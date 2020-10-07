@@ -1,0 +1,8 @@
+profiles.lo: profiles.c /usr/include/stdc-predef.h profiles.h \
+ /usr/lib/gcc/aarch64-linux-gnu/8/include/stddef.h
+
+/usr/include/stdc-predef.h:
+
+profiles.h:
+
+/usr/lib/gcc/aarch64-linux-gnu/8/include/stddef.h:
