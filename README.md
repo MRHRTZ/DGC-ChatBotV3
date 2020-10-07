@@ -10,4 +10,4 @@ Personal Bot DGC WhatsApp
 - npm start
 
 # Bug? 
-- Apabila ada bug atau pertanyaan chat saya di <a href=wa.me/6285559038021>WhatsApp</a>
+- Apabila ada bug atau pertanyaan chat saya di <a href=https://wa.me/6285559038021>WhatsApp</a>
