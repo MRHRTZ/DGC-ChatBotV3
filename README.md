@@ -26,7 +26,8 @@ cd DGC-ChatBotV3/whatsapp-bot
 [Untuk linux = sudo apt-get install npm]
 [Untuk Windows = (install manual di <a href=https://nodejs.org/en/download/>Link nodejs</a>) 
 npm i
-npm start```
+npm start`
+``
 
 # Bug? 
 - Apabila ada bug atau pertanyaan chat saya di <a href=https://wa.me/6285559038021>WhatsApp</a>
