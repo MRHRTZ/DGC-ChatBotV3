@@ -1,1 +1,0 @@
-[Dir bot data]
