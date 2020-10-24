@@ -23,11 +23,11 @@
 ```
 git clone https://github.com/MRHRTZ/DGC-ChatBotV3
 
-cd DGC-ChatBotV3/whatsapp-bot
+cd DGC-ChatBotV3/
 
 [Untuk linux = sudo apt-get install npm]
 
-[Untuk Windows = (install manual di <a href=https://nodejs.org/en/download/>Link nodejs</a>) 
+[Untuk Windows = (install manual di https://nodejs.org>) 
 
 npm i
 
