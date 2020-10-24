@@ -22,8 +22,11 @@ module.exports = options = (headless, start) => {
     //     process.exit(1)
     // }
 
-    const options = {
-        headless: headless,
+     const options = {
+        headless: true,
+        qrRefreshS: 20,
+        qrTimeout: 0,
+        authTimeout: 0,
         autoRefresh: true,
         restartOnCrash: start,
         cacheEnabled: false,
@@ -41,6 +44,5 @@ module.exports = options = (headless, start) => {
             '--disk-cache-size=0'
         ]
     }
-
     return options
 }
