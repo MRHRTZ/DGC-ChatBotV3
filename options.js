@@ -22,24 +22,27 @@ module.exports = options = (headless, start) => {
     //     process.exit(1)
     // }
 
-     const options = {
- 
-  // executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-          useChrome: true,
-          restartOnCrash: start,
-          headless:false,
-          throwErrorOnTosBlock:true,
-          qrTimeout:0,   //set to 0 to wait forever for a qr scan
-          authTimeout:0, //set to 0 to wait forever for connection to phone
-          killProcessOnBrowserClose: true,
-          autoRefresh:true, //default to true
-          safeMode: true,
-          disableSpins: true,
-          viewport: {
-            // width: 1920,
-            height: 1200
-          },
-          defaultViewport: null
+      const options = {
+        headless: headless,
+        qrRefreshS: 20,
+        qrTimeout: 0,
+        authTimeout: 0,
+        autoRefresh: true,
+        restartOnCrash: start,
+        cacheEnabled: false,
+        // executablePath: execPath,
+        useChrome: true,
+        killProcessOnBrowserClose: true,
+        throwErrorOnTosBlock: false,
+        chromiumArgs: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--aggressive-cache-discard',
+            '--disable-cache',
+            '--disable-application-cache',
+            '--disable-offline-load-stale-cache',
+            '--disk-cache-size=0'
+        ]
     }
     return options
 }

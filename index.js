@@ -1,15 +1,23 @@
 const { create, Client } = require('@open-wa/wa-automate')
 const welcome = require('./lib/welcome')
 const welcomeF = require('./lib/freedom')
-const msgHandler = require('./msgHndlr')
+const welcomeD = require('./lib/dmff')
+const moment = require('moment-timezone')
+//const msgHandler = require('./msgHndlr')
 const options = require('./options')
+
+moment.tz.setDefault('Asia/Jakarta').locale('id')
+const time = moment().format('MMMM Do YYYY, h:mm:ss a')
+// Cache handler and check for file change
+require('./msgHndlr')
+nocache('./msgHndlr', module => console.log(`${time} '${module}' Updated!`))
 
 const start = async (client = new Client()) => {
         console.log('[SERVER] Server Started!')
         // Force it to keep the current session
-        client.onStateChanged((state) => {
-            console.log('[Client State]', state)
-            if (state === 'CONFLICT' || state === 'UNLAUNCHED') client.forceRefocus()
+        client.onStateChanged(state=>{
+            console.log('statechanged', state)
+            if(state==="CONFLICT" || state==="UNLAUNCHED") client.forceRefocus();
         })
         // listening on message
         client.onMessage((async (message) => {
@@ -19,12 +27,16 @@ const start = async (client = new Client()) => {
                     client.cutMsgCache()
                 }
             })
-            msgHandler(client, message)
+        //    msgHandler(client, message)
+        // Message Handler (Loaded from recent cache)
+        require('./msgHndlr')(client, message)
         }))
 
         client.onGlobalParicipantsChanged((async (heuh) => {
             await welcome(client, heuh)
             await welcomeF(client, heuh)
+            await welcomeD(client, heuh)
+            console.log(heuh)
             //left(client, heuh)
             }))
         
@@ -35,7 +47,7 @@ const start = async (client = new Client()) => {
             // } else {
             //     client.sendText(chat.groupMetadata.id, `Halo warga grup *${chat.contact.name}* terimakasih sudah menginvite bot ini, untuk melihat menu silahkan kirim *!menu*`)
             // } 
-            client.sendText(chat.id, `Berhubungan Server terbatas bot ini hanya untuk grup DGC dan cabangnya!\n\nJika ada pihak yang membutuhkan bot ini untuk digrup donasi seikhlasnya ke 085559038021 (ovo) dan konfirmasi owner bot wa.me/6285559038021\n\nterima kasih.`).then(() => client.leaveGroup(chat.id)).then(() => client.deleteChat(chat.id))
+            client.sendText(chat.id, `Berhubungan Server terbatas bot ini hanya untuk grup DGC dan cabangnya!\n\nJika ada pihak yang membutuhkan bot ini untuk digrup donasi MIN 5K (tanpa request) ke 085559038021 (DANA/GOPAY/OVO) dan konfirmasi owner bot wa.me/6285559038021\n\nterima kasih.`).then(() => client.leaveGroup(chat.id)).then(() => client.deleteChat(chat.id))
         }))
 
 
@@ -50,6 +62,36 @@ const start = async (client = new Client()) => {
             .then(() => client.contactBlock(call.peerJid))
         }))
     }
+
+
+/**
+ * uncache if there is file change
+ * @param {string} module module name or path
+ * @param {function} cb when module updated <optional> 
+ */
+function nocache(module, cb = () => { }) {
+    console.log('Module', `'${module}'`, 'is now being watched for changes')
+    require('fs').watchFile(require.resolve(module), async () => {
+        await uncache(require.resolve(module))
+        cb(module)
+    })
+}
+
+/**
+ * uncache a module
+ * @param {string} module module name or path
+ */
+function uncache(module = '.') {
+    return new Promise((resolve, reject) => {
+        try {
+            delete require.cache[require.resolve(module)]
+            resolve()
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 
 create('MRHRTZ', options(true, start))
     .then(client => start(client))
