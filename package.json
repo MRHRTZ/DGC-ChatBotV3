@@ -1,13 +1,13 @@
 {
-  "name": "whatsapp-bot",
-  "version": "2.0.0",
-  "description": "Halo sesama pengguna, <b>whatsapp-bot</b> adalah skrip otomatisasi whatsapp atau lebih seperti bot yang merespons kata kunci tertentu dan beberapa fitur lain yang sedang kami kerjakan.",
+  "name": "DGC-ChatBotV3",
+  "version": "3.0",
+  "description": "<b>DGC-ChatBotV3</b> Adalah suatu bot yang direalisasikan dari suatu komunitas DeepGoreCreepypasta dan diprogram untuk respon tertentu",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Mhank BarBar",
+  "author": "MRHRTZ",
   "license": "Apache-2.0",
   "dependencies": {
     "@open-wa/wa-automate": "^2.1.6",
@@ -41,13 +41,13 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mhankbarbar/whatsapp-bot.git"
+    "url": "git+https://github.com/MRHRTZ/DGC-ChatBotV3"
   },
   "keywords": [
-    "Whatsapp-Bot"
+    "DGC-ChatBotV3"
   ],
   "bugs": {
-    "url": "https://github.com/mhankbarbar/whatsapp-bot/issues"
+    "url": "https://github.com/MRHRTZ/DGC-ChatBotV3/issues"
   },
-  "homepage": "https://github.com/mhankbarbar/whatsapp-bot#readme"
+  "homepage": "https://github.com/MRHRTZ/DGC-ChatBotV3#readme"
 }
