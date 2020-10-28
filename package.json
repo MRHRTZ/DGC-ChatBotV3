@@ -1,6 +1,6 @@
 {
   "name": "DGC-ChatBotV3",
-  "version": "3.0",
+  "version": "2.0.0",
   "description": "<b>DGC-ChatBotV3</b> Adalah suatu bot yang direalisasikan dari suatu komunitas DeepGoreCreepypasta dan diprogram untuk respon tertentu",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "MRHRTZ",
   "license": "Apache-2.0",
   "dependencies": {
-    "@open-wa/wa-automate": "^2.1.6",
+    "@open-wa/wa-automate": "^2.0.28",
     "@open-wa/wa-decrypt": "^2.0.1",
     "@vitalets/google-translate-api": "^4.0.0",
     "axios": "^0.19.2",
@@ -19,6 +19,7 @@
     "download-file": "^0.1.5",
     "emoji-regex": "^9.2.0",
     "fs-extra": "^9.0.1",
+    "get-youtube-id": "^1.0.1",
     "gifify": "^2.4.3",
     "gify": "^0.2.0",
     "got": "^11.8.0",
