@@ -66,6 +66,7 @@ module.exports = msgHandler = async (client, message) => {
         const isBotGroupAdmins = isGroupMsg ? groupAdmins.includes(botNumber + '@c.us') : false
         const ownerNumber = '6285559038021@c.us'
         const DGCfounder = 'Biancho Junaidi'
+        const apikeyvhtear = 'APIKEY api.vhtear.com here'
         const DGCbotowner = 'MRHRTZ@kali:~#'
         const isFounder = sender.pushname === DGCfounder
         const isBOwner = sender.pushname === DGCbotowner
@@ -156,7 +157,7 @@ module.exports = msgHandler = async (client, message) => {
             const keywot = body.slice(10)
             try {
                 client.reply(from, '_Sedang mencari data..._')
-                const response2 = await fetch(`https://api.vhtear.com/youtube?query=${encodeURIComponent(keywot)}&apikey=botnolepbydandyproject`)
+                const response2 = await fetch(`https://api.vhtear.com/youtube?query=${encodeURIComponent(keywot)}&apikey=${apikeyvhtear}`)
                 if (!response2.ok) throw new Error(`unexpected response ${response2.statusText}`)
                 const jsonserc = await response2.json()
                 const { result } = await jsonserc
@@ -346,7 +347,7 @@ module.exports = msgHandler = async (client, message) => {
         //         client.reply(from, '_Bot sedang nulis..._')
         //         const nulis = body.slice(7)
         //         client.reply(from, mess.wait, id)
-        //         let urlnulis = "https://api.vhtear.com/write?text="+nulis+"&apikey=botnolepbydandyproject"              
+        //         let urlnulis = "https://api.vhtear.com/write?text="+nulis+"&apikey=${apikeyvhtear}"              
         //         await fetch(urlnulis)
         //         .then((gam) => {
         //             client.sendFile(from, gam, 'tulisan.jpg', `Udah di tulis ni ${pushname}`, id);
@@ -365,7 +366,7 @@ module.exports = msgHandler = async (client, message) => {
             const serahu = body.slice(7)
             try {
                 client.reply(from, '_Sedang mencari musik, mohon tunggu..._', id)
-                const respons = await fetch(`https://api.vhtear.com/ytmp3?query=${serahu}&apikey=botnolepbydandyproject`)
+                const respons = await fetch(`https://api.vhtear.com/ytmp3?query=${serahu}&apikey=${apikeyvhtear}`)
                 if (!respons.ok) throw new Error(`unexpected response ${respons.statusText}`)
                 const json = await respons.json()
                 const jsonre = await json.result
@@ -422,8 +423,8 @@ module.exports = msgHandler = async (client, message) => {
             if (!isLinks) return client.reply(from, mess.error.Iv, id)
             try {
                 client.reply(from, mess.wait, id)
-                const response1 = await fetch(`https://api.vhtear.com/ytdl?link=${args[1]}&apikey=botnolepbydandyproject`)
-                const mhankyt3 = await fetch(`http://mhankbarbar.herokuapp.com/api/yta?url=${args[1]}&apiKey=9eqNrrqr6UxSlck3uGDD`)
+                const response1 = await fetch(`https://api.vhtear.com/ytdl?link=${args[1]}&apikey=${apikeyvhtear}`)
+                const mhankyt3 = await fetch(`http://mhankbarbar.herokuapp.com/api/yta?url=${args[1]}&apiKey=MhankAPI`)
                 if (!response1.ok) throw new Error(`unexpected response vhtear ${response1.statusText}`)
                 if (!mhankyt3.ok) throw new Error(`Error barbaryt3 ${mhankyt3.statusText}`)
                 const barbarytp3 = await mhankyt3.json()
@@ -457,8 +458,8 @@ module.exports = msgHandler = async (client, message) => {
             if (!isLinks2) return client.reply(from, mess.error.Iv, id)
             try {
                 client.reply(from, mess.wait, id)
-                //const response1 = await fetch(`https://api.vhtear.com/ytdl?link=${args[1]}&apikey=botnolepbydandyproject`)
-                const mhankyt4 = await fetch(`http://mhankbarbar.herokuapp.com/api/ytv?url=${args[1]}&apiKey=9eqNrrqr6UxSlck3uGDD`)
+                //const response1 = await fetch(`https://api.vhtear.com/ytdl?link=${args[1]}&apikey=${apikeyvhtear}`)
+                const mhankyt4 = await fetch(`http://mhankbarbar.herokuapp.com/api/ytv?url=${args[1]}&apiKey=MhankAPI`)
                 //if (!response1.ok) throw new Error(`unexpected response vhtear ${response1.statusText}`);
                 if (!mhankyt4.ok) throw new Error(`Err mhankyt4 ${mhankyt4.statusText}`)
                 //const json = await response1.json()
@@ -491,7 +492,7 @@ module.exports = msgHandler = async (client, message) => {
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!tiktok* _linkVideoTikTod_, untuk contoh silahkan kirim perintah *!readme*', id)
             client.reply(from, '_Mohon tunggu sebentar, sedang di proses..._', id)
             try{
-                const restik = await fetch(`https://api.vhtear.com/tiktokdl?link=${args[1]}&apikey=botnolepbydandyproject`)
+                const restik = await fetch(`https://api.vhtear.com/tiktokdl?link=${args[1]}&apikey=${apikeyvhtear}`)
                 if (!restik.ok) throw new Error(`Kesalahan respon : ${restik.statusText}`)
                 const jsontik = await restik.json()
                 if (restik.error){
@@ -512,7 +513,7 @@ module.exports = msgHandler = async (client, message) => {
             if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!wiki [query]*\nContoh : *!wiki asu*', id)
             const query_ = body.slice(6)
-            const wiki = await get.get(`https://api.vhtear.com/wikipedia?query=${encodeURIComponent(query_)}&apikey=botnolepbydandyproject`).json()
+            const wiki = await get.get(`https://api.vhtear.com/wikipedia?query=${encodeURIComponent(query_)}&apikey=${apikeyvhtear}`).json()
             if (wiki.error) {
                 client.reply(from, wiki.error, id)
             } else {
@@ -547,7 +548,7 @@ module.exports = msgHandler = async (client, message) => {
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!cuaca [tempat]*\nContoh : *!cuaca tangerang', id)
             const tempat = body.slice(7)
             client.reply(from, `_Sedang mencari data cuaca ${tempat}..._`)
-            const weather = await get.get(`https://mhankbarbar.herokuapp.com/api/cuaca?q=${tempat}&apiKey=9eqNrrqr6UxSlck3uGDD`).json()
+            const weather = await get.get(`https://mhankbarbar.herokuapp.com/api/cuaca?q=${tempat}&apiKey=MhankAPI`).json()
             if (weather.error) {
                 client.reply(from, weather.error, id)
             } else {
@@ -902,7 +903,7 @@ Nomor : wa.me/${hapusser[0]}
             if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
             if (args.length === 1)  return client.reply(from, 'Kirim perintah *!igStalk @username*\nContoh *!igStalk @hanif_az.sq.61*', id)
             client.reply(from, `_Sedang mencari data profil..._`, id)
-            const stalk = await get.get(`https://api.vhtear.com/igprofile?query=${args[1]}&apikey=botnolepbydandyproject`).json()
+            const stalk = await get.get(`https://api.vhtear.com/igprofile?query=${args[1]}&apikey=${apikeyvhtear}`).json()
             if (stalk.error) return client.reply(from, stalk.error, id)
             const { biography, follower, follow, post_count, full_name, username, picture, is_private } = stalk.result
             const caps = `➣ *Nama* : ${full_name}\n➣ *Username* : ${username}\n➣ *Jumlah Followers* : ${follower}\n➣ *Jumlah Following* : ${follow}\n➣ *Jumlah Postingan* : ${post_count}\n➣ *Biodata* : ${biography}`
@@ -1458,7 +1459,7 @@ Nomor : wa.me/${hapusser[0]}
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!nulis [teks]*', id)
             const nulis = encodeURIComponent(body.slice(7))
             client.reply(from, `_Bot lagi menulis ni ${pushname}..._`, id)
-            let urlnulis = `https://mhankbarbar.herokuapp.com/nulis?text=${nulis}&apiKey=9eqNrrqr6UxSlck3uGDD`
+            let urlnulis = `https://mhankbarbar.herokuapp.com/nulis?text=${nulis}&apiKey=MhankAPI`
             await fetch(urlnulis, {method: "GET"})
             .then(res => res.json())
             .then(async (json) => {
