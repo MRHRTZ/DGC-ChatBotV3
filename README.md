@@ -19,7 +19,7 @@
 >Personal Bot DGC WhatsApp, including unique fiture like group commands downloader and other unique thing thats bot for Whatsapp. 
 
 # Required
-- Node v12.19.0
+- Node 12.19.0
 - Npm 6.14.8
 - ImageMagick-7.0.10-34-Q16-HDRI <a href=https://imagemagick.org/script/download.php#windows>Here</a>
 
