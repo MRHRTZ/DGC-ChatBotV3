@@ -30,9 +30,9 @@ git clone https://github.com/MRHRTZ/DGC-ChatBotV3
 
 cd DGC-ChatBotV3/
 
-[Untuk linux = sudo apt-get install npm]
+[For linux = sudo apt-get install npm]
 
-[Untuk Windows = (install manual di https://nodejs.org>) 
+[For Windows = (install manual from https://nodejs.org>) 
 
 npm i
 
