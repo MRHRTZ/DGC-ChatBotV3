@@ -18,16 +18,21 @@
 # DGC-ChatBotV3
 >Personal Bot DGC WhatsApp, including unique fiture like group commands downloader and other unique thing thats bot for Whatsapp. 
 
-# Cara install
+# Required
+- Node 12.19.0
+- Npm 6.14.8
+- ImageMagick-7.0.10-34-Q16-HDRI <a href=https://imagemagick.org/script/download.php#windows>Here</a>
+
+# Installing Step
 
 ```
 git clone https://github.com/MRHRTZ/DGC-ChatBotV3
 
 cd DGC-ChatBotV3/
 
-[Untuk linux = sudo apt-get install npm]
+[For linux = sudo apt-get install npm]
 
-[Untuk Windows = (install manual di https://nodejs.org>) 
+[For Windows = (install manual from https://nodejs.org>) 
 
 npm i
 
@@ -35,4 +40,4 @@ npm start
 ```
 
 # Bug? 
-- Apabila ada bug atau pertanyaan chat saya di <a href=https://wa.me/6285559038021>WhatsApp</a>
+- If find a bugs please contact me on <a href=https://wa.me/6285559038021>WhatsApp</a>
