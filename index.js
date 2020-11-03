@@ -1,10 +1,15 @@
 const { create, Client } = require('@open-wa/wa-automate')
 const welcome = require('./lib/welcome')
+const fs = require('fs-extra')
 const welcomeF = require('./lib/freedom')
+//const cron = require('node-cron')
 const welcomeD = require('./lib/dmff')
 const moment = require('moment-timezone')
 //const msgHandler = require('./msgHndlr')
 const options = require('./options')
+
+//let setting = JSON.parse(fs.readFileSync('./lib/config.json'));
+//let {prefix, banChats, restartState: isRestart,mtc: mtcState, whitelist ,sAdmin, limitCount, memberLimit, groupLimit} = setting
 
 moment.tz.setDefault('Asia/Jakarta').locale('id')
 const time = moment().format('MMMM Do YYYY, h:mm:ss a')
@@ -19,7 +24,15 @@ const start = async (client = new Client()) => {
             console.log('statechanged', state)
             if(state==="CONFLICT" || state==="UNLAUNCHED") client.forceRefocus();
         })
+        // cron.schedule('* * * * *', () =>  {
+        //     const obj = [{id: sAdmin, msg: 1}]
+        //     msgLimit = obj
+        //     fs.writeFileSync('./lib/msgLimit.json', JSON.stringify(obj))
+        // });
+        
         // listening on message
+
+
         client.onMessage((async (message) => {
             client.getAmountOfLoadedMessages()
             .then((msg) => {
@@ -37,6 +50,7 @@ const start = async (client = new Client()) => {
             await welcomeF(client, heuh)
             await welcomeD(client, heuh)
             console.log(heuh)
+            //console.log(client)
             //left(client, heuh)
             }))
         
