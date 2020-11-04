@@ -30,19 +30,19 @@ module.exports = options = (headless, start) => {
         autoRefresh: true,
         restartOnCrash: start,
         cacheEnabled: false,
-        // executablePath: execPath,
+        executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', 
         useChrome: true,
         killProcessOnBrowserClose: true,
-        throwErrorOnTosBlock: false,
-        chromiumArgs: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--aggressive-cache-discard',
-            '--disable-cache',
-            '--disable-application-cache',
-            '--disable-offline-load-stale-cache',
-            '--disk-cache-size=0'
-        ]
+        throwErrorOnTosBlock: false
+        // chromiumArgs: [
+        //     '--no-sandbox',
+        //     '--disable-setuid-sandbox',
+        //     '--aggressive-cache-discard',
+        //     '--disable-cache',
+        //     '--disable-application-cache',
+        //     '--disable-offline-load-stale-cache',
+        //     '--disk-cache-size=0'
+        // ]
     }
     return options
 }
