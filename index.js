@@ -46,12 +46,12 @@ const start = async (client = new Client()) => {
         require('./msgHndlr')(client, message)
         }))
 
-        client.onGlobalParicipantsChanged((async (heuh) => {
-            await welcome(client, heuh)
-            await welcomeF(client, heuh)
-            await welcomeD(client, heuh)
+        client.onGlobalParicipantsChanged((async (xixi) => {
+            await welcome(client, xixi)
+            await welcomeF(client, xixi)
+            await welcomeD(client, xixi)
             console.log('Somegroup '+heuh.action+'ing')
-            if (event.action === 'remove' || event.action === 'leave') await client.sendTextWithMentions(event.chat, `Selamat tinggal @${event.who.replace('@c.us', '')}, Semoga tenang dialam sana..`)
+            if (xixi.action === 'remove' || xixi.action === 'leave') await client.sendTextWithMentions(event.chat, `Selamat tinggal @${event.who.replace('@c.us', '')}, Semoga tenang dialam sana..`)
             //console.log(client)
             //left(client, heuh)
             }))

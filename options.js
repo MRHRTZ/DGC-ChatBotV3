@@ -23,17 +23,17 @@ module.exports = options = (headless, start) => {
     // }
 
       const options = {
-        headless: headless,
+        headless: true,
         qrRefreshS: 20,
         qrTimeout: 0,
         authTimeout: 0,
         autoRefresh: true,
-        restartOnCrash: start,
+        restartOnCrash: true,
         cacheEnabled: false,
         executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', 
         useChrome: true,
         killProcessOnBrowserClose: true,
-        throwErrorOnTosBlock: false
+        throwErrorOnTosBlock: false,
         // chromiumArgs: [
         //     '--no-sandbox',
         //     '--disable-setuid-sandbox',

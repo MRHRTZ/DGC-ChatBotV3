@@ -1,7 +1,7 @@
 {
-  "sAdmin": "6285559038021@c.us",
-  "restartState": true,
-  "restartId": "6285559038021-1603588233@g.us",
+  "sAdmin": "6285559038022@c.us",
+  "restartState": false,
+  "restartId": "undefined",
   "banChats": false,
   "Rest": true,
   "limitCount": 30,
