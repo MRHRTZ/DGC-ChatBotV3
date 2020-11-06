@@ -36,7 +36,8 @@ const start = async (client = new Client()) => {
         client.onMessage((async (message) => {
             client.getAmountOfLoadedMessages()
             .then((msg) => {
-                if (msg >= 3000) {
+                console.log('Amount => '+msg)
+                if (msg >= 500) {
                     client.cutMsgCache()
                 }
             })
@@ -49,7 +50,8 @@ const start = async (client = new Client()) => {
             await welcome(client, heuh)
             await welcomeF(client, heuh)
             await welcomeD(client, heuh)
-            console.log(heuh)
+            console.log('Somegroup '+heuh.action+'ing')
+            if (event.action === 'remove' || event.action === 'leave') await client.sendTextWithMentions(event.chat, `Selamat tinggal @${event.who.replace('@c.us', '')}, Semoga tenang dialam sana..`)
             //console.log(client)
             //left(client, heuh)
             }))
