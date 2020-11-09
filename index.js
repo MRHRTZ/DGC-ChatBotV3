@@ -36,7 +36,6 @@ const start = async (client = new Client()) => {
         client.onMessage((async (message) => {
             client.getAmountOfLoadedMessages()
             .then((msg) => {
-                console.log('Amount => '+msg)
                 if (msg >= 500) {
                     client.cutMsgCache()
                 }
@@ -47,9 +46,6 @@ const start = async (client = new Client()) => {
         }))
 
         client.onGlobalParicipantsChanged((async (xixi) => {
-            await welcome(client, xixi)
-            await welcomeF(client, xixi)
-            await welcomeD(client, xixi)
             console.log('Somegroup '+heuh.action+'ing')
             if (xixi.action === 'remove' || xixi.action === 'leave') await client.sendTextWithMentions(event.chat, `Selamat tinggal @${event.who.replace('@c.us', '')}, Semoga tenang dialam sana..`)
             //console.log(client)
@@ -109,6 +105,6 @@ function uncache(module = '.') {
 }
 
 
-create('MRHRTZ', options(true, start))
+create(options(true, start))
     .then(client => start(client))
     .catch((error) => console.log(error))
