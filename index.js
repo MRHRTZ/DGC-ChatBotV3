@@ -45,11 +45,8 @@ const start = async (client = new Client()) => {
         require('./msgHndlr')(client, message)
         }))
 
-        client.onGlobalParicipantsChanged((async (client, xixi) => {
-            await welcomeD(client, xixi)
-            console.log('Somegroup '+heuh.action+'ing')
-            if (xixi.action === 'remove' || xixi.action === 'leave') await client.sendTextWithMentions(event.chat, `Selamat tinggal @${event.who.replace('@c.us', '')}, Semoga tenang dialam sana..`)
-            //console.log(client)
+        client.onGlobalParicipantsChanged((async (heuh) => {
+            // await welcomeD(client, heuh)
             //left(client, heuh)
             }))
         
@@ -60,7 +57,10 @@ const start = async (client = new Client()) => {
             // } else {
             //     client.sendText(chat.groupMetadata.id, `Halo warga grup *${chat.contact.name}* terimakasih sudah menginvite bot ini, untuk melihat menu silahkan kirim *!menu*`)
             // } 
-            client.sendText(chat.id, `Berhubungan Server terbatas bot ini hanya untuk grup DGC dan cabangnya!\n\nJika ada pihak yang membutuhkan bot ini untuk digrup donasi dan konfirmasi owner bot\n\nterima kasih.`).then(() => client.sendContact(from, '6285559038021@c.us')).then(() => client.leaveGroup(chat.id)).then(() => client.deleteChat(chat.id))
+            client.sendText(chat.id, `Berhubungan Server terbatas bot ini hanya untuk grup DGC dan cabangnya!\n\nJika ada pihak yang membutuhkan bot ini untuk digrup donasi dan konfirmasi owner bot\n\nterima kasih.`)
+            .then(() => client.sendContact(chat.id, '6285559038021@c.us'))
+            .then(() => client.leaveGroup(chat.id))
+            .then(() => client.deleteChat(chat.id))
         }))
 
 

@@ -18,6 +18,7 @@ const { liriklagu, quotemaker, randomNimek, fb, ig, twt, sleep, tulis, jadwalTv,
 const { help, snk, info, donate, readme, listChannel, bahasa_list } = require('./lib/help')
 const { stdout } = require('process')
 const nsfw_ = JSON.parse(fs.readFileSync('./lib/NSFW.json'))
+const welkomD = JSON.parse(fs.readFileSync('./lib/dmff.json'))
 const welkom = JSON.parse(fs.readFileSync('./lib/welcome.json'))
 const welkomF = JSON.parse(fs.readFileSync('./lib/freedom.json'))
 const { RemoveBgResult, removeBackgroundFromImageBase64, removeBackgroundFromImageFile } = require('remove.bg')
@@ -97,7 +98,8 @@ module.exports = msgHandler = async (client, message) => {
         if (isGroupMsg && command.startsWith('!')) console.log('\x1b[1;31m~\x1b[1;37m>', '[\x1b[1;32mEXEC\x1b[1;37m]', time, color(msgs(command)), 'from', color(pushname), 'in', color(formattedTitle))
         if (!isGroupMsg && !command.startsWith('!')) console.log('\x1b[1;33m~\x1b[1;37m>', '[\x1b[1;31mMSG\x1b[1;37m]', time, color('message'), 'from', color(pushname))
         if (isGroupMsg && !command.startsWith('!')) console.log('\x1b[1;33m~\x1b[1;37m>', '[\x1b[1;31mMSG\x1b[1;37m]', time, color('message'), 'from', color(pushname), 'in', color(formattedTitle))
-        if (isBlocked) return client.reply(from, `_Sepertinya anda telah terblokir dikarenakan vc/call bot._`)
+        if (isBlocked ) return 
+            //client.reply(from, `_Sepertinya anda telah terblokir dikarenakan vc/call bot._`)
         //if (!isOwner) return
     //try { 
         const isMuted = (chatId) => {
@@ -241,6 +243,18 @@ module.exports = msgHandler = async (client, message) => {
         //client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Coba lagi besok..._`, id)
                         
         switch(command) {
+        case '!botstat':
+            try {    
+                const btre = await client.getBatteryLevel()
+                const gcjm = await client.getAllGroups()
+                const ctjm = await client.getAllChats()
+                const stat = await client.getConnectionState()
+                const charge = await client.getIsPlugged()
+                await client.reply(from, `*Menampilkan status bot*\n\nStatus koneksi : ${stat}\nJumlah Grup : ${gcjm.length}\nJumlah Chat New : ${ctjm.length}\nBaterai Bot : ${btre}\nBot Charging : ${charge}`, id)
+            } catch (e){
+                console.log(e)
+            }
+            break
         case '!unmute':
             console.log(`Unmuted ${name}!`)
             await client.sendSeen(from)
@@ -577,6 +591,56 @@ Pesanan:`, id)
             }
             await client.sendSeen(from)
             break
+        case '!stickerori':
+        case '!stikerori':
+        /*
+if (isMedia) {
+                if (mimetype === 'video/mp4' && message.duration < 10 || mimetype === 'image/gif' && message.duration < 10) {
+                    const mediaData = await decryptMedia(message, uaOverride)
+                    client.reply(from, `_Permintaan anda sedang diproses mohon tunggu sebentar_ ⏲️ _Tunggu perkiraan kurang lebih 1 menit_`, id)
+                    const filename = `./media/aswu.${mimetype.split('/')[1]}`
+                    await fs.writeFileSync(filename, mediaData)
+                    await exec(`gifify ${filename} -o ./media/output-stik.${mimetype} --resize=240:240`, async function (error, stdout, stderr) {
+                        const gif = await fs.readFileSync('./media/output.${mimetype}', { encoding: "base64" })
+                        await client.sendImageAsSticker(from, `data:${mimetype};base64,${mediaData.toString('base64')}`)
+                    })
+                } else (
+                    client.reply(from, `_Kesalahan ⚠️ Hanya bisa video/gif apabila file media berbentuk gambar ketik *!stiker*_`, id)
+                )
+            }
+        */
+       
+        // if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (isMedia && type === 'image') {
+                client.reply(from, mess.wait, id)
+                const mediaDataa = await decryptMedia(message, uaOverride)
+                const filenamea = `./media/imgscale.${mimetype.split('/')[1]}`
+                await fs.writeFileSync(filenamea, mediaDataa)
+                const imageBase64a = `data:${mimetype};base64,${mediaDataa.toString('base64')}`
+                await client.sendImageAsSticker(from, imageBase64a)
+                    }
+             else if (quotedMsg && quotedMsg.type == 'image') {
+                client.reply(from, mess.wait, id)
+                const mediaDataa = await decryptMedia(quotedMsg, uaOverride)
+                const imageBase64a = `data:${quotedMsg.mimetype};base64,${mediaDataa.toString('base64')}`
+                const filenamea = `./media/imgscale.${quotedMsg.mimetype.split('/')[1]}`
+                await fs.writeFileSync(filenamea, mediaDataa)
+                await client.sendImageAsSticker(from, imageBase64a)
+                 
+                //await client.sendImageAsSticker(from, imageBase64)
+            } else if (args.length === 2) {
+                const url = args[1]
+                if (url.match(isUrl)) {
+                    await client.sendStickerfromUrl(from, url, { method: 'get' })
+                        .catch(err => console.log('Caught exception: ', err))
+                } else {
+                    client.reply(from, mess.error.Iv, id)
+                }
+            } else {
+                    client.reply(from, mess.error.St, id)
+            }
+            await client.sendSeen(from)
+            break
         case '!sticker':
         case '!stiker':
         /*
@@ -893,59 +957,61 @@ if (isMedia) {
             // https://api.i-tech.id/dl/googlei?key=iwEdte-kAPiT1-3Cj3JD-siWNHI-xc6jV7&query=odading
             if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6289673766582 untuk pertanyaan lebih lanjut', id)            
             if (args.length === 1) return client.reply(from, `Kirim perintah search gambar dengan cara ketik perintah :\n*!gambar* _Katakunci_\nContoh :\n*!gambar* _kopi_`, id)
-            client.reply(from, mess.wait, id)
-            const quegam = body.slice(8)
-            const gamb = `https://api.i-tech.id/dl/googlei?key=ijmalalfafanajib&query=${encodeURIComponent(quegam)}`
-            const gettinggam = await get.get(gamb).json()
-            var plorgam = Math.floor(Math.random() * gettinggam.result.length)
-            // console.log(plorgam)
-            await client.sendFileFromUrl(from, gettinggam.result[plorgam], `gam.${gettinggam.result[plorgam].substr(-3)}`, `*Hasil pencarian google image dari ${quegam}*`, id).catch((e) => { console.log(e); client.reply(from, `_Data tersebut tidak ditemukan!_`, id)})
+            try {
+                client.reply(from, mess.wait, id)
+                const quegam = body.slice(8)
+                const gamb = `https://api.i-tech.id/dl/googlei?key=ijmalalfafanajib&query=${encodeURIComponent(quegam)}`
+                const gettinggam = await get.get(gamb).json()
+                if (gettinggam.error) return console.log(`error ${gettinggam.error}`)
+                var plorgam = Math.floor(Math.random() * gettinggam.result.length)
+                // console.log(plorgam)
+                await client.sendFileFromUrl(from, gettinggam.result[plorgam], `gam.${gettinggam.result[plorgam].substr(-3)}`, `*Hasil pencarian google image dari ${quegam}*`, id).catch((e) => { console.log(e); client.reply(from, `_Data tersebut tidak ditemukan!_`, id)})
+            } catch (e) {
+                console.log(e)
+            }
             await client.sendSeen(from)
             break
         case '!wallpaper':
             if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
             if (args.length <= 2 || args.length == 1) return await client.reply(from, 'Random image generator splash, bisa untuk wallpaper.\npenggunaan : *!gambar [halaman] [kata kunci]* contoh *!gambar 1 office*', id)
-           
-            if (args.length > 2){
-            const reqpage = args[1]
-            const reqimg = args.slice(2, args.length)
-            const imgurl = `https://api.unsplash.com/search/photos?page=${reqpage}&query=${reqimg}&client_id=J92b7gyJFWEdgT3z6OXZlqXovHjcn9242Ob4rKdE3uA`
-            const has = await get.get(imgurl).json()
-            const { total, total_pages, results } = has
-            if (total > 0) {
-                const total_img = between(0, results.length)
-                const linkUrlFull = results[total_img].urls.full
-                const shortgetFull = await get.get(`https://api.haipbis.xyz/bitly?url=${linkUrlFull}`).json()
-                const hazel = `*${results[total_img].alt_description}*\n\n*Deskripsi :* ${results[total_img].description}\n*Width :* ${results[total_img].width}\n*Height :* ${results[total_img].height}\n*Link HD :* ${shortgetFull.result}\n\n_Menampilkan page ${reqpage} dari ${total_pages} halaman_`
-                const outsplash = results[total_img].urls.regular
-                await client.sendFileFromUrl(from, outsplash, 'outimagesplash.jpeg', hazel, id)
-                } else {
-                    await client.reply(from, `[ERROR] Gambar dengan nama ${reqimg} tidak ditemukan!`, id)
+            try {
+                if (args.length > 2){
+                const reqpage = args[1]
+                const reqimg = args.slice(2, args.length)
+                const imgurl = `https://api.unsplash.com/search/photos?page=${reqpage}&query=${reqimg}&client_id=J92b7gyJFWEdgT3z6OXZlqXovHjcn9242Ob4rKdE3uA`
+                const has = await get.get(imgurl).json()
+                const { total, total_pages, results } = has
+                if (total > 0) {
+                    const total_img = between(0, results.length)
+                    const linkUrlFull = results[total_img].urls.full
+                    const shortgetFull = await get.get(`https://api.haipbis.xyz/bitly?url=${linkUrlFull}`).json()
+                    const hazel = `*${results[total_img].alt_description}*\n\n*Deskripsi :* ${results[total_img].description}\n*Width :* ${results[total_img].width}\n*Height :* ${results[total_img].height}\n*Link HD :* ${shortgetFull.result}\n\n_Menampilkan page ${reqpage} dari ${total_pages} halaman_`
+                    const outsplash = results[total_img].urls.regular
+                    await client.sendFileFromUrl(from, outsplash, 'outimagesplash.jpeg', hazel, id)
+                    } else {
+                        await client.reply(from, `[ERROR] Gambar dengan nama ${reqimg} tidak ditemukan!`, id)
+                    }
                 }
+            } catch (e) {
+                console.log(e)
             }
             await client.sendSeen(from)
             break
+        case '!stickergif':
+        case '!stikergif':    
         case '!sgi':
             if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
             if (!isMedia || type == message) return client.reply(from, '_Kesalahan! kirim video/gif dengan caption *!stikerGif* max 10 detik! bukan tag._', id)
             if (isMedia && type == 'video') {
-                if (mimetype === 'video/mp4' || mimetype === 'image/gif' && message.duration < 10 || quotedMsg && quotedMsg.type == 'video/mp4' || quotedMsg && quotedMsg.type == 'image/gif') {
-                    const { opts, uploadToGiphy } = require('./lib/giphy')
-                    const mediaData = await decryptMedia(message, uaOverride)
-                    await client.reply(from, `_Permintaan anda sedang diproses mohon tunggu sebentar_ ⏲️\n_Turunkan resolusi gif/video apabila sticker gif rusak!_`, id)
-                    const filename = `./media/aswu.${mimetype.split('/')[1]}`
-                    fs.writeFile(filename, mediaData, function (err) {
-                        if (err) {
-                            return console.log(err)
-                        }
-                        uploadToGiphy(filename).then((async (gifUrl) => {
-                            console.log(`Success upload : ${gifUrl}`)
-                            //await sleep(15000)
-                            await client.sendStickerfromUrl(from, gifUrl).catch(err => console.log(err))
-                        })).catch(err => {
-                            client.reply(from, `_Gagal mengkonversi sticker gif! kirim Video/Gif dan gunakan caption !stikergif maksimal 10 detik._`, id)
-                        })
-                    })
+                if (mimetype === 'video/mp4' || mimetype === 'image/gif' || quotedMsg && quotedMsg.type == 'video/mp4' || quotedMsg && quotedMsg.type == 'image/gif') {
+                    try {
+                        const { opts, uploadToGiphy } = require('./lib/giphy')
+                        const mediaData = await decryptMedia(message, uaOverride)
+                        client.reply(from, `_Permintaan anda sedang diproses mohon tunggu sebentar_ ⏲️`, id)
+                        await client.sendMp4AsSticker(from, mediaData, {fps: 20, startTime: `00:00:00.0`, endTime : `00:00:06.0`,loop: 0})
+                    } catch (e) {
+                        client.reply(from, `Size media terlalu besar!`)
+                    }
                 }
             } else {
                 client.reply(from, `_Kesalahan ⚠️ Hanya bisa video/gif apabila file media berbentuk gambar ketik *!stiker*_`, id)
@@ -1056,7 +1122,7 @@ if (isMedia) {
         //         console.log(err)
         //     }
         //     await client.sendSeen(from)
-            break
+            // break
         // case '!g-asik':
         //     if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
         //     if (args.length === 1) return client.reply(from, 'Kirim perintah *!musik [query]*, untuk contoh silahkan kirim perintah *!readme*')
@@ -1328,6 +1394,12 @@ if (isMedia) {
                 client.reply(from, `_Kayanya bot gabisa nyanyi lagu itu hemm :(_`, id)
             }
             await client.sendSeen(from)
+            break
+        case '#done':
+            // if (chat.id !== '6285216810127-1602212654@g.us') return 
+            const png = await fs.readFileSync(`./media/CSstik.png`, { encoding: "base64" })
+            await client.sendImageAsSticker(from, `data:image/png;base64,${png.toString('base64')}`)
+            // client.sendImageAsSticker(from, './media/CSstik.png')
             break
         case '#menu':
             if (chat.id !== '6285216810127-1602212654@g.us') return 
@@ -1682,14 +1754,14 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
         case '!ig':
         if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
             try {
-                // if (args.length === 1) return client.reply(from, 'Kirim perintah *!ig [linkIg]* untuk contoh silahkan kirim perintah *!readme*', id)
-                // if (!args[1].includes('instagram.com')) return client.reply(from, mess.error.Iv, id)
-                client.reply(from, mess.mt, id)
+                if (args.length === 1) return client.reply(from, 'Kirim perintah *!ig [linkIg]* untuk contoh silahkan kirim perintah *!readme*', id)
+                if (!args[1].includes('instagram.com')) return client.reply(from, mess.error.Iv, id)
+                client.reply(from, mess.wait, id)
                 // const responseig = await ig(args[1].toString())
-                // // const responseig = await get.get(`https://mrhrtz-api.herokuapp.com/api/ig?url=${args[1]}`).json()
+                const responseig = await get.get(`https://mhankbarbar.herokuapp.com/api/ig?url=${args[1]}&apiKey=9eqNrrqr6UxSlck3uGDD`).json()
                 // console.log(responseig.result.post)
-                // if (responseig.error) return console.log(responseig.error)
-                // await client.sendFileFromUrl(from, responseig.result.post[0].urlDownload, `Ignyakk`, `Media telah terkirim ${pushname}`, id)
+                if (responseig.error) return console.log(responseig.error)
+                await client.sendFileFromUrl(from, responseig.result, `Ignyakk`, `Media telah terkirim ${pushname}`, id)
             } catch (err) {
                 //client.reply(from, `Kesalahan dengan kode error : ${err}`)
                 console.log(err)
@@ -2147,6 +2219,7 @@ Nomor : wa.me/${hapusser[0]}
         case '!igstalk':
         if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
            
+           try {
             if (args.length === 1)  return client.reply(from, 'Kirim perintah *!igStalk @username*\nContoh *!igStalk @hanif_az.sq.61*', id)
             const stalk2 = await get.get(`https://api.vhtear.com/igprofile?query=${args[1]}&apikey=botnolepbydandyproject`).json()
             const { biography, follower, follow, post_count, full_name, username, picture, is_private } = stalk2.result
@@ -2156,14 +2229,18 @@ Nomor : wa.me/${hapusser[0]}
             if (stalk2.error) {
                 // return client.reply(from, stalk2.error, id)
                 client.reply(from, `_Kesalahan! sedang mengganti metode get profile.._`)
-                const stalk = await get.get(`https://mhankbarbar.herokuapp.com/api/stalk?username=${args[1]}`).json()
+                const stalk = await get.get(`https://api.i-tech.id/dl/stalk?key=ijmalalfafanajib&username=${args[1]}`).json()
                 if (stalk.error) return client.reply(from, stalk.error, id)
-                const { Biodata, Jumlah_Followers, Jumlah_Following, Jumlah_Post, Name, Username, Profile_pic } = stalk
-                const caps = `➣ *Nama* : ${Name}\n➣ *Username* : ${Username}\n➣ *Jumlah Followers* : ${Jumlah_Followers}\n➣ *Jumlah Following* : ${Jumlah_Following}\n➣ *Jumlah Postingan* : ${Jumlah_Post}\n➣ *Biodata* : ${Biodata}`
+                const { bio, followers, following, post, name, username, pic } = stalk
+                const caps = `➣ *Nama* : ${name}\n➣ *Username* : ${username}\n➣ *Jumlah Followers* : ${followers}\n➣ *Jumlah Following* : ${following}\n➣ *Jumlah Postingan* : ${post}\n➣ *Biodata* : ${bio}`
                 //await client.sendFileFromUrl(from, Profile_pic, 'Profile.jpg', caps, id)
             }
             await client.sendSeen(from)
-            break
+        } catch (e) {
+            console.log(e)
+            client.reply(from, `_Terdapat kesalahan saat stalk ${args[1]}_`, id)
+        }
+         break
         // case '!igstalk':
         //     if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
         //     if (args.length === 1)  return client.reply(from, 'Kirim perintah *!igStalk @username*\nContoh *!igStalk @hanif_az.sq.61*', id)
@@ -2365,6 +2442,7 @@ Nomor : wa.me/${hapusser[0]}
                 }
             }catch (err){
                 client.reply(from, 'Gagal membuat gambar, mohon jangan gunakan simbol/kata-kata selain latin')
+                console.log(err)
             }
             await client.sendSeen(from)
             break
@@ -2525,7 +2603,7 @@ Nomor : wa.me/${hapusser[0]}
             //const telahfixorg = orang.replace('+', '')
             try {
                 await client.addParticipant(from,`${orang}@c.us`).catch((err) => console.log(err))
-                console.log(orang)
+                // console.log(orang)
             } catch {
                 client.reply(from, mess.error.Ad, id)
             }
@@ -2912,7 +2990,7 @@ Nomor : wa.me/${hapusser[0]}
             client.reply(from, `_Bot lagi menulis ni ${pushname}..._`, id)
             let urlnulis = `https://mrhrtz-api.herokuapp.com/nulis?text=${nulis}`
             const awalnul = await get.get(urlnulis).json()
-            console.log(awalnul.code)
+            // console.log(awalnul.code)
             await client.sendImage(from, awalnul.result, 'Nulis.jpg', 'Oke done ni tulisannya', id).catch(e => client.reply(from, "Error: "+ e));
             await client.sendSeen(from)
             break
