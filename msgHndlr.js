@@ -9,6 +9,7 @@ const download = require('download-file')
 // const fetch = require('node-fetch')
 const google = require('google-it')
 const color = require('./lib/color')
+const { promisify } = require('util')
 const { spawn, exec } = require('child_process')
 const { getLocationData } = require('./lib')
 const nhentai = require('nhentai-js')
@@ -30,6 +31,9 @@ const limit = JSON.parse(fs.readFileSync('./lib/limit.json'));
 const msgLimit = JSON.parse(fs.readFileSync('./lib/msgLimit.json'));
 const {prefix, banChats, restartState: isRestart,mtc: mtcState, whitelist ,sAdmin, limitCount, memberLimit, groupLimit} = setting
 //const { default: translate } = require('google-translate-open-api')
+
+// const igGetInfo = promisify(instagram.getInfo)
+// const twtGetInfo = promisify(twitter.getInfo)
 
 moment.tz.setDefault('Asia/Jakarta').locale('id')
 
@@ -56,6 +60,7 @@ module.exports = msgHandler = async (client, message) => {
 
         const mess = {
             wait: '_Permintaan anda sedang diproses mohon tunggu sebentar_ ⏲️',
+            mt: '_Fitur ini masih dalam proses perbaikan._',
             error: {
                 St: '_Terjadi kesalahan_ ⚠️ _Kirim gambar dengan caption *!sticker* atau tag gambar yang sudah dikirim_',
                 Qm: '_Terjadi kesalahan_ ⚠️ _mungkin themenya tidak tersedia!_',
@@ -407,7 +412,7 @@ module.exports = msgHandler = async (client, message) => {
             const quejod = body.slice(10)
             const jod = `https://api.i-tech.id/tools/cekjodoh?key=ijmalalfafanajib&query=${encodeURIComponent(quejod.split('|')[0])}-${encodeURIComponent(quejod.split('|')[1])}`
             const gettingjo = await get.get(jod).json()
-            console.log(gettingjo)
+            // console.log(gettingjo)
             await client.reply(from, `${gettingjo.result}`, id).catch(() => client.reply(from, '_Kesalahan! pastikan anda menggunakan perinath yang benar. Ketik *!cekjodoh*_', id))
             await client.sendSeen(from)
             break
@@ -418,7 +423,7 @@ module.exports = msgHandler = async (client, message) => {
             const quejodr = body.slice(14)
             const jodr = `https://api.i-tech.id/tools/jodoh?key=ijmalalfafanajib&p1=${encodeURIComponent(quejodr.split('|')[0])}&p2=${encodeURIComponent(quejodr.split('|')[1])}`
             const gettingjor = await get.get(jodr).json()
-            console.log(gettingjor)
+            // console.log(gettingjor)
             await client.sendFileFromUrl(from, gettingjor.gambar, 'pirstlope.png', `*Hasil ramalan jodoh dari ${quejodr.split('|')[0]} dan ${quejodr.split('|')[1]}*\n\n*Sisi Positif* : ${gettingjor.sisi.positif}\n*Sisi Negatif* : ${gettingjor.sisi.negatif}`, id).catch((e) => console.log(e))
             await client.sendSeen(from)
 //https://api.i-tech.id/tools/jodoh?key=iwEdte-kAPiT1-3Cj3JD-siWNHI-xc6jV7&p1=Andi&p2=Aurel
@@ -591,7 +596,7 @@ if (isMedia) {
             }
         */
        
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        // if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
             if (isMedia && type === 'image') {
                 client.reply(from, mess.wait, id)
                 const mediaData = await decryptMedia(message, uaOverride)
@@ -893,7 +898,7 @@ if (isMedia) {
             const gamb = `https://api.i-tech.id/dl/googlei?key=ijmalalfafanajib&query=${encodeURIComponent(quegam)}`
             const gettinggam = await get.get(gamb).json()
             var plorgam = Math.floor(Math.random() * gettinggam.result.length)
-            console.log(plorgam)
+            // console.log(plorgam)
             await client.sendFileFromUrl(from, gettinggam.result[plorgam], `gam.${gettinggam.result[plorgam].substr(-3)}`, `*Hasil pencarian google image dari ${quegam}*`, id).catch((e) => { console.log(e); client.reply(from, `_Data tersebut tidak ditemukan!_`, id)})
             await client.sendSeen(from)
             break
@@ -1125,13 +1130,13 @@ if (isMedia) {
                     if (!Number(args[1])) return client.reply(from, `_Apabila ditag hanya cantumkan nomer urutan bukan ID Download!_  contoh : *!getmusik _1_*`, id)
                     const dataDownmp3 = quotedMsg.type == 'chat' ? quotedMsg.body : quotedMsg.type == 'image' ? quotedMsg.caption : ''
                     const pilur = dataDownmp3.split('(#)')
-                    console.log(pilur[args[1]])
+                    // console.log(pilur[args[1]])
                     client.reply(from, mess.wait, id)
                     //client.reply(from, `_Sedang mencari file download dengan id ${args[1]}_`, id)
                     //const response15 = await fetch(`https://api.vhtear.com/ytdl?link=https://www.youtube.com/watch?v=${args[1]}&apikey=botnolepbydandyproject`)
                     const mhankyt35 = await get.get(`https://mrhrtz-api.herokuapp.com/api/yta?url=https://youtu.be/${pilur[args[1]]}`).json()
                     //if (!response15.ok) throw new Error(`unexpected response vhtear ${response15.statusText}`)
-                    console.log(mhankyt35.status)
+                    // console.log(mhankyt35.status)
                     //if (!mhankyt35.ok) throw new Error(`Error barbaryt3 ${mhankyt35.statusText}`)
 
                     //const json = await response15.json()
@@ -1179,12 +1184,12 @@ if (isMedia) {
                         const shortvid2 = await urlShortener(result)
                         if (Number(filesize.split(' MB')[0]) >= 50.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortvid2}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
                         // console.log(`BarBar Giliran ${ext}\n${filesize}\n${status}`)
-                        console.log(status)
+                        // console.log(status)
                         //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre 
                         const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
                         client.sendFileFromUrl(from, thumb, `thumb.jpg`, captions, id)
                         //await client.sendAudio(from, UrlMp3, id)        
-                        await client.sendFileFromUrl(from, result, `${title}.mp3`, '', id).catch(() => client.reply(from, mess.error.Yt4, id))
+                        await client.sendFileFromUrl(from, result, `${title}.mp3`, '', id).catch(() => client.reply(from, mess.error.Yt3, id))
 
                    }
                 }
@@ -1324,6 +1329,142 @@ if (isMedia) {
             }
             await client.sendSeen(from)
             break
+        case '#menu':
+            if (chat.id !== '6285216810127-1602212654@g.us') return 
+            client.reply(from, `
+#menu > Daftar Perintah Bot
+#ml > Daftar Harga DM Mobile legends
+#ff > Daftar Harga DM Free Fire
+#pubg > Daftar Harga UC PUBG 
+#Payment > Menu Pembayaran
+#FormatOrder > Format untuk order
+===============
+Time now ${time}
+                `, id)
+            break
+        case '#payment':
+            if (chat.id !== '6285216810127-1602212654@g.us') return 
+            client.reply(from, `
+💰 PAYMENT 💰
+
+🏦 BANK BRI
+ 801001000689508
+A/N : ARIF RAHMAT
+
+💳 DANA
+089516074556 
+A/N : SUDINAH
+
+💷 GOPAY
+081388861086 
+A/N : CRAFFTSTORE.1
+
+NB MOHON TRANSAKSI MENGGUNAKAN BUKTI TRANFER KALO TIDAK ADA BUKTI GK AKAN KAMI PROSES
+https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
+                `, id)
+            break
+        case '#format order':
+        case '#formatorder':
+            if (chat.id !== '6285216810127-1602212654@g.us') return 
+            client.reply(from, `
+╔═══❖•ೋ° °ೋ•❖═══╗
+             Format order
+╚═══❖•ೋ° °ೋ•❖═══╝
+📝 NICK :
+🎰 ID :
+📠 JUMBLAH DIAMOND :
+
+NOTE :
+HARAP SABAR BILA BER ORDER KARENA NGANTRI DAN GK USAH SPAM SPAM NANTI PASTI KITA ISIKAN DIAMONDNYA
+
+Ig @crafftstore.1
+                `, id)
+            break
+        case '#pubg':
+            if (chat.id !== '6285216810127-1602212654@g.us') return 
+            client.reply(from, `
+LIST PUBG REG INDO
+
+74 💸 = Rp 15.600
+148 💸 = Rp 28.800
+221 💸 = Rp 41.800
+295 💸 = Rp 55.100
+770 💸 = Rp 131.900
+2013 💸 = Rp 329.000
+4200 💸 = Rp 650.000
+8750 💸 = Rp 1.300.000
+
+ROYALE PASS = Rp 145.000
+
+PENTING! 
+MOHON BERTRANSAKSI MENGGUNAKAN FORMAT ORDER DAN BERTRANSAKSI VIA GRUP AGAR ADMIN FAST RESPON
+      https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
+                `, id)
+            break
+        case '#ml':
+            client.reply(from, `
+LIST DM MLBB/MOBILE LEGENDS
+
+VIA BANK  BRI, GOPAY,OVO, DANA, QRISS
+
+86💎 = Rp 19.000
+172💎 = Rp 40.000
+257💎 = Rp 60.000
+344💎 = Rp 72. 000
+514💎 = Rp 120.000
+706💎 = Rp 145. 000
+878💎 = Rp 178.000
+1050💎 = Rp 215.000
+1412💎 = Rp 285.000
+2194💎 = Rp 425.000
+2900💎 = Rp 570.000
+3072💎 = Rp 610.000
+3688💎 = Rp 720.000
+5532💎 = Rp 1.100.000
+9288💎 = Rp 1.820.000
+
+SL/TW = Rp 120.000
+SL+ = Rp 266. 000
+
+
+NB :
+MOHON BERTRANSAKSI MENGGUNAKAN FORMAT ORDER DAN BERTRANSAKSI VIA GRUP AGAR ADMIN FAST RESPON
+https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
+                `, id)
+            break
+        case '#ff':
+            if (chat.id !== '6285216810127-1602212654@g.us') return 
+            client.reply(from, `
+LIST DM FREE FIRE
+
+VIA BANK  BRI, GOPAY,OVO, DANA, QRISS
+
+5 💎 = 990
+20 💎 = 2.850
+50 💎 =6.500
+70💎 =9.370
+100💎 =13.700
+140💎 =18.500
+210💎 =28.250
+355 💎 =46.600
+500 💎 =66.200
+720 💎 =93.900
+860 💎 =112.600
+1000 💎 =131.600
+1355💎 =177.100
+2000 💎 =255.100
+MM = 28.200
+MB = 111 300
+
+
+NB :
+MOHON BERTRANSAKSI MENGGUNAKAN FORMAT ORDER DAN BERTRANSAKSI VIA GRUP AGAR ADMIN FAST RESPON
+https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
+                `, id)
+            break
+        case '!cekgrup':
+            await client.reply(from, `ID GRUP : ${chat.id}`, id)
+            break
         case '!ytmp3':
             if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!ytmp3 [linkYt]*, untuk contoh silahkan kirim perintah *!readme*')
@@ -1334,7 +1475,7 @@ if (isMedia) {
             try {
                 client.reply(from, mess.wait, id)
                 //const response1 = await fetch(`https://api.vhtear.com/ytdl?link=${args[1]}&apikey=botnolepbydandyproject`)
-                const barbarypt3 = await get.get(`https://mrhrtz-api.herokuapp.com/api/yta?url=https://youtu.be/${dapetidmp3}`).json()
+                const barbarytp3 = await get.get(`https://mrhrtz-api.herokuapp.com/api/yta?url=https://youtu.be/${dapetidmp3}`).json()
                 //if (!response1.ok) throw new Error(`unexpected response vhtear ${response1.statusText}`)
                 // if (!mhankyt3.ok) throw new Error(`Error barbaryt3 ${mhankyt3.statusText}`)
                 // const barbarytp3 = await mhankyt3.json()
@@ -1354,9 +1495,11 @@ if (isMedia) {
                     }
                 } else {
                     // Data memenuhi syarat?
-
                     const { title, filesize, result, status, thumb } = await barbarytp3
-                    if (Number(filesize.split(' MB')[0]) >= 40.00) return client.reply(from, '_Mohon maaf sepertinya durasi video telah melebihi batas._', id)
+                     const shortytm3 = await urlShortener(result)
+                        if (Number(filesize.split(' MB')[0]) >= 40.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortytm3}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                        
+                    // if (Number(filesize.split(' MB')[0]) >= 40.00) return client.reply(from, '_Mohon maaf sepertinya durasi video telah melebihi batas._', id)
                     // console.log(`BarBar Giliran ${ext}\n${filesize}\n${status}`)
                     //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
                     const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
@@ -1380,7 +1523,7 @@ if (isMedia) {
             try {
                 client.reply(from, mess.wait, id)
                 const dapetidmp4 = getYouTubeID(args[1])
-                console.log(dapetidmp4)
+                // console.log(dapetidmp4)
                 //const response1 = await fetch(`https://api.vhtear.com/ytdl?link=${args[1]}&apikey=botnolepbydandyproject`)
                 const barbarytp4 = await get.get(`https://mrhrtz-api.herokuapp.com/api/ytv?url=https://youtu.be/${dapetidmp4}`).json()
                 //if (!response1.ok) throw new Error(`unexpected response vhtear ${response1.statusText}`);
@@ -1400,9 +1543,10 @@ if (isMedia) {
                         console.log(err)
                     }
                 } else {
-                    if (Number(barbarytp4.filesize.split(' MB')[0]) > 50.00) return client.reply(from, '_Mohon maaf sepertinya durasi video telah melebihi batas._', id)
                     const { title, ext, thumb, filesize, resolution, result } = await barbarytp4
-
+                    const shortytm4 = await urlShortener(result)
+                        if (Number(filesize.split(' MB')[0]) >= 50.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortytm4}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                    
                     //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
                     //try {
                         const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP4\n*Filesize* : ${filesize}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
@@ -1458,7 +1602,7 @@ if (isMedia) {
                 if (wiki.error) {
                     client.reply(from, wiki.error, id)
                 } else {
-                    console.log(wiki)
+                    // console.log(wiki)
                     //client.reply(from, `_Mohon tunggu sedang mencari data.._`, id)
                     //client.reply(from, `➣ *Query* : ${query_}\n\n➣ *Result* : ${wiki.result}`, id)
                     client.sendFileFromUrl(from, wiki.result.ImgResult[0], wiki.jpg, `*Hasil wikipedia dari ${query_}*\n\n${wiki.result.Info}`, id).catch(() => client.reply(from, `*Hasil wikipedia dari ${query_}*\n\n${wiki.result.Info}`, id))
@@ -1494,15 +1638,15 @@ if (isMedia) {
             if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!cuaca [tempat]*\nContoh : *!cuaca tangerang', id)
             try {
-                const tempat = body.slice(7)
-                client.reply(from, mess.wait, id)
-                //client.reply(from, `_Sedang mencari data cuaca ${tempat}..._`)
-                const weather = await get.get(`https://mhankbarbar.herokuapp.com/api/cuaca?q=${tempat}`).json()
-                if (weather.error) {
-                    client.reply(from, weather.error, id)
-                } else {
-                    client.reply(from, `➣ Tempat : ${weather.result.tempat}\n\n➣ Angin : ${weather.result.angin}\n➣ Cuaca : ${weather.result.cuaca}\n➣ Deskripsi : ${weather.result.desk}\n➣ Kelembapan : ${weather.result.kelembapan}\n➣ Suhu : ${weather.result.suhu}\n➣ Udara : ${weather.result.udara}`, id)
-                }
+                // const tempat = body.slice(7)
+                client.reply(from, mess.mt, id)
+                // //client.reply(from, `_Sedang mencari data cuaca ${tempat}..._`)
+                // const weather = await get.get(`https://mhankbarbar.herokuapp.com/api/cuaca?q=${tempat}`).json()
+                // if (weather.error) {
+                //     client.reply(from, weather.error, id)
+                // } else {
+                //     client.reply(from, `➣ Tempat : ${weather.result.tempat}\n\n➣ Angin : ${weather.result.angin}\n➣ Cuaca : ${weather.result.cuaca}\n➣ Deskripsi : ${weather.result.desk}\n➣ Kelembapan : ${weather.result.kelembapan}\n➣ Suhu : ${weather.result.suhu}\n➣ Udara : ${weather.result.udara}`, id)
+                // }
             } catch (e){
                 client.reply(from, `_Kesalahan saat mengambil data tempat ${tempat}_`)
             }
@@ -1538,13 +1682,14 @@ if (isMedia) {
         case '!ig':
         if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
             try {
-                if (args.length === 1) return client.reply(from, 'Kirim perintah *!ig [linkIg]* untuk contoh silahkan kirim perintah *!readme*', id)
-                if (!args[1].includes('instagram.com')) return client.reply(from, mess.error.Iv, id)
-                client.reply(from, mess.wait, id)
-                const responseig = await get.get(`https://mrhrtz-api.herokuapp.com/api/ig?url=${args[1]}`).json()
-                console.log(responseig)
-                if (responseig.error) return console.log(responseig.error)
-                await client.sendFileFromUrl(from, responseig.result, `Ignyakk`, `Media telah terkirim ${pushname}`, id)
+                // if (args.length === 1) return client.reply(from, 'Kirim perintah *!ig [linkIg]* untuk contoh silahkan kirim perintah *!readme*', id)
+                // if (!args[1].includes('instagram.com')) return client.reply(from, mess.error.Iv, id)
+                client.reply(from, mess.mt, id)
+                // const responseig = await ig(args[1].toString())
+                // // const responseig = await get.get(`https://mrhrtz-api.herokuapp.com/api/ig?url=${args[1]}`).json()
+                // console.log(responseig.result.post)
+                // if (responseig.error) return console.log(responseig.error)
+                // await client.sendFileFromUrl(from, responseig.result.post[0].urlDownload, `Ignyakk`, `Media telah terkirim ${pushname}`, id)
             } catch (err) {
                 //client.reply(from, `Kesalahan dengan kode error : ${err}`)
                 console.log(err)
@@ -1610,8 +1755,8 @@ if (isMedia) {
             await client.sendSeen(from)
             break
         case '!pubg':
-            if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
-            
+            // if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
+            if (chat.id !== '6288233282599-1601304366@g.us') return
             client.reply(from, `
 LIST PUBG REG INDO
 
@@ -1633,7 +1778,7 @@ MOHON BERTRANSAKSI MENGGUNAKAN FORMAT ORDER DAN BERTRANSAKSI VIA GRUP AGAR ADMIN
             break
         case '!ff':
             //if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
-            
+            if (chat.id !== '6288233282599-1601304366@g.us') return
             client.reply(from, `
 LIST DM FF
 
@@ -1659,7 +1804,7 @@ MOHON BERTRANSAKSI MENGGUNAKAN FORMAT ORDER DAN BERTRANSAKSI VIA GRUP AGAR ADMIN
             break
         case '!ml':
         //if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
-            
+            if (chat.id !== '6288233282599-1601304366@g.us') return
             client.reply(from, `
 LIST DM MLBB
 
@@ -1691,7 +1836,7 @@ MOHON BERTRANSAKSI MENGGUNAKAN FORMAT ORDER DAN BERTRANSAKSI VIA GRUP AGAR ADMIN
             break
         case '!payment':
         //if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
-            
+            if (chat.id !== '6288233282599-1601304366@g.us') return
             client.reply(from, `
 🏛️ PAYMENT 🏛️ : 
 rek (bca) : 6790287078 (a.n s**i a***h) 
@@ -1705,6 +1850,7 @@ kode untuk payment via alfamart/indomaret silahkan minta di admin
             await client.sendSeen(from)
             break
         case '!formatorder':
+        if (chat.id !== '6288233282599-1601304366@g.us') return
             client.reply(from, `
 FORMAT PEMESANAN
 
@@ -2389,6 +2535,73 @@ Nomor : wa.me/${hapusser[0]}
             client.reply(from, `Kesalahan! pastikan bot adalah admin digrup ini.`)
             }
             break
+        case '!unblock':
+            if(!isOwner) return client.reply(from, `Anda siapa? Hanya owner yang dapat melakukannya! 😏`, id)
+            if (args.length === 1) return client.reply(from, `Mau unblock siapa nich??`, id)
+            if(args.length == 2){
+                let unblock = `${args[1]}@c.us`
+                await client.contactUnblock(unblock).then((a)=>{
+                    console.log(a)
+                    client.reply(from, `Sukses unblok ${args[1]}!`, id)
+                })
+            } 
+            await client.sendSeen(from)
+            break
+        case '!unbantag':
+        try {
+            if (!isGroupMsg) return client.reply(from, 'Fitur ini hanya bisa di gunakan dalam group', id)
+            if (!isOwner) return client.reply(from, `Hanya untuk owner bot okehh`)
+            // if (!isGroupAdmins) return client.reply(from, 'Perintah ini hanya bisa di gunakan oleh admin group', id)
+            // if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
+            
+            //if (!isBotGroupAdmins) return client.reply(from, 'Perintah ini hanya bisa di gunakan ketika bot menjadi admin', id)
+            if (mentionedJidList.length === 0) return client.reply(from, 'Untuk menggunakan Perintah ini, kirim perintah *un!bantag* @tagmember', id)
+            await client.sendText(from, `Perintah diterima, unban\n${mentionedJidList.join('\n')}`, id)
+            for (let i = 0; i < mentionedJidList.length; i++) {
+                // if (groupAdmins.includes(mentionedJidList[i])) return client.reply(from, mess.error.Ki, id)
+                await client.contactUnblock(mentionedJidList[i])
+            }
+            await client.sendSeen(from)
+            } catch(e) {
+            console.log(e)
+            client.reply(from, `Kesalahan! pastikan bot adalah admin digrup ini.`)
+            }
+            break
+        case '!ban':
+        case '!block':
+            if(!isOwner) return client.reply(from, `Anda siapa? Hanya owner yang dapat melakukannya! 😏`, id)
+            if (args.length === 1) return client.reply(from, `Mau banned siapa nich??`, id)
+            if(args.length == 2){
+                let unblock = `${args[1]}@c.us`
+                await client.contactBlock(unblock).then((a)=>{
+                    console.log(a)
+                    client.reply(from, `Sukses ban ${args[1]}!`, id)
+                })
+            } else {
+                client.reply(from, `Satu satu yachh..`, id)
+            }
+            await client.sendSeen(from)
+            break
+        case '!bantag':
+        try {
+            if (!isGroupMsg) return client.reply(from, 'Fitur ini hanya bisa di gunakan dalam group', id)
+            if (!isOwner) return client.reply(from, `Hanya untuk owner bot okehh`)
+            // if (!isGroupAdmins) return client.reply(from, 'Perintah ini hanya bisa di gunakan oleh admin group', id)
+            // if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
+            
+            //if (!isBotGroupAdmins) return client.reply(from, 'Perintah ini hanya bisa di gunakan ketika bot menjadi admin', id)
+            if (mentionedJidList.length === 0) return client.reply(from, 'Untuk menggunakan Perintah ini, kirim perintah *!bantag* @tagmember', id)
+            await client.sendText(from, `Perintah diterima, Telah diban :\n${mentionedJidList.join('\n')}`, id)
+            for (let i = 0; i < mentionedJidList.length; i++) {
+                // if (groupAdmins.includes(mentionedJidList[i])) return client.reply(from, mess.error.Ki, id)
+                await client.contactBlock(mentionedJidList[i])
+            }
+            await client.sendSeen(from)
+            } catch(e) {
+            console.log(e)
+            client.reply(from, `Kesalahan! pastikan bot adalah admin digrup ini.`)
+            }
+            break
         case '!kick':
         try {
             if (!isGroupMsg) return client.reply(from, 'Fitur ini hanya bisa di gunakan dalam group', id)
@@ -2499,35 +2712,6 @@ Nomor : wa.me/${hapusser[0]}
         if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
             const listDaerah = await get('https://api.haipbis.xyz/daerah').json()
             client.reply(from, listDaerah, id)
-            await client.sendSeen(from)
-            break
-        case '!unblock':
-            if(!isOwner) return client.reply(from, `Anda siapa? Hanya owner yang dapat melakukannya! 😏`, id)
-            if (args.length === 1) return client.reply(from, `Mau unblock siapa nich??`, id)
-            if(args.length == 2){
-                let unblock = `${args[1]}@c.us`
-                await client.contactUnblock(unblock).then((a)=>{
-                    console.log(a)
-                    client.reply(from, `Sukses unblok ${args[1]}!`, id)
-                })
-            } else {
-                client.reply(from, `Satu satu yachh..`, id)
-            }
-            await client.sendSeen(from)
-            break
-        case '!ban':
-        case '!block':
-            if(!isOwner) return client.reply(from, `Anda siapa? Hanya owner yang dapat melakukannya! 😏`, id)
-            if (args.length === 1) return client.reply(from, `Mau banned siapa nich??`, id)
-            if(args.length == 2){
-                let unblock = `${args[1]}@c.us`
-                await client.contactBlock(unblock).then((a)=>{
-                    console.log(a)
-                    client.reply(from, `Sukses ban ${args[1]}!`, id)
-                })
-            } else {
-                client.reply(from, `Satu satu yachh..`, id)
-            }
             await client.sendSeen(from)
             break
         case '!ment':
