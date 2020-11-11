@@ -51,6 +51,7 @@ const start = async (client = new Client()) => {
             }))
         
          client.onAddedToGroup((async (chat) => {
+            // if (sender.id === '6285559038021@c.us') return
             // let totalMem = await chat.groupMetadata.participants.length
             // if (totalMem < 20) { 
             //     client.sendText(chat.id, `Yaampun member nya cuma ${totalMem}, Kalo mau invite bot, minimal jumlah mem ada 20 atau chat owner!`).then(() => client.leaveGroup(chat.id)).then(() => client.deleteChat(chat.id))

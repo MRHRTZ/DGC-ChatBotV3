@@ -31,7 +31,7 @@ module.exports = options = (headless, start) => {
         cacheEnabled: false,
         executablePath: execPath,
         useChrome: true,
-        killProcessOnBrowserClose: true,
+        killProcessOnBrowserClose: false,
         throwErrorOnTosBlock: false,
         chromiumArgs: [
             '--disable-2d-canvas-clip-aa',

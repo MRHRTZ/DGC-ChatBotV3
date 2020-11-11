@@ -13,6 +13,7 @@ const { promisify } = require('util')
 const { spawn, exec } = require('child_process')
 const { getLocationData } = require('./lib')
 const nhentai = require('nhentai-js')
+const cron = require('node-cron')
 const { API } = require('nhentai-api')
 const { liriklagu, quotemaker, randomNimek, fb, ig, twt, sleep, tulis, jadwalTv, ss, between } = require('./lib/functions')
 const { help, snk, info, donate, readme, listChannel, bahasa_list } = require('./lib/help')
@@ -27,7 +28,7 @@ const { BikinTikel } = require('./lib/tikel_makel')
 const setting = JSON.parse(fs.readFileSync('./lib/config.json'))
 const muted = JSON.parse(fs.readFileSync('./lib/muted.json'))
 const vip = JSON.parse(fs.readFileSync('./lib/vip.json'))
-const banned = JSON.parse(fs.readFileSync('./lib/banned.json'));
+let banned = JSON.parse(fs.readFileSync('./lib/banned.json'));
 const limit = JSON.parse(fs.readFileSync('./lib/limit.json'));
 const msgLimit = JSON.parse(fs.readFileSync('./lib/msgLimit.json'));
 const {prefix, banChats, restartState: isRestart,mtc: mtcState, whitelist ,sAdmin, limitCount, memberLimit, groupLimit} = setting
@@ -83,14 +84,19 @@ module.exports = msgHandler = async (client, message) => {
         const groupAdmins = isGroupMsg ? await client.getGroupAdmins(groupId) : ''
         const isGroupAdmins = isGroupMsg ? groupAdmins.includes(sender.id) : false
         const isBotGroupAdmins = isGroupMsg ? groupAdmins.includes(botNumber + '@c.us') : false
+        const isBanned = banned.includes(sender.id)
         const ownerNumber = '6285559038021@c.us'
         const DGCfounder = 'Biancho Junaidi'
         const DGCbotowner = 'MRHRTZ@kali:~#'
         const dgc_id = 'false_6285559038021-1603688917@g.us_3EB05AFD72F7F8618F4B'
         const isFounder = sender.pushname === DGCfounder
         const isBOwner = sender.pushname === DGCbotowner
+        const pengirim = JSON.parse(fs.readFileSync('./lib/pengguna.json'))
+        const jelema = pengirim[Math.floor(Math.random()*pengirim.length)];
         const isOwner = sender.id === ownerNumber
         const isBlocked = blockNumber.includes(sender.id)
+        const isPrivate = sender.id === chat.contact.id
+        const menuPriv = `*Fitur bot private yang tersedia* :\n\n➣ *!stiker*\n\n>> Anonymous Chat\n➣ *!kirim _Teksnya_*\n➣ *!daftar _62855xxxx_*\n➣ *!hapus _62855xxxx_*`
         const isNsfw = isGroupMsg ? nsfw_.includes(chat.id) : false
         const uaOverride = 'WhatsApp/2.2029.4 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
         const isUrl = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/gi)
@@ -102,6 +108,24 @@ module.exports = msgHandler = async (client, message) => {
             //client.reply(from, `_Sepertinya anda telah terblokir dikarenakan vc/call bot._`)
         //if (!isOwner) return
     //try { 
+
+
+        //EXPIRED BEGIN
+
+        // cron.schedule('00 15 * * * *', () => {
+        //     const hzbot = '6285559038021-1603688917@g.us'
+        //     client.sendText(hzbot, `Terima kasih telah menggunakan jasa DGC ChatBot grup ini telah expired pada tanggal 52 bot akan otomatis leave terima kasih.`)
+        //     // .then(() => client.leaveGroup(hzbot))
+        //     // .then(() => client.deleteChat(hzbot))
+        //     console.log('Coming')
+        // })
+
+
+
+        //EXPIRED ENDLINE
+
+
+
         const isMuted = (chatId) => {
             if(muted.includes(chatId)){
                 return false
@@ -278,6 +302,96 @@ module.exports = msgHandler = async (client, message) => {
                 console.log(res[0])
             })
             break
+            //PRIVATE
+
+
+        case '!kirim': {
+            if (isGroupMsg) return client.reply(from, `Fitur ini khusus private chat!`)
+            if (args.length === 1) return client.reply(from, 'Masukan pesan atau gambar dengan caption *!kirim _teksnya_*, bisa juga tag pesan dan gambar dengan pesan *!kirim _teksnya_*')  
+            var cek = pengirim.includes(sender.id);
+            const isQuotedImage = quotedMsg && quotedMsg.type === 'image'
+            if(!cek){
+                return client.reply(from, 'kamu belum terdaftar, untuk mendaftar kirim !daftar no wa kamu\ncontoh : !daftar 628523615486 ', id) //if user is not registered
+            } else {           
+                if (isMedia && args.length >= 1) {
+                    const mediaData = await decryptMedia(message, uaOverride)
+                    const imageBase64 = `data:${mimetype};base64,${mediaData.toString('base64')}`
+                    const opo = body.slice(6)
+                    //pengirim.push(from) //otomatis menambahkan nomor ke database
+                    //fs.writeFileSync('./lib/user.json', JSON.stringify(pengirim))
+                    client.sendImage(jelema, imageBase64, 'gambar.jpeg',`${opo}\n\nHai, kamu mendapat pesan dari : wa.me/${from.replace(/[@c.us]/g, '')}`)
+                        .then(() => client.reply(from, 'Berhasil mengirim pesan\nTunggu pesan dari seseorang, kalo ga di bales coba lagi aja', id))
+                } else if (isQuotedImage && args.length >= 1) {
+                    const mediaData = await decryptMedia(quotedMsg, uaOverride)
+                    const imageBase64 = `data:${quotedMsg.mimetype};base64,${mediaData.toString('base64')}`
+                    const opo = body.slice(6)
+                    //pengirim.push(from) //otomatis menambahkan nomor ke database
+                    //fs.writeFileSync('./lib/user.json', JSON.stringify(pengirim))
+                    client.sendImage(jelema, imageBase64, 'gambar.jpeg',`${opo}\n\nHai, kamu mendapat pesan dari : wa.me/${from.replace(/[@c.us]/g, '')}`)
+                        .then(() => client.reply(from, 'Berhasil mengirim pesan\nTunggu pesan dari seseorang, kalo ga di bales coba lagi aja', id))                
+                } else if (args.length >= 1) {
+                    const opo = body.slice(6)
+                    //pengirim.push(from) //otomatis menambahkan nomor ke database
+                    //fs.writeFileSync('./lib/user.json', JSON.stringify(pengirim))
+                    client.sendText(jelema, `${opo}\n\nHai, kamu mendapat pesan dari : wa.me/${from.replace(/[@c.us]/g, '').replace(/[-]/g, '')}`)
+                        .then(() => client.reply(from, 'Berhasil mengirim pesan\nTunggu pesan dari seseorang, kalo ga di bales coba lagi aja', id))   
+                } else {
+                    await client.reply(from, 'Format salah! Untuk membuka daftar perintah kirim #menu', id)
+                } 
+            } 
+        }     
+            break   
+
+
+            case '!daftar': { //menambahkan nomor ke database 
+                if (isGroupMsg) return client.reply(from, `Fitur ini khusus private chat!`)
+                if (args.length === 1) return client.reply(from, 'Nomornya mana kak?\ncontoh: !daftar 6285226236155')  
+                const text = body.slice(8).replace(/[-\s+]/g,'') + '@c.us'
+                var cek = pengirim.includes(text);
+                if(cek){
+                    return client.reply(from, 'Nomor sudah ada di database', id) //if number already exists on database
+                } else {
+                    const mentah = await client.checkNumberStatus(text) //VALIDATE WHATSAPP NUMBER
+                    const hasiluu = mentah.canReceiveMessage ? `Sukses menambahkan nomer ke database\nTotal data nomer sekarang : *${pengirim.length}*` : false
+                    if (!hasiluu) return client.reply(from, 'Nomor WhatsApp tidak valid [ Tidak terdaftar di WhatsApp ]', id) 
+                    {
+                    pengirim.push(mentah.id._serialized)
+                    fs.writeFileSync('./lib/pengguna.json', JSON.stringify(pengirim))
+                        client.sendText(from, hasiluu)
+                    }
+                }
+        }
+            break   
+
+
+            case '!hapus': //menghapus nomor dari database
+            if (isGroupMsg) return client.reply(from, `Fitur ini khusus private chat!`)
+            if (!isOwner) return client.reply(from, 'Fitur ini hanya dapat digunakan oleh owner bot')  
+            if (!args.length >= 1) return client.reply(from, 'Masukkan nomornya, *GUNAKAN AWALAN 62* contoh: 6285226236155')  
+            {
+                let inx = pengirim.indexOf(args[0]+'@c.us')
+                pengirim.splice(inx,1)
+                fs.writeFileSync('./lib/pengguna.json', JSON.stringify(pengirim))
+                client.reply(from, 'Sukses menghapus nomor dari database', id)
+            }
+            break
+
+            case '!list': //melihat daftar nomor di database 
+            if (isGroupMsg) return client.reply(from, `Fitur ini khusus private chat!`)
+            if (!isOwner) return client.reply(from, 'Fitur ini hanya dapat digunakan oleh owner bot')  
+            const num = fs.readFileSync('./lib/pengguna.json')
+            const daftarnum = JSON.parse(num)
+            console.log(daftarnum)
+            let hasiluu = `*Menampilkan daftar list chat anonymous* :\n`
+            for (var i = 0; i < daftarnum.length; i++) {
+                hasiluu += `\n➣ @${daftarnum[i].replace(/['"@c.us]/g,'')}\n`
+            }
+            // const hasiluu = daftarnum.toString().replace(/['"@c.us]/g,'').replace(/[,]/g, '\n');
+            client.sendTextWithMentions(from, hasiluu) 
+            break   
+
+
+            //PRIVATE END
         case '!cobalimit':
             if (isLimit(sender.id)) return client.reply(from, `limit abis`, id)
                 console.log(isLimit(serial))
@@ -350,6 +464,7 @@ module.exports = msgHandler = async (client, message) => {
             break
         case '!ceklokasi':
             //if (type === 'chat') return client.reply(from, `Mohon tag lokasi anda! (sharelok)`, id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)            
             try {
                 client.reply(from, mess.wait, id)
                 if (quotedMsg.type !== 'location') return client.reply(from, `Maaf, format pesan salah.\nKirimkan lokasi dan reply dengan caption !ceklokasi`, id)
@@ -371,7 +486,7 @@ module.exports = msgHandler = async (client, message) => {
             }
             break
         case '$':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6289673766582 untuk pertanyaan lebih lanjut', id)            
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)            
             if (args.length === 1) return client.reply(from, `Chat dengan simi caranya ketik perintah :\n*$* _Pesan kamu_\nContoh :\n*$* _Halo simi_`, id)
             const que = body.slice(2)
             const sigot = await get.get(`http://simsumi.herokuapp.com/api?text=${que}&lang=id`).json()
@@ -381,7 +496,7 @@ module.exports = msgHandler = async (client, message) => {
             break
         case '!fact':
         case '!facts':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6289673766582 untuk pertanyaan lebih lanjut', id)            
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)            
             const faks = `https://api.i-tech.id/tools/fakta?key=ijmalalfafanajib`
             const getting = await get.get(faks).json()
             await client.reply(from, `*FACTS* : ${getting.result}`, id).catch((e) => console.log(e))
@@ -389,7 +504,7 @@ module.exports = msgHandler = async (client, message) => {
             break
         //case '!fact':
         case '!indoht':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6289673766582 untuk pertanyaan lebih lanjut', id)            
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)            
             const faksx = `https://test.mumetndase.my.id/indohot`
             const gettingx = await get.get(faksx).json()
             //console.log(gettingx)
@@ -397,7 +512,7 @@ module.exports = msgHandler = async (client, message) => {
             await client.sendSeen(from)
             break
         case '!pantun':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6289673766582 untuk pertanyaan lebih lanjut', id)            
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)            
             const pans = `https://api.i-tech.id/tools/pantun?key=ijmalalfafanajib`
             const gettingpa = await get.get(pans).json()
             await client.reply(from, `${gettingpa.result}`, id).catch((e) => console.log(e))
@@ -405,7 +520,7 @@ module.exports = msgHandler = async (client, message) => {
             break
         case '!quran':
 //https://api.i-tech.id/tools/quran?key=ijmalalfafanajib&surat=2
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6289673766582 untuk pertanyaan lebih lanjut', id)            
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)            
             if (args.length === 1) return client.reply(from, `Kirim perintah Surah Quran kamu dengan cara ketik perintah :\n*!quran* _Urutan surat_\nContoh :\n*!quran* _1_`, id)
             const qura = `https://api.i-tech.id/tools/quran?key=ijmalalfafanajib&surat=${args[1]}`
             const gettingqu = await get.get(qura).json()
@@ -420,7 +535,7 @@ module.exports = msgHandler = async (client, message) => {
             break
         case '!cekjodoh':
 //https://api.i-tech.id/tools/cekjodoh?key=iwEdte-kAPiT1-3Cj3JD-siWNHI-xc6jV7&query=aku-kamu
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6289673766582 untuk pertanyaan lebih lanjut', id)            
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)            
             if (args.length === 1) return client.reply(from, `Kirim perintah Cek Jodoh kamu dengan cara ketik perintah :\n*!cekjodoh* _Kamu_|_nama pasanganmu_\nContoh :\n*!cekjodoh* _asep_|_udin_`, id)
             client.reply(from, mess.wait, id)
             const quejod = body.slice(10)
@@ -431,7 +546,7 @@ module.exports = msgHandler = async (client, message) => {
             await client.sendSeen(from)
             break
         case '!ramalanjodoh':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6289673766582 untuk pertanyaan lebih lanjut', id)            
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)            
             if (args.length === 1) return client.reply(from, `Kirim perintah Cek Jodoh kamu dengan cara ketik perintah :\n*!ramalanjodoh* _Kamu|nama pasanganmu_\nContoh :\n*!ramalanjodoh* _asep|udin_`, id)
             client.reply(from, mess.wait, id)
             const quejodr = body.slice(14)
@@ -443,7 +558,7 @@ module.exports = msgHandler = async (client, message) => {
 //https://api.i-tech.id/tools/jodoh?key=iwEdte-kAPiT1-3Cj3JD-siWNHI-xc6jV7&p1=Andi&p2=Aurel
             break
         case '!search':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6289673766582 untuk pertanyaan lebih lanjut', id)            
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)            
             if (args.length === 1) return client.reply(from, `Kirim perintah Google search dengan cara ketik perintah :\n*!search* _Query search_\nContoh :\n*!search* _Detik News hari ini_`, id)
             client.reply(from, mess.wait, id)
            
@@ -479,7 +594,7 @@ Member mingguan : 28.500
 Member bulanan    : 114.000`, id)
             break
         case '!qrcode':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)        
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)        
             if (args.length === 1) return client.reply(from, `Kirim perintah create QR Code dengan cara ketik perintah :\n*!qrcode* _Ketik pesan_\nContoh :\n*!qrcode* _MRHRTZ@kali:~#_`, id)
            
             const qrdata = body.slice(8)
@@ -494,7 +609,7 @@ Member bulanan    : 114.000`, id)
             break
         case '!profile':
         case '!profil':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)        
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)        
             if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
             
             console.log(isGroupAdmins)
@@ -547,7 +662,7 @@ Harga:
 Pesanan:`, id)
             break
         case '!bug':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)        
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)        
             if (args.length === 1) return client.reply(from, `Kirim laporan bug dengan cara ketik perintah :\n*!bug* _Ketik pesan_\nContoh :\n*!bug* _Bug di perintah !musik tolong fix_`, id)
             const ygingin = body.slice(5)
             await client.sendText(ownerNumber, `*BUG!!!* :\n\n*From* ${pushname}\n*Grup* : ${name}\n*WA* : wa.me/${sender.id.replace('@c.us','')}\n*Content* : ${ygingin}\n*TimeStamp* : ${time}\n\n\n\n|${from}|${id}|`).then(() => client.reply(from, `_[DONE] Laporan telah terkirim, mohon kirim laporan dengan jelas atau kami tidak akan menerima laporan tersebut sebagai bug!_`, id))
@@ -566,7 +681,7 @@ Pesanan:`, id)
             break
         case '!stikernobg':
         case '!stickernobg':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
            // if (args.length === 1 && !isMedia || args.length === 1 && !quotedMsg) return client.reply(from, `Kirim foto dengan caption *!stickernobg*`, id)
            
             if (isMedia && type === 'image') {
@@ -610,7 +725,7 @@ if (isMedia) {
             }
         */
        
-        // if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        // if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (isMedia && type === 'image') {
                 client.reply(from, mess.wait, id)
                 const mediaDataa = await decryptMedia(message, uaOverride)
@@ -660,7 +775,7 @@ if (isMedia) {
             }
         */
        
-        // if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        // if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (isMedia && type === 'image') {
                 client.reply(from, mess.wait, id)
                 const mediaData = await decryptMedia(message, uaOverride)
@@ -703,7 +818,7 @@ if (isMedia) {
             break
         case '!toimage':
         case '!toimg':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             if (args.length === 2) return client.reply(from, `Hai ${pushname} untuk menggunakan fitur sticker to image, mohon tag stiker! dan kirim pesan *!toimage*`, id)
             if (quotedMsg) {
@@ -726,7 +841,7 @@ if (isMedia) {
             await client.sendSeen(from)
             break
         case '!ssweb':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!ssweb* _Website yang akan discreenshot_')
             try {
                 client.reply(from, `_Sedang screenshot web..._`, id)
@@ -742,7 +857,7 @@ if (isMedia) {
             break
         case '!musik':
         case '!music':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!musik* _Judul lagu yang akan dicari_')
             const quer = body.slice(7)
@@ -772,7 +887,7 @@ if (isMedia) {
             break
         case '!video':
         case '!film':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!video* _Judul video yang akan dicari_')
             const querv = body.slice(7)
@@ -800,7 +915,7 @@ if (isMedia) {
             break
         case '!playstore':
             //https://api.vhtear.com/playstore?query=ff&apikey=botnolepbydandyproject
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!PlayStore* _Aplikasi/Games yang akan dicari_')
             const keywotp = body.slice(11)
@@ -821,7 +936,7 @@ if (isMedia) {
             break
         case '!ytsearch':
         case '!searchyt':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!searchyt* _Channel/Title YT yang akan dicari_')
            
             const keywot = body.slice(10)
@@ -843,7 +958,7 @@ if (isMedia) {
             await client.sendSeen(from)
             break
         case '!translate':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (args.length === 1) return client.reply(from, `Penggunaan untuk translate teks\n\nPenggunaan 1 : *!translate [data bahasa] [teks yang akan ditranslate]* _(tanpa tag)_\nPenggunaan 2 : *!translate [data bahasa]* _(dengan tag)_\n\nContoh 1 : *!translate id hello how are you* _(tanpa tag)_\nContoh 2 : *!translate id* _(tag pesan yang akan ditranslate)_`, id)
            
             //if (!quotedMsg) return client.reply(from, 'Tag pesan yang akan ditranslate!', id)
@@ -882,7 +997,7 @@ if (isMedia) {
         case '!tostiker':
         case '!tosticker':
             //if (args.length === 1) return client.reply(from, `Penggunaan teks to sticker : *!tosticker [Teks]*\n\nContoh : !tosticker bot ganteng`)
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (isMedia && type === 'image' || quotedMsg && quotedMsg.type === 'image') return client.reply(from, 'Fitur ini hanya untuk teks! bukan gambar.', id)
            
             const texk = body.slice(10)
@@ -955,7 +1070,7 @@ if (isMedia) {
         case '!gambar':
         case '!images':
             // https://api.i-tech.id/dl/googlei?key=iwEdte-kAPiT1-3Cj3JD-siWNHI-xc6jV7&query=odading
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6289673766582 untuk pertanyaan lebih lanjut', id)            
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)            
             if (args.length === 1) return client.reply(from, `Kirim perintah search gambar dengan cara ketik perintah :\n*!gambar* _Katakunci_\nContoh :\n*!gambar* _kopi_`, id)
             try {
                 client.reply(from, mess.wait, id)
@@ -972,7 +1087,7 @@ if (isMedia) {
             await client.sendSeen(from)
             break
         case '!wallpaper':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (args.length <= 2 || args.length == 1) return await client.reply(from, 'Random image generator splash, bisa untuk wallpaper.\npenggunaan : *!gambar [halaman] [kata kunci]* contoh *!gambar 1 office*', id)
             try {
                 if (args.length > 2){
@@ -1000,19 +1115,21 @@ if (isMedia) {
         case '!stickergif':
         case '!stikergif':    
         case '!sgi':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
-            if (!isMedia || type == message) return client.reply(from, '_Kesalahan! kirim video/gif dengan caption *!stikerGif* max 10 detik! bukan tag._', id)
-            if (isMedia && type == 'video') {
-                if (mimetype === 'video/mp4' || mimetype === 'image/gif' || quotedMsg && quotedMsg.type == 'video/mp4' || quotedMsg && quotedMsg.type == 'image/gif') {
-                    try {
-                        const { opts, uploadToGiphy } = require('./lib/giphy')
-                        const mediaData = await decryptMedia(message, uaOverride)
-                        client.reply(from, `_Permintaan anda sedang diproses mohon tunggu sebentar_ ⏲️`, id)
-                        await client.sendMp4AsSticker(from, mediaData, {fps: 20, startTime: `00:00:00.0`, endTime : `00:00:06.0`,loop: 0})
-                    } catch (e) {
-                        client.reply(from, `Size media terlalu besar!`)
-                    }
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
+            // if (!isMedia) return client.reply(from, '_Kesalahan! kirim video/gif dengan caption *!stikerGif* max 10 detik! bukan tag._', id)
+            // if (isMedia) {
+            
+            client.reply(from, `_Permintaan anda sedang diproses mohon tunggu sebentar_ ⏲️`, id)
+            if (isMedia && type === 'video' || mimetype === 'image/gif') {
+                try {
+                    const mediaData = await decryptMedia(message, uaOverride)
+                    await client.sendMp4AsSticker(from, mediaData, {fps: 17, startTime: `00:00:00.0`, endTime : `00:00:05.0`,loop: 0})
+                } catch (e) {
+                    client.reply(from, `Size media terlalu besar! mohon kurangi durasi video.`)
                 }
+            } else if (quotedMsg && quotedMsg.type == 'video' || quotedMsg && quotedMsg.mimetype == 'image/gif') {
+                const mediaData = await decryptMedia(quotedMsg, uaOverride)
+                await client.sendMp4AsSticker(from, mediaData, {fps: 15, startTime: `00:00:00.0`, endTime : `00:00:05.0`,loop: 0})
             } else {
                 client.reply(from, `_Kesalahan ⚠️ Hanya bisa video/gif apabila file media berbentuk gambar ketik *!stiker*_`, id)
             } 
@@ -1056,7 +1173,7 @@ if (isMedia) {
        //  case '!stickergif':
        // case '!stikergif':
        // case '!sgif':
-       //      if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+       //      if (!isGroupMsg) return client.reply(from, menuPriv, id)
        //      if (!isMedia || type == message) return client.reply(from, '_Kesalahan! kirim video/gif dengan caption *!stikerGif* max 10 detik! bukan tag._', id)
        //      if (isMedia) {
        //          if (mimetype === 'video/mp4' && message.duration < 10 || mimetype === 'image/gif' && message.duration < 10) {
@@ -1081,7 +1198,7 @@ if (isMedia) {
             await client.sendSeen(from)
             break
         case '!tts':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
        
             try {
                 if (args.length === 1) return client.reply(from, 'Kirim perintah *!tts [code_bahasa] [teks]*, contoh *!tts id halo semua*')
@@ -1101,7 +1218,7 @@ if (isMedia) {
             await client.sendSeen(from)
             break
         case 'bot':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             //await client.sendPtt(from, './media/sound/Dgc-sound-mut.mp3', id).then(() => client.sendText(from, 'Ketik *!menu* untuk memulai 😊'))
             break
         // case '!nulis':
@@ -1124,7 +1241,7 @@ if (isMedia) {
         //     await client.sendSeen(from)
             // break
         // case '!g-asik':
-        //     if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        //     if (!isGroupMsg) return client.reply(from, menuPriv, id)
         //     if (args.length === 1) return client.reply(from, 'Kirim perintah *!musik [query]*, untuk contoh silahkan kirim perintah *!readme*')
         //     const serahu = body.slice(7)
         //     try {
@@ -1188,7 +1305,7 @@ if (isMedia) {
             break
         case '!getmusik':
         case '!getmusic':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             try {
                 if (quotedMsg && quotedMsg.type == 'image') {
@@ -1267,7 +1384,7 @@ if (isMedia) {
             await client.sendSeen(from)
             break
         case '!getvideo':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!getvideo* _IdDownload_, untuk contoh silahkan kirim perintah *!readme*', id)
             //let isLinks2 = args[1].match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/)
             //if (!isLinks2) return client.reply(from, mess.error.Iv, id)
@@ -1370,7 +1487,7 @@ if (isMedia) {
             await client.sendSeen(from)
             break
         case '!nyanyi':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!nyanyi _Lagunya_*, untuk contoh silahkan kirim perintah *!readme*')
             const quernyanyi = body.slice(8)
@@ -1538,7 +1655,7 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
             await client.reply(from, `ID GRUP : ${chat.id}`, id)
             break
         case '!ytmp3':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!ytmp3 [linkYt]*, untuk contoh silahkan kirim perintah *!readme*')
            
             let isLinks = args[1].match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/)
@@ -1587,7 +1704,7 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
             await client.sendSeen(from)
             break   
         case '!ytmp4':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!ytmp4* _linkYt_, untuk contoh silahkan kirim perintah *!readme*', id)
             let isLinks2 = args[1].match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/)
@@ -1639,7 +1756,7 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
             await client.sendSeen(from)
             break
         case '!tiktok':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!tiktok* _linkVideoTikTod_, untuk contoh silahkan kirim perintah *!readme*', id)
            
             try{
@@ -1663,7 +1780,7 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
             await client.sendSeen(from)
             break
         case '!wiki':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!wiki [query]*\nContoh : *!wiki asu*', id)
             const query_ = body.slice(6)
@@ -1707,7 +1824,7 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
         //     await client.sendSeen(from)
             break
         case '!cuaca':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!cuaca [tempat]*\nContoh : *!cuaca tangerang', id)
             try {
                 // const tempat = body.slice(7)
@@ -1726,7 +1843,7 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
             
             break
         case '!fb':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             try {
                 if (args.length === 1) return client.reply(from, 'Kirim perintah *!fb [linkFb]* untuk contoh silahkan kirim perintah *!readme*', id)
@@ -1752,7 +1869,7 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
             await client.sendSeen(from)
             break
         case '!ig':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
             try {
                 if (args.length === 1) return client.reply(from, 'Kirim perintah *!ig [linkIg]* untuk contoh silahkan kirim perintah *!readme*', id)
                 if (!args[1].includes('instagram.com')) return client.reply(from, mess.error.Iv, id)
@@ -1769,7 +1886,7 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
             await client.sendSeen(from)
             break
         case '!twt':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             try {
                 if (args.length === 1) return client.reply(from, 'Kirim perintah *!twt [linkVideoTwitter]* untuk contoh silahkan kirim perintah *!readme*', id)
@@ -1809,7 +1926,7 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
             await client.sendSeen(from)
             break*/
         case '!nsfw':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (!isGroupAdmins) return client.reply(from, 'Perintah ini hanya bisa di gunakan oleh Admin group!', id)
            
             if (args.length === 1) return client.reply(from, 'Pilih enable atau disable!', id)
@@ -1936,7 +2053,7 @@ JANGAN LUPA SERTAKAN BUKTI PEMBAYARAN NYA☺
             await client.sendSeen(from)
             break
         case '!freedom':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (!isGroupAdmins) return client.reply(from, 'Perintah ini hanya bisa di gunakan oleh Admin group!', id)
             if (args.length === 1) return client.reply(from, 'Penggunaan *!freedom aktif* atau *!freedom mati*', id)
             if (args[1].toLowerCase() === 'aktif') {
@@ -1954,7 +2071,7 @@ JANGAN LUPA SERTAKAN BUKTI PEMBAYARAN NYA☺
             await client.sendSeen(from)
             break
         case '!dmff':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (!isGroupAdmins) return client.reply(from, 'Perintah ini hanya bisa di gunakan oleh Admin group!', id)
             if (args.length === 1) return client.reply(from, 'Penggunaan *!dmff aktif* atau *!dmff mati*', id)
             if (args[1].toLowerCase() === 'aktif') {
@@ -1973,7 +2090,7 @@ JANGAN LUPA SERTAKAN BUKTI PEMBAYARAN NYA☺
             break
         case '!sambutan':
         case '!welcome':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (!isGroupAdmins) return client.reply(from, 'Perintah ini hanya bisa di gunakan oleh Admin group!', id)
             if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
             
@@ -1997,7 +2114,7 @@ JANGAN LUPA SERTAKAN BUKTI PEMBAYARAN NYA☺
             await client.sendSeen(from)
             break
         case '!listdm':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             const capsnya = `
 RATE 250 
 50💎  6.000
@@ -2070,7 +2187,7 @@ Ketik perintah : *!pesandm* untuk order
             await client.sendSeen(from)
             break
         case '!pesandm':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             const capts = `!<#> FORMAT
 
 FORMAT ORDER💎
@@ -2088,7 +2205,7 @@ _Hanya isi saja formatnya, dan tidak menghapus apapun!_
             await client.sendSeen(from)
             break
         case '!<#>':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
          if (isMedia && type === 'image'){
             const ownerNumberFF = '6289625370361@c.us'
             const inputan = body.trim().split('|')
@@ -2110,7 +2227,7 @@ Nomor : wa.me/${hapusser[0]}
             await client.sendSeen(from)
             break
         case '!timeline':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             // if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
             
             // await limitAdd(serial)  
@@ -2122,7 +2239,7 @@ Nomor : wa.me/${hapusser[0]}
         case '!ciwi':
         case '!cewek':
         case '!cecan':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
         //client.reply(from, `_Perintah fitur ini telah diganti ke *!timeline*_`, id)
         //if (isVIP(sender.id)) return client.reply(from, '_Ini khusus member premium om_', id)
         //if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
@@ -2157,7 +2274,7 @@ Nomor : wa.me/${hapusser[0]}
             break
         case '!cowok':
         case '!cogan':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
         //client.reply(from, `_Perintah fitur ini telah diganti ke *!timeline*_`, id)
         //if (isVIP(sender.id)) return client.reply(from, '_Ini khusus member premium om_', id)
         if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
@@ -2203,7 +2320,7 @@ Nomor : wa.me/${hapusser[0]}
         await client.sendSeen(from)
             break
         // case '!textscreen':
-        //     if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        //     if (!isGroupMsg) return client.reply(from, menuPriv, id)
         //     if (args.length === 1) return client.reply(from, `Gunakan perintah *!textscreen _Teksnya_*\nContoh *!textscreen DGC BOT GANS*`)
         //     client.reply(from, `_Sedang mengkonversi teks ke ASCII_`)
         //     const keasci = body.slice(12)
@@ -2217,7 +2334,7 @@ Nomor : wa.me/${hapusser[0]}
         //     await client.sendSeen(from)
             break
         case '!igstalk':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
            try {
             if (args.length === 1)  return client.reply(from, 'Kirim perintah *!igStalk @username*\nContoh *!igStalk @hanif_az.sq.61*', id)
@@ -2242,7 +2359,7 @@ Nomor : wa.me/${hapusser[0]}
         }
          break
         // case '!igstalk':
-        //     if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        //     if (!isGroupMsg) return client.reply(from, menuPriv, id)
         //     if (args.length === 1)  return client.reply(from, 'Kirim perintah *!igStalk @username*\nContoh *!igStalk @hanif_az.sq.61*', id)
         //     client.reply(from, `_Sedang mencari data profil..._`, id)
             // const stalk = await get.get(`https://api.vhtear.com/igprofile?query=${args[1]}&apikey=botnolepbydandyproject`).json()
@@ -2270,7 +2387,7 @@ Nomor : wa.me/${hapusser[0]}
         //         await client.sendSeen(from)
             break
         case '!artinama':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             if (args.length === 1) return client.reply(from, 'Masukan perintah : *!artinama* _nama kamu_', id) 
             const artihah = body.slice(10)
@@ -2281,7 +2398,7 @@ Nomor : wa.me/${hapusser[0]}
             break
         case '!cak':
         case '!caklontong':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             const sicak = await get.get('https://api.vhtear.com/funkuis&apikey=botnolepbydandyproject').json()
             const isicak = `*TTS CAK LONTONG*\n\n*Pertanyaan* : ${sicak.result.soal}\n*Jawaban* : ${sicak.result.jawaban}\n*Penjelasan* : ${sicak.result.desk}`
@@ -2289,7 +2406,7 @@ Nomor : wa.me/${hapusser[0]}
             await client.sendSeen(from)
             break
         case '!infogempa':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             const bmkg = await get.get('https://api.vhtear.com/infogempa&apikey=botnolepbydandyproject').json()
             let jiah = `*Mendapatkan informasi gempa*\n\n`
@@ -2354,7 +2471,7 @@ Nomor : wa.me/${hapusser[0]}
         	await client.sendSeen(from)
             break
         case '!brainly':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             if (args.length >= 2){
                 const BrainlySearch = require('./lib/brainly')
@@ -2423,7 +2540,7 @@ Nomor : wa.me/${hapusser[0]}
             break
         case '!quotesmaker':
         case '!quotemaker':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
        
             try {
                 arg = body.trim().split('|')
@@ -2481,7 +2598,7 @@ Nomor : wa.me/${hapusser[0]}
             break
         case '!listadmin':
         case '!adminlist':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
             
             let mimin = ''
@@ -2493,7 +2610,7 @@ Nomor : wa.me/${hapusser[0]}
             await client.sendSeen(from)
             break
         case '!ownergroup':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             const Owner_ = chat.groupMetadata.owner
             if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
             
@@ -2502,7 +2619,7 @@ Nomor : wa.me/${hapusser[0]}
             break
         case '!tagall':
         case '!mentionall':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (!isGroupAdmins) return client.reply(from, 'Perintah ini hanya bisa di gunakan oleh admin group', id)
             /*
             const DGCfounder = 'Biancho Junaidi'
@@ -2752,7 +2869,7 @@ Nomor : wa.me/${hapusser[0]}
             break
         case '!delete':
             if (!isGroupMsg) return client.reply(from, 'Fitur ini hanya bisa di gunakan dalam group', id)
-            if (!isGroupAdmins) return client.reply(from, 'Fitur ini hanya bisa di gunakan oleh admin group', id)
+            // if (!isGroupAdmins) return client.reply(from, 'Fitur ini hanya bisa di gunakan oleh admin group', id)
             if (!quotedMsg) return client.reply(from, 'Salah!!, kirim perintah *!delete [tagpesanbot]*', id)
             if (!quotedMsgObj.fromMe) return client.reply(from, 'Salah!!, Bot tidak bisa menghapus chat user lain!', id)
             client.deleteMessage(quotedMsgObj.chatId, quotedMsgObj.id, false)
@@ -2765,7 +2882,7 @@ Nomor : wa.me/${hapusser[0]}
             await client.sendSeen(from)
             break
         case '!lirik':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             if (args.length == 1) return client.reply(from, 'Kirim perintah *!lirik [optional]*, contoh *!lirik aku bukan boneka*', id)
             const lagu = body.slice(7)
@@ -2774,7 +2891,7 @@ Nomor : wa.me/${hapusser[0]}
             await client.sendSeen(from)
             break
         case '!chord':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
            
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!chord [query]*, contoh *!chord aku bukan boneka*', id)
             const query__ = body.slice(7)
@@ -2787,7 +2904,7 @@ Nomor : wa.me/${hapusser[0]}
             await client.sendSeen(from)
             break
         case '!listdaerah':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
             const listDaerah = await get('https://api.haipbis.xyz/daerah').json()
             client.reply(from, listDaerah, id)
             await client.sendSeen(from)
@@ -2830,7 +2947,7 @@ Nomor : wa.me/${hapusser[0]}
             await client.sendSeen(from)
             break
         case '!jadwaltv':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
        
             try {
                 if (args.length === 1) return client.reply(from, 'Kirim perintah *!jadwalTv [channel]*', id)
@@ -2844,7 +2961,7 @@ Nomor : wa.me/${hapusser[0]}
             await client.sendSeen(from)
             break
         case '!jadwaltvnow':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
        
             const jadwalNow = await get.get('https://api.haipbis.xyz/jadwaltvnow').json()
             client.reply(from, `Jam : ${jadwalNow.jam}\n\nJadwalTV : ${jadwalNow.jadwalTV}`, id)
@@ -2983,7 +3100,7 @@ Nomor : wa.me/${hapusser[0]}
             .catch(() => client.reply(from, `Error tidak dapat mengambil screenshot website ${_query}`, id))
             
         case '!nulis':
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (args.length === 1) return client.reply(from, 'Kirim perintah *!nulis [teks]*', id)
        
             const nulis = encodeURIComponent(body.slice(7))
@@ -2996,7 +3113,7 @@ Nomor : wa.me/${hapusser[0]}
             break
         case '!quote':
         case '!quotes':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
        
             const quotes = await get.get('https://api.kanye.rest').json()
             const qotues = await get.get('https://api.vhtear.com/quotes?apikey=botnolepbydandyproject').json()
@@ -3033,7 +3150,7 @@ Nomor : wa.me/${hapusser[0]}
         break
         case '!help':
         case '!menu':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
             
             client.reply(from, help, id)
             await client.sendSeen(from)
@@ -3043,7 +3160,7 @@ Nomor : wa.me/${hapusser[0]}
             await client.sendSeen(from)
             break
         case '!info':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
             client.sendLinkWithAutoPreview(from, 'https://github.com/MRHRTZ', info)
             await client.sendSeen(from)
             break
@@ -3059,17 +3176,17 @@ Nomor : wa.me/${hapusser[0]}
         case '!tiktok':
         case '!likee':
         case '!twit':
-        if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+        if (!isGroupMsg) return client.reply(from, menuPriv, id)
             client.reply(from, `Hai ${pushname} fitur ini akan segera diluncurkan, dukung pengambangan bot ini dengan donasi seikhlasnya ke owner, ketik *!donasi*`)
             await client.sendSeen(from)
             break
          default:
-            if (!isGroupMsg) return client.reply(from, 'Bot sekarang hanya bisa digunakan digrup saja! untuk dimasukan ke grup bot ini sifatnya berbayar, konfirmasi ke owner bot wa.me/6285559038021 untuk pertanyaan lebih lanjut', id)
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (command.startsWith('!')) {
-                //client.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
-                const que61 = body.slice(1)
-                const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
-                client.reply(from, sigot61.success, id)
+                client.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
+                // const que61 = body.slice(1)
+                // const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
+                // client.reply(from, sigot61.success, id)
                 // console.log(sigot61)
                 await client.sendSeen(from)
                 }
