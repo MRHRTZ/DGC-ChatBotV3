@@ -96,7 +96,7 @@ module.exports = msgHandler = async (client, message) => {
         const isOwner = sender.id === ownerNumber
         const isBlocked = blockNumber.includes(sender.id)
         const isPrivate = sender.id === chat.contact.id
-        const menuPriv = `*Fitur bot private yang tersedia* :\n\n➣ *!stiker*\n\n>> Anonymous Chat\n➣ *!kirim _Teksnya_*\n➣ *!daftar _62855xxxx_*\n➣ *!hapus _62855xxxx_*`
+        const menuPriv = `*Fitur bot private yang tersedia* :\n\n➣ *!bug _teksnya_*\n➣ *!stikergif*\n➣ *!stiker*\n\n>> Anonymous Chat\n➣ *!kirim _Teksnya_*\n➣ *!daftar _62855xxxx_*\n➣ *!hapus _62855xxxx_*`
         const isNsfw = isGroupMsg ? nsfw_.includes(chat.id) : false
         const uaOverride = 'WhatsApp/2.2029.4 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
         const isUrl = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/gi)
@@ -662,7 +662,7 @@ Harga:
 Pesanan:`, id)
             break
         case '!bug':
-            if (!isGroupMsg) return client.reply(from, menuPriv, id)        
+            // if (!isGroupMsg) return client.reply(from, menuPriv, id)        
             if (args.length === 1) return client.reply(from, `Kirim laporan bug dengan cara ketik perintah :\n*!bug* _Ketik pesan_\nContoh :\n*!bug* _Bug di perintah !musik tolong fix_`, id)
             const ygingin = body.slice(5)
             await client.sendText(ownerNumber, `*BUG!!!* :\n\n*From* ${pushname}\n*Grup* : ${name}\n*WA* : wa.me/${sender.id.replace('@c.us','')}\n*Content* : ${ygingin}\n*TimeStamp* : ${time}\n\n\n\n|${from}|${id}|`).then(() => client.reply(from, `_[DONE] Laporan telah terkirim, mohon kirim laporan dengan jelas atau kami tidak akan menerima laporan tersebut sebagai bug!_`, id))
@@ -1115,7 +1115,7 @@ if (isMedia) {
         case '!stickergif':
         case '!stikergif':    
         case '!sgi':
-            if (!isGroupMsg) return client.reply(from, menuPriv, id)
+            // if (!isGroupMsg) return client.reply(from, menuPriv, id)
             // if (!isMedia) return client.reply(from, '_Kesalahan! kirim video/gif dengan caption *!stikerGif* max 10 detik! bukan tag._', id)
             // if (isMedia) {
             
