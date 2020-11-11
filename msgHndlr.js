@@ -96,7 +96,7 @@ module.exports = msgHandler = async (client, message) => {
         const isOwner = sender.id === ownerNumber
         const isBlocked = blockNumber.includes(sender.id)
         const isPrivate = sender.id === chat.contact.id
-        const menuPriv = `*Fitur bot private yang tersedia* :\n\n➣ *!bug _teksnya_*\n➣ *!stikergif*\n➣ *!stiker*\n\n>> Anonymous Chat\n➣ *!kirim _Teksnya_*\n➣ *!daftar _62855xxxx_*\n➣ *!hapus _62855xxxx_*`
+        const menuPriv = `*Fitur bot private yang tersedia* :\n\n➣ *!sendowner*\n➣ *!bug _teksnya_*\n➣ *!tostiker _Teksnya__*\n➣ *!stikergif*\n➣ *!stiker*\n\n   🎤〘 Anonymous Chat 〙💺\n\n➣ *!kirim _Teksnya_*\n➣ *!daftar _62855xxxx_*\n➣ *!hapus _62855xxxx_*`
         const isNsfw = isGroupMsg ? nsfw_.includes(chat.id) : false
         const uaOverride = 'WhatsApp/2.2029.4 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
         const isUrl = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/gi)
@@ -885,6 +885,7 @@ if (isMedia) {
             }
             await client.sendSeen(from)
             break
+        case '!vidio':
         case '!video':
         case '!film':
             if (!isGroupMsg) return client.reply(from, menuPriv, id)
@@ -997,7 +998,7 @@ if (isMedia) {
         case '!tostiker':
         case '!tosticker':
             //if (args.length === 1) return client.reply(from, `Penggunaan teks to sticker : *!tosticker [Teks]*\n\nContoh : !tosticker bot ganteng`)
-            if (!isGroupMsg) return client.reply(from, menuPriv, id)
+            // if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (isMedia && type === 'image' || quotedMsg && quotedMsg.type === 'image') return client.reply(from, 'Fitur ini hanya untuk teks! bukan gambar.', id)
            
             const texk = body.slice(10)
@@ -3181,7 +3182,7 @@ Nomor : wa.me/${hapusser[0]}
             await client.sendSeen(from)
             break
          default:
-            if (!isGroupMsg) return client.reply(from, menuPriv, id)
+            // if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (command.startsWith('!')) {
                 client.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
                 // const que61 = body.slice(1)
