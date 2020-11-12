@@ -96,7 +96,7 @@ module.exports = msgHandler = async (client, message) => {
         const isOwner = sender.id === ownerNumber
         const isBlocked = blockNumber.includes(sender.id)
         const isPrivate = sender.id === chat.contact.id
-        const menuPriv = `*Fitur bot private yang tersedia* :\n\n➣ *!sendowner*\n➣ *!bug _teksnya_*\n➣ *!tostiker _Teksnya__*\n➣ *!stikergif*\n➣ *!stiker*\n\n   🎤〘 Anonymous Chat 〙💺\n\n➣ *!kirim _Teksnya_*\n➣ *!daftar _62855xxxx_*\n➣ *!hapus _62855xxxx_*`
+        const menuPriv = `*Fitur bot private yang tersedia* :\n\n➣ *!sendowner*\n➣ *!bug _teksnya_*\n➣ *!tostiker _Teksnya__*\n➣ *!stikergif*\n➣ *!stiker*\n\n   🎤〘 Anonymous Chat 〙💺\n\n➣ *!kirim _Teksnya_*\n➣ *!daftar _62855xxxx_*\n➣ *!hapus _62855xxxx_*\n\n_Apabila ingin full fitur menu donasi untuk sewa bot digrup, minat? ketik *!sendOwner*_`
         const isNsfw = isGroupMsg ? nsfw_.includes(chat.id) : false
         const uaOverride = 'WhatsApp/2.2029.4 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
         const isUrl = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/gi)
@@ -353,7 +353,7 @@ module.exports = msgHandler = async (client, message) => {
                 } else {
                     const mentah = await client.checkNumberStatus(text) //VALIDATE WHATSAPP NUMBER
                     const hasiluu = mentah.canReceiveMessage ? `Sukses menambahkan nomer ke database\nTotal data nomer sekarang : *${pengirim.length}*` : false
-                    if (!hasiluu) return client.reply(from, 'Nomor WhatsApp tidak valid [ Tidak terdaftar di WhatsApp ]', id) 
+                    if (!hasiluu) return client.reply(from, `Nomor WhatsApp tidak valid [ Tidak terdaftar di WhatsApp ]\nDan pastikan format nomer diawali dengan *62* contoh *6285559038022*`, id) 
                     {
                     pengirim.push(mentah.id._serialized)
                     fs.writeFileSync('./lib/pengguna.json', JSON.stringify(pengirim))
@@ -387,7 +387,9 @@ module.exports = msgHandler = async (client, message) => {
                 hasiluu += `\n➣ @${daftarnum[i].replace(/['"@c.us]/g,'')}\n`
             }
             // const hasiluu = daftarnum.toString().replace(/['"@c.us]/g,'').replace(/[,]/g, '\n');
-            client.sendTextWithMentions(from, hasiluu) 
+            await client.sendTextWithMentions(from, hasiluu).catch(() => {
+                client.reply(from, `_Database kosong!_`, id)
+            })
             break   
 
 
@@ -1087,6 +1089,25 @@ if (isMedia) {
             }
             await client.sendSeen(from)
             break
+        case '!gambar2':
+            //https://api.fdci.se/rep.php?gambar=
+            if (!isGroupMsg) return client.reply(from, menuPriv, id)            
+            if (args.length === 1) return client.reply(from, `Kirim perintah search gambar dengan cara ketik perintah :\n*!gambar* _Katakunci_\nContoh :\n*!gambar* _kopi_`, id)
+            try {
+                client.reply(from, mess.wait, id)
+                const quegam2 = body.slice(9)
+                const gamb2 = `https://api.fdci.se/rep.php?gambar=${encodeURIComponent(quegam2)}`
+                const gettinggam2 = await get.get(gamb2).json()
+                if (gettinggam2.error) return console.log(`error ${gettinggam2.error}`)
+                var plorgam = Math.floor(Math.random() * gettinggam2.length)
+                // console.log(plorgam)
+                await client.sendFileFromUrl(from, gettinggam2[plorgam], `gam.${gettinggam2[plorgam].substr(-3)}`, `*Hasil pencarian image dari ${quegam2}*`, id).catch((e) => { client.reply(from, `_Data tersebut tidak ditemukan!_`, id)})
+            } catch (e) {
+                console.log(e)
+
+            }
+            await client.sendSeen(from)
+            break
         case '!wallpaper':
             if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (args.length <= 2 || args.length == 1) return await client.reply(from, 'Random image generator splash, bisa untuk wallpaper.\npenggunaan : *!gambar [halaman] [kata kunci]* contoh *!gambar 1 office*', id)
@@ -1512,6 +1533,10 @@ if (isMedia) {
                 client.reply(from, `_Kayanya bot gabisa nyanyi lagu itu hemm :(_`, id)
             }
             await client.sendSeen(from)
+            break
+        case 'done':
+            const pnag = await fs.readFileSync(`./media/Freedom.png`, { encoding: "base64" })
+            await client.sendImageAsSticker(from, `data:image/png;base64,${pnag.toString('base64')}`)
             break
         case '#done':
             // if (chat.id !== '6285216810127-1602212654@g.us') return 
@@ -2252,7 +2277,7 @@ Nomor : wa.me/${hapusser[0]}
             await limitAdd(serial)
         client.reply(from, mess.wait, id)
         const imageToBase64 = require('image-to-base64')
-        var items = ["cewe cantik", "hijab cantik", "jilbab sma cans","cantik", "sma jilbob", "sma hot"]; //Awokawoka meh laku sc uing :v
+        var items = ["cewe cantik", "hijab cantik", "jilbab sma cantik", "jilbab sma", "cewe sma", "cantik", "sma jilbob", "sma hot"]; //Awokawoka meh laku sc uing :v
         var cewe = items[Math.floor(Math.random() * items.length)];
         var urlciw = "https://api.fdci.se/rep.php?gambar=" + cewe;
         
@@ -2806,7 +2831,7 @@ Nomor : wa.me/${hapusser[0]}
             
             //if (!isBotGroupAdmins) return client.reply(from, 'Perintah ini hanya bisa di gunakan ketika bot menjadi admin', id)
             if (mentionedJidList.length === 0) return client.reply(from, 'Untuk menggunakan Perintah ini, kirim perintah *!kick* @tagmember', id)
-            await client.sendText(from, `Perintah diterima, mengeluarkan:\n${mentionedJidList.join('\n')}`)
+            await client.sendTextWithMentions(from, `Perintah diterima, mengeluarkan:\n@${mentionedJidList.join('\n')}`)
             for (let i = 0; i < mentionedJidList.length; i++) {
                 if (groupAdmins.includes(mentionedJidList[i])) return client.reply(from, mess.error.Ki, id)
                 await client.removeParticipant(groupId, mentionedJidList[i])
@@ -3184,10 +3209,10 @@ Nomor : wa.me/${hapusser[0]}
          default:
             // if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (command.startsWith('!')) {
-                client.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
-                // const que61 = body.slice(1)
-                // const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
-                // client.reply(from, sigot61.success, id)
+                // client.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
+                const que61 = body.slice(1)
+                const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
+                client.reply(from, sigot61.success, id)
                 // console.log(sigot61)
                 await client.sendSeen(from)
                 }
