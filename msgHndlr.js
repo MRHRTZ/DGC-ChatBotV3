@@ -96,7 +96,7 @@ module.exports = msgHandler = async (client, message) => {
         const isOwner = sender.id === ownerNumber
         const isBlocked = blockNumber.includes(sender.id)
         const isPrivate = sender.id === chat.contact.id
-        const menuPriv = `*Fitur bot private yang tersedia* :\n\n➣ *!sendowner*\n➣ *!bug _teksnya_*\n➣ *!tostiker _Teksnya__*\n➣ *!stikergif*\n➣ *!stiker*\n\n   🎤〘 Anonymous Chat 〙💺\n\n➣ *!kirim _Teksnya_*\n➣ *!daftar _62855xxxx_*\n➣ *!hapus _62855xxxx_*\n\n_Apabila ingin full fitur menu donasi untuk sewa bot digrup, minat? ketik *!sendOwner*_`
+        const menuPriv = `*Fitur bot private yang tersedia* :\n\n➣ *!sendowner*\n➣ *!bug _teksnya_*\n➣ *!tostiker _Teksnya_*\n➣ *!stikergif*\n➣ *!stiker*\n\n   🎤〘 Anonymous Chat 〙💺\n\n➣ *!kirim _Teksnya_*\n➣ *!daftar _62855xxxx_*\n➣ *!hapus _62855xxxx_*\n\n_Apabila ingin full fitur menu donasi untuk sewa bot digrup, minat? ketik *!sendOwner*_`
         const isNsfw = isGroupMsg ? nsfw_.includes(chat.id) : false
         const uaOverride = 'WhatsApp/2.2029.4 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
         const isUrl = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/gi)
@@ -1023,6 +1023,7 @@ if (isMedia) {
             //client.reply(from, '_Fitur ini sedang down dikarenakan terlalu banyak request._', id)
             try {
                 if (quotedMsgObj == null) {
+                    if (args.length === 1) return client.reply(from, `Mohon masukan teks setelah *!tostiker*\nContoh : *!tostiker Bot Ganz*`, id)
                     const GetData = await BikinTikel(texk)
                     //if (GetData.status == false) return client.reply(from, 'Kesalahan dalam mengkonversi teks! tag tulisan atau gunakan teks setelah perintah *!tosticker [teks]*', id)
                     try {
@@ -1041,6 +1042,7 @@ if (isMedia) {
                 }
             } catch (err){
                 console.log(err)
+                client.reply(from, `_Kesalahan! saat membuat stiker._`)
             }
 
 
