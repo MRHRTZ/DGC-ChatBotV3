@@ -265,6 +265,21 @@ module.exports = msgHandler = async (client, message) => {
         }
         if (!isMuted(chat.id) == true) return console.log(`Muted ${chat.id} ${name}`)
         //client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Coba lagi besok..._`, id)
+
+        if (body == "Assalamualaikum" || body == "Assalamu'alaikum" || body == "Samlikum" || body == "Samlekum"){
+                return client.reply(from, "Wa'alaikumsalam Warahmatullahi Wabarokatuh", id)
+        } else if (body == "Anjing" || body == "Goblok" || body == "Ngentod" || body == "Bangsat"){
+            if (!isGroupAdmins) {
+                return client.reply(from, "WOYY JANGAN TOXIC MEMBER BANGSAT SETAN!", id)
+                .then(() => client.removeParticipant(groupId, sender.id))
+                .then(() => {
+                    if (!isBotGroupAdmins) return client.sendText(from, `Untung bot bukan admin kalo ngga udah terkick tuh >:(`)
+                    client.sendText(from, `Awokawoka mampuss terwisuda🐦`)
+                })
+            } else {
+                return client.reply(from, "Mohon jaga ucapannya ya mimin:)", id)
+            }
+        }
                         
         switch(command) {
         case '!botstat':
@@ -1535,6 +1550,7 @@ if (isMedia) {
             await client.sendSeen(from)
             break
         case 'done':
+            if (sender.id !== '6288233282599@c.us') return
             const pnag = await fs.readFileSync(`./media/Freedom.png`, { encoding: "base64" })
             await client.sendImageAsSticker(from, `data:image/png;base64,${pnag.toString('base64')}`)
             break
@@ -2119,19 +2135,19 @@ JANGAN LUPA SERTAKAN BUKTI PEMBAYARAN NYA☺
             if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (!isGroupAdmins) return client.reply(from, 'Perintah ini hanya bisa di gunakan oleh Admin group!', id)
             if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
-            
-            if (args.length === 1) return client.reply(from, 'Pilih Aktif atau Mati!', id)
-            if (args[1].toLowerCase() === 'aktif') {
-                welkom.push(chat.id)
-                fs.writeFileSync('./lib/welcome.json', JSON.stringify(welkom))
-                client.reply(from, 'Fitur penyambutan berhasil di aktifkan di group ini!', id)
-            } else if (args[1].toLowerCase() === 'mati') {
-                welkom.splice(chat.id, 1)
-                fs.writeFileSync('./lib/welcome.json', JSON.stringify(welkom))
-                client.reply(from, 'Fitur penyambutan berhasil di nonaktifkan di group ini!', id)
-            } else {
-                client.reply(from, 'Penggunaan *!sambutan aktif* atau *!sambutan mati*', id)
-            }
+            client.reply(from, mess.mt, id)
+            // if (args.length === 1) return client.reply(from, 'Pilih Aktif atau Mati!', id)
+            // if (args[1].toLowerCase() === 'aktif') {
+            //     welkom.push(chat.id)
+            //     fs.writeFileSync('./lib/welcome.json', JSON.stringify(welkom))
+            //     client.reply(from, 'Fitur penyambutan berhasil di aktifkan di group ini!', id)
+            // } else if (args[1].toLowerCase() === 'mati') {
+            //     welkom.splice(chat.id, 1)
+            //     fs.writeFileSync('./lib/welcome.json', JSON.stringify(welkom))
+            //     client.reply(from, 'Fitur penyambutan berhasil di nonaktifkan di group ini!', id)
+            // } else {
+            //     client.reply(from, 'Penggunaan *!sambutan aktif* atau *!sambutan mati*', id)
+            // }
             await client.sendSeen(from)
             break
         case '!nsfwmenu':
@@ -3214,8 +3230,8 @@ Nomor : wa.me/${hapusser[0]}
                 const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
                 client.reply(from, sigot61.success, id)
                 // console.log(sigot61)
-                await client.sendSeen(from)
                 }
+                await client.sendSeen(from)
         }
 
     } catch (err) {

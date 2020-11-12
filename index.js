@@ -51,6 +51,7 @@ const start = async (client = new Client()) => {
             }))
         
          client.onAddedToGroup((async (chat) => {
+            // const whitelist = ["6285216490187-1558621310@g.us","6285559038021-1603688917@g.us"]
             // if (sender.id === '6285559038021@c.us') return
             // let totalMem = await chat.groupMetadata.participants.length
             // if (totalMem < 20) { 
@@ -58,10 +59,14 @@ const start = async (client = new Client()) => {
             // } else {
             //     client.sendText(chat.groupMetadata.id, `Halo warga grup *${chat.contact.name}* terimakasih sudah menginvite bot ini, untuk melihat menu silahkan kirim *!menu*`)
             // } 
-            client.sendText(chat.id, `Berhubungan Server terbatas bot ini hanya untuk grup DGC dan cabangnya!\n\nJika ada pihak yang membutuhkan bot ini untuk digrup donasi dan konfirmasi owner bot\n\nterima kasih.`)
-            .then(() => client.sendContact(chat.id, '6285559038021@c.us'))
-            .then(() => client.leaveGroup(chat.id))
-            .then(() => client.deleteChat(chat.id))
+            // if (!whitelist.include(chat.id)) {
+                client.sendText(chat.id, `Berhubungan Server terbatas bot ini hanya untuk grup DGC dan cabangnya!\n\nJika ada pihak yang membutuhkan bot ini untuk digrup donasi dan konfirmasi owner bot\n\nterima kasih.`)
+                .then(() => client.sendContact(chat.id, '6285559038021@c.us'))
+                .then(() => client.leaveGroup(chat.id))
+                .then(() => client.deleteChat(chat.id))
+            // } else {
+                    // client.sendText(chat.id, `Halo semua DGC ChatBot siap melayani semuanya, kecuali klo mati :'D`)
+            // } 
         }))
 
 
