@@ -1731,7 +1731,7 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
                     // Data memenuhi syarat?
                     const { title, published, duration, desc, author, thumb, video, audio } = await barbarytp3
                     const shortytm4 = await urlShortener(audio[0].url)
-                        if (Number(duration.replace(':','').replace(':','')) > 3000) return client.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n*Deskripsi* : ${desc.simpleText}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                        if (Number(duration.replace(':','').replace(':','')) > 1300) return client.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n*Deskripsi* : ${desc.simpleText}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
                     //     // if (Number(filesize.split(' MB')[0]) >= 40.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortytm3}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
                         
                     // // if (Number(filesize.split(' MB')[0]) >= 40.00) return client.reply(from, '_Mohon maaf sepertinya durasi video telah melebihi batas._', id)
@@ -1782,7 +1782,7 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
                 } else if (barbarytp4.status !== true) {
                     const { title, published, duration, desc, author, thumb, video, audio } = await barbarytp4
                     const shortytm4 = await urlShortener(video[0].url)
-                        if (Number(duration.replace(':','').replace(':','')) > 3000) return client.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n*Deskripsi* : ${desc.simpleText}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                        if (Number(duration.replace(':','').replace(':','')) > 1300) return client.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n*Deskripsi* : ${desc.simpleText}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
                     // console.log(duration.replace(':','').replace(':',''))
                     // console.log(barbarytp4)
                     // console.log(dapetidmp4)
@@ -1791,7 +1791,7 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
                         const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Deskripsi* : ${desc.simpleText}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
                         //console.log(response1)                    
                         client.sendFileFromUrl(from, thumb.url, `thumb.jpg`, captions, id)
-                        await client.sendFileFromUrl(from, audio[0].url, `${title}.mp4`, `Audio telah terkirim ${pushname}`, id).catch(() => client.reply(from, mess.error.Yt4, id))
+                        await client.sendFileFromUrl(from, video[0].url, `${title}.mp4`, `Video telah terkirim ${pushname}`, id).catch(() => client.reply(from, mess.error.Yt4, id))
                     //} catch (err){
                     //    console.log(err)
                     //    client.reply(from, `_Download file gagal sedang mengganti metode..._`)
@@ -2047,29 +2047,16 @@ MOHON BERTRANSAKSI MENGGUNAKAN FORMAT ORDER DAN BERTRANSAKSI VIA GRUP AGAR ADMIN
             client.reply(from, `
 LIST DM MLBB
 
-86💎 = Rp 18,340
-172💎 = Rp 37,980
-257💎 = Rp 56,320
-344💎 = Rp 74,660
-429💎 = Rp 93,000
-514💎 = Rp 111,540
-600💎 = Rp 129,980
-706💎 = Rp148,520
-878💎 = Rp185,150
-1050💎 = Rp 221,880
-1412💎 = Rp 296,640
-2195💎 = Rp 443,585
-3072💎 = Rp 632,385
-3688💎 = Rp 742,900
-5532💎 = Rp 1,127,800
-9288💎 = Rp 1,894,450
+86💎 = 19.090 
+172💎 = 38.620
+257💎 = 58.240
+706💎 = 153.640
+2194💎 = 459.375
+3688💎 = 768.200
+5532💎 = 1.165.800
+9288💎 = 1.957.000
 
-SL / TP = Rp 122,770
-SL +  = Rp 277,100
-
-
-NB :
-MOHON BERTRANSAKSI MENGGUNAKAN FORMAT ORDER DAN BERTRANSAKSI VIA GRUP AGAR ADMIN FAST RESPON
+Berlaku kelipatan 172+172= 344 DM dst
                 `, id)
             await client.sendSeen(from)
             break
@@ -2891,7 +2878,7 @@ Nomor : wa.me/${hapusser[0]}
             
             if (!isBotGroupAdmins) return client.reply(from, 'Fitur ini hanya bisa di gunakan ketika bot menjadi admin', id)
            
-            await client.setGroupToAdminsOnly(from, true)
+            await client.setGroupToAdminsOnly(from, false)
             .then(() => client.sendText(from, `Grup telah dibuka untuk member chat.`))
             break
         case '!promote':
@@ -3255,10 +3242,10 @@ Nomor : wa.me/${hapusser[0]}
          default:
             // if (!isGroupMsg) return client.reply(from, menuPriv, id)
             if (command.startsWith('!')) {
-                // client.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
-                const que61 = body.slice(1)
-                const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
-                client.reply(from, sigot61.success, id)
+                client.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
+                // const que61 = body.slice(1)
+                // const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
+                // client.reply(from, sigot61.success, id)
                 // console.log(sigot61)
                 }
                 await client.sendSeen(from)
