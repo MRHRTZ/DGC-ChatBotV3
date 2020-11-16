@@ -1258,7 +1258,7 @@ if (isMedia) {
             break
         case 'bot':
             if (!isGroupMsg) return client.reply(from, menuPriv, id)
-            //await client.sendPtt(from, './media/sound/Dgc-sound-mut.mp3', id).then(() => client.sendText(from, 'Ketik *!menu* untuk memulai 😊'))
+            await client.sendPtt(from, './media/sound/DGC-Sound.mp3', id).then(() => client.sendText(from, 'Ketik *!menu* untuk memulai 😊'))
             break
         // case '!nulis':
         //     if (args.length === 1) return client.reply(from, 'Kirim perintah *!nulis [teks]*', id)
@@ -1356,7 +1356,7 @@ if (isMedia) {
                     client.reply(from, mess.wait, id)
                     //client.reply(from, `_Sedang mencari file download dengan id ${args[1]}_`, id)
                     //const response15 = await fetch(`https://api.vhtear.com/ytdl?link=https://www.youtube.com/watch?v=${args[1]}&apikey=botnolepbydandyproject`)
-                    const mhankyt35 = await get.get(`https://mrhrtz-api.herokuapp.com/api/yta?url=https://youtu.be/${pilur[args[1]]}`).json()
+                    const mhankyt35 = await get.get(`https://st4rz.herokuapp.com/api/yta2?url=https://youtu.be/${pilur[args[1]]}`).json()
                     //if (!response15.ok) throw new Error(`unexpected response vhtear ${response15.statusText}`)
                     // console.log(mhankyt35.status)
                     //if (!mhankyt35.ok) throw new Error(`Error barbaryt3 ${mhankyt35.statusText}`)
@@ -1371,7 +1371,7 @@ if (isMedia) {
                         try{
                         const { title, ext, filesize, result, status, thumb } = await mhankyt35
                             const shortvid1 = await urlShortener(result)
-                        if (Number(filesize.split(' MB')[0]) >= 50.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortvid1}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                        // if (Number(filesize.split(' MB')[0]) >= 50.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortvid1}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
                         //console.log(`BarBar Giliran ${ext}\n${filesize}\n${status}`)
                         //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
                         const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
@@ -1390,7 +1390,7 @@ if (isMedia) {
                     client.reply(from, mess.wait, id)
                     //client.reply(from, `_Sedang mencari file download dengan id ${args[1]}_`, id)
                     //const response15 = await fetch(`https://api.vhtear.com/ytdl?link=https://www.youtube.com/watch?v=${args[1]}&apikey=botnolepbydandyproject`)
-                    const barbarytp35 = await get.get(`https://mrhrtz-api.herokuapp.com/api/yta?url=https://youtu.be/${args[1]}`).json()
+                    const barbarytp35 = await get.get(`https://st4rz.herokuapp.com/api/yta2?url=https://youtu.be/${args[1]}`).json()
                     //if (!response15.ok) throw new Error(`unexpected response vhtear ${response15.statusText}`)
                     // if (!mhankyt35.ok) throw new Error(`Error barbaryt3 ${mhankyt35.statusText}`)
                     if (barbarytp35.error) return barbarytp35.error
@@ -1404,7 +1404,7 @@ if (isMedia) {
 
                         const { title, ext, filesize, result, status, thumb } = await barbarytp35
                         const shortvid2 = await urlShortener(result)
-                        if (Number(filesize.split(' MB')[0]) >= 50.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortvid2}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                        // if (Number(filesize.split(' MB')[0]) >= 50.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortvid2}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
                         // console.log(`BarBar Giliran ${ext}\n${filesize}\n${status}`)
                         // console.log(status)
                         //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre 
@@ -1435,7 +1435,7 @@ if (isMedia) {
                 console.log(pilur[args[1]])
                 client.reply(from, mess.wait, id)
                 //const response1a = await fetch(`https://api.vhtear.com/ytdl?link=https://www.youtube.com/watch?v=${args[1]}&apikey=botnolepbydandyproject`)
-                const barbarytp45 = await get.get(`https://mrhrtz-api.herokuapp.com/api/ytv?url=https://youtu.be/${pilur[args[1]]}`).json()
+                const barbarytp45 = await get.get(`https://st4rz.herokuapp.com/api/ytv2?url=https://youtu.be/${pilur[args[1]]}`).json()
                 //if (!response1a.ok) throw new Error(`unexpected response vhtear ${response1a.statusText}`);
                 // if (!mhankyt45.ok) throw new Error(`Err mhankyt4 ${mhankyt45.statusText}`)
                 if (barbarytp45.error) return barbarytp45.error
@@ -1454,13 +1454,14 @@ if (isMedia) {
                         console.log(err)
                     }
                 } else {
-                    const { title, ext, thumb, filesize, resolution, result } = await barbarytp45
+                    const { title, ext, thumb, result } = await barbarytp45
                     const shortmus1 = await urlShortener(result)
-                    if (Number(barbarytp45.filesize.split(' MB')[0]) > 50.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortmus1}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                    // if (Number(barbarytp45.filesize.split(' MB')[0]) > 50.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortmus1}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
                     //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
                     //try {
-                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP4\n*Filesize* : ${filesize}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP4\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
                         //console.log(response1)                    
+                        console.log(result)
                         client.sendFileFromUrl(from, thumb, `thumb.jpg`, captions, id)
                         await client.sendFileFromUrl(from, result, `${title}.mp4`, `Video telah terkirim ${pushname}`, id).catch(() => client.reply(from, mess.error.Yt3, id))
                     //} catch (err){
@@ -1476,7 +1477,7 @@ if (isMedia) {
                 if (args[1] <= 25) return client.reply(from, `_Apabila ingin mengambil data video dengan nomor urutan, mohon tag pesan bot tentang pencarian video!_`,)
                 client.reply(from, mess.wait, id)
                 //const response1a = await fetch(`https://api.vhtear.com/ytdl?link=https://www.youtube.com/watch?v=${args[1]}&apikey=botnolepbydandyproject`)
-                const barbarytp45 = await get.get(`https://mrhrtz-api.herokuapp.com/api/ytv?url=https://youtu.be/${args[1]}`).json()
+                const barbarytp45 = await get.get(`https://st4rz.herokuapp.com/api/ytv2?url=https://youtu.be/${args[1]}`).json()
                 //if (!response1a.ok) throw new Error(`unexpected response vhtear ${response1a.statusText}`);
                 // if (!mhankyt45.ok) throw new Error(`Err mhankyt4 ${mhankyt45.statusText}`)
                 //const jsona = await response1a.json()
@@ -1497,7 +1498,7 @@ if (isMedia) {
                 } else {
                     const { title, ext, thumb, filesize, resolution, result } = await barbarytp45
                     const shortmus2 = await urlShortener(result)
-                    if (Number(barbarytp45.filesize.split(' MB')[0]) > 50.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortmus2}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                    // if (Number(barbarytp45.filesize.split(' MB')[0]) > 50.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortmus2}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
                     //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
                     //try {
                         const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP4\n*Filesize* : ${filesize}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
@@ -1708,14 +1709,14 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
             try {
                 client.reply(from, mess.wait, id)
                 //const response1 = await fetch(`https://api.vhtear.com/ytdl?link=${args[1]}&apikey=botnolepbydandyproject`)
-                const barbarytp3 = await get.get(`https://mrhrtz-api.herokuapp.com/api/yta?url=https://youtu.be/${dapetidmp3}`).json()
+                const barbarytp3 = get.get(`https://nzcha-api.herokuapp.com/ytdl?id=${encodeURIComponent(dapetidmp3)}`).json()
                 //if (!response1.ok) throw new Error(`unexpected response vhtear ${response1.statusText}`)
                 // if (!mhankyt3.ok) throw new Error(`Error barbaryt3 ${mhankyt3.statusText}`)
                 // const barbarytp3 = await mhankyt3.json()
                 //const json = await response1.json()
                // const jsonre = await json.result
-               console.log(barbarytp3.status)
-                if (barbarytp3.status != 200) {                          //Send File MP3 Berbentuk Dokumen
+               // console.log(barbarytp3.status)
+                if (barbarytp3.error) {                          //Send File MP3 Berbentuk Dokumen
                     client.reply(from, `_Kesalahan sedang mengganti metode download..._`, id)
                     try {
                         // const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
@@ -1726,23 +1727,25 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
                     } catch (err){
                         console.log(err)
                     }
-                } else {
+                } else if(barbarytp3.status !== true) {
                     // Data memenuhi syarat?
-                    const { title, filesize, result, status, thumb } = await barbarytp3
-                     const shortytm3 = await urlShortener(result)
-                        if (Number(filesize.split(' MB')[0]) >= 40.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortytm3}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                    const { title, published, duration, desc, author, thumb, video, audio } = await barbarytp3
+                    const shortytm4 = await urlShortener(audio[0].url)
+                        if (Number(duration.replace(':','').replace(':','')) > 3000) return client.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n*Deskripsi* : ${desc.simpleText}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                    //     // if (Number(filesize.split(' MB')[0]) >= 40.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortytm3}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
                         
-                    // if (Number(filesize.split(' MB')[0]) >= 40.00) return client.reply(from, '_Mohon maaf sepertinya durasi video telah melebihi batas._', id)
-                    // console.log(`BarBar Giliran ${ext}\n${filesize}\n${status}`)
-                    //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
-                    const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
-                    client.sendFileFromUrl(from, thumb, `thumb.jpg`, captions, id)
-                    //await client.sendAudio(from, UrlMp3, id)        
-                    await client.sendFileFromUrl(from, result, `${title}.mp3`, '', id).catch(() => client.reply(from, mess.error.Yt3, id))
-
+                    // // if (Number(filesize.split(' MB')[0]) >= 40.00) return client.reply(from, '_Mohon maaf sepertinya durasi video telah melebihi batas._', id)
+                    // // console.log(`BarBar Giliran ${ext}\n${filesize}\n${status}`)
+                    // //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
+                     const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Deskripsi* : ${desc.simpleText}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                    //     //console.log(response1)                    
+                        client.sendFileFromUrl(from, thumb.url, `thumb.jpg`, captions, id)
+                        await client.sendFileFromUrl(from, audio[0].url, `${title}.mp3`, ``, id).catch(() => client.reply(from, mess.error.Yt3, id))
+                        // await client.sendAudio(from, audio[0].url)
                 }
             } catch (err) {
                 client.sendText(ownerNumber, 'Error ytmp3 : '+ err)
+                console.log(err)
                 client.reply(from, mess.error.Yt3, id)
             }
             await client.sendSeen(from)
@@ -1755,37 +1758,40 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
             if (!isLinks2) return client.reply(from, mess.error.Iv, id)
             try {
                 client.reply(from, mess.wait, id)
-                const dapetidmp4 = getYouTubeID(args[1])
+                const dapetidmp4 = getYouTubeID(args[1]).toString()
                 // console.log(dapetidmp4)
-                //const response1 = await fetch(`https://api.vhtear.com/ytdl?link=${args[1]}&apikey=botnolepbydandyproject`)
-                const barbarytp4 = await get.get(`https://mrhrtz-api.herokuapp.com/api/ytv?url=https://youtu.be/${dapetidmp4}`).json()
+                //http://nzcha-api.herokuapp.com/ytdl?url=
+                const barbarytp4 = await get.get(`https://nzcha-api.herokuapp.com/ytdl?id=${encodeURIComponent(dapetidmp4)}`).json()
                 //if (!response1.ok) throw new Error(`unexpected response vhtear ${response1.statusText}`);
                 // if (!mhankyt4.ok) throw new Error(`Err mhankyt4 ${mhankyt4.statusText}`)
                 //const json = await response1.json()
                 // const barbarytp4 = await mhankyt4.json()
                 //const jsonre = await json.result
-                 if (barbarytp4.status != 200) {                          //Send File MP3 Berbentuk Dokumen
+                 if (barbarytp4.error) {                          //Send File MP3 Berbentuk Dokumen
                     client.reply(from, `_Kesalahan sedang mengganti metode download..._`, id)
                     try {
                         // const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
                         // const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
                         // client.sendFileFromUrl(from, imgUrl, `thumb.jpg`, captions, id)
                         // await client.sendFileFromUrl(from, UrlVideo, `${title}.mp3`, '', id).catch(() => client.reply(from, mess.error.Yt4, id))
+                        // console.log(barbarytp4.status)
                         client.reply(from, `Gagal cok, chat ownernya cepetan buat fix :(`, id)
                     } catch (err){
                         console.log(err)
                     }
-                } else {
-                    const { title, ext, thumb, filesize, resolution, result } = await barbarytp4
-                    const shortytm4 = await urlShortener(result)
-                        if (Number(filesize.split(' MB')[0]) >= 50.00) return client.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortytm4}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
-                    
+                } else if (barbarytp4.status !== true) {
+                    const { title, published, duration, desc, author, thumb, video, audio } = await barbarytp4
+                    const shortytm4 = await urlShortener(video[0].url)
+                        if (Number(duration.replace(':','').replace(':','')) > 3000) return client.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n*Deskripsi* : ${desc.simpleText}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                    // console.log(duration.replace(':','').replace(':',''))
+                    // console.log(barbarytp4)
+                    // console.log(dapetidmp4)
                     //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
                     //try {
-                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP4\n*Filesize* : ${filesize}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Deskripsi* : ${desc.simpleText}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
                         //console.log(response1)                    
-                        client.sendFileFromUrl(from, thumb, `thumb.jpg`, captions, id)
-                        await client.sendFileFromUrl(from, result, `${title}.mp4`, `Video telah terkirim ${pushname}`, id).catch(() => client.reply(from, mess.error.Yt3, id))
+                        client.sendFileFromUrl(from, thumb.url, `thumb.jpg`, captions, id)
+                        await client.sendFileFromUrl(from, audio[0].url, `${title}.mp4`, `Audio telah terkirim ${pushname}`, id).catch(() => client.reply(from, mess.error.Yt4, id))
                     //} catch (err){
                     //    console.log(err)
                     //    client.reply(from, `_Download file gagal sedang mengganti metode..._`)
@@ -2018,7 +2024,7 @@ LIST DM FF
 20💎 = Rp 2.850
 50💎 = Rp 6.840
 70💎 = Rp 9.405
-100💎 = Rp 13.965
+100💎 = Rp 13.680
 140💎 = Rp 18.810
 210💎 = Rp 28.215
 355💎 = Rp 47.025
@@ -2865,6 +2871,28 @@ Nomor : wa.me/${hapusser[0]}
             if (!isGroupAdmins) return client.reply(from, 'Perintah ini hanya bisa di gunakan oleh admin group', id)
             await client.sendText(from,'Sayonara').then(() => client.leaveGroup(groupId))
             await client.sendSeen(from)
+            break
+        case '!mutegrup':
+        case '!mutegroup':
+            if (!isGroupMsg) return client.reply(from, 'Fitur ini hanya bisa di gunakan dalam group', id)
+            if (!isGroupAdmins) return client.reply(from, 'Fitur ini hanya bisa di gunakan oleh admin group', id)
+            if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
+            
+            if (!isBotGroupAdmins) return client.reply(from, 'Fitur ini hanya bisa di gunakan ketika bot menjadi admin', id)
+           
+            await client.setGroupToAdminsOnly(from, true)
+            .then(() => client.sendText(from, `Grup telah dimute hanya untuk admin! ketik *!unmute* untuk membuka member chat.`))
+            break
+        case '!unmutegrup':
+        case '!unmutegroup':
+            if (!isGroupMsg) return client.reply(from, 'Fitur ini hanya bisa di gunakan dalam group', id)
+            if (!isGroupAdmins) return client.reply(from, 'Fitur ini hanya bisa di gunakan oleh admin group', id)
+            if (isLimit(serial)) return client.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
+            
+            if (!isBotGroupAdmins) return client.reply(from, 'Fitur ini hanya bisa di gunakan ketika bot menjadi admin', id)
+           
+            await client.setGroupToAdminsOnly(from, true)
+            .then(() => client.sendText(from, `Grup telah dibuka untuk member chat.`))
             break
         case '!promote':
             if (!isGroupMsg) return client.reply(from, 'Fitur ini hanya bisa di gunakan dalam group', id)

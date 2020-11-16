@@ -10,7 +10,7 @@
   "author": "MRHRTZ",
   "license": "Apache-2.0",
   "dependencies": {
-    "@open-wa/wa-automate": "^3.0.14",
+    "@open-wa/wa-automate": "^3.0.16",
     "@open-wa/wa-decrypt": "^2.0.1",
     "@vitalets/google-translate-api": "^4.0.0",
     "axios": "^0.21.0",
