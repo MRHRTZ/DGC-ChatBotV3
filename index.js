@@ -1,4 +1,4 @@
-const { create, Client } = require('@open-wa/wa-automate')
+const { create, hurtz } = require('@open-wa/wa-automate')
 const welcome = require('./lib/welcome')
 const fs = require('fs-extra')
 const welcomeF = require('./lib/freedom')
@@ -17,12 +17,12 @@ const time = moment().format('MMMM Do YYYY, h:mm:ss a')
 require('./msgHndlr')
 nocache('./msgHndlr', module => console.log(`${time} '${module}' Updated!`))
 
-const start = async (client = new Client()) => {
+const start = async (hurtz = new Hurtz()) => {
         console.log('[SERVER] Server Started!')
         // Force it to keep the current session
-        client.onStateChanged(state=>{
+        hurtz.onStateChanged(state=>{
             console.log('statechanged', state)
-            if(state==="CONFLICT" || state==="UNLAUNCHED") client.forceRefocus();
+            if(state==="CONFLICT" || state==="UNLAUNCHED") hurtz.forceRefocus();
         })
         // cron.schedule('* * * * *', () =>  {
         //     const obj = [{id: sAdmin, msg: 1}]
@@ -33,52 +33,52 @@ const start = async (client = new Client()) => {
         // listening on message
 
 
-        client.onMessage((async (message) => {
-            client.getAmountOfLoadedMessages()
+        hurtz.onMessage((async (message) => {
+            hurtz.getAmountOfLoadedMessages()
             .then((msg) => {
                 if (msg >= 500) {
-                    client.cutMsgCache()
+                    hurtz.cutMsgCache()
                 }
             })
-        //    msgHandler(client, message)
+        //    msgHandler(hurtz, message)
         // Message Handler (Loaded from recent cache)
-        require('./msgHndlr')(client, message)
+        require('./msgHndlr')(hurtz, message)
         }))
 
-        client.onGlobalParicipantsChanged((async (heuh) => {
-            // await welcomeD(client, heuh)
-            //left(client, heuh)
+        hurtz.onGlobalParicipantsChanged((async (heuh) => {
+            // await welcomeD(hurtz, heuh)
+            //left(hurtz, heuh)
             }))
         
-         client.onAddedToGroup((async (chat) => {
+         hurtz.onAddedToGroup((async (chat) => {
             // const whitelist = ["6285216490187-1558621310@g.us","6285559038021-1603688917@g.us"]
             // if (sender.id === '6285559038021@c.us') return
             // let totalMem = await chat.groupMetadata.participants.length
             // if (totalMem < 20) { 
-            //     client.sendText(chat.id, `Yaampun member nya cuma ${totalMem}, Kalo mau invite bot, minimal jumlah mem ada 20 atau chat owner!`).then(() => client.leaveGroup(chat.id)).then(() => client.deleteChat(chat.id))
+            //     hurtz.sendText(chat.id, `Yaampun member nya cuma ${totalMem}, Kalo mau invite bot, minimal jumlah mem ada 20 atau chat owner!`).then(() => hurtz.leaveGroup(chat.id)).then(() => hurtz.deleteChat(chat.id))
             // } else {
-            //     client.sendText(chat.groupMetadata.id, `Halo warga grup *${chat.contact.name}* terimakasih sudah menginvite bot ini, untuk melihat menu silahkan kirim *!menu*`)
+            //     hurtz.sendText(chat.groupMetadata.id, `Halo warga grup *${chat.contact.name}* terimakasih sudah menginvite bot ini, untuk melihat menu silahkan kirim *!menu*`)
             // } 
             // if (!whitelist.include(chat.id)) {
-                client.sendText(chat.id, `Berhubungan Server terbatas bot ini hanya untuk grup DGC dan cabangnya!\n\nJika ada pihak yang membutuhkan bot ini untuk digrup donasi dan konfirmasi owner bot\n\nterima kasih.`)
-                .then(() => client.sendContact(chat.id, '6285559038021@c.us'))
-                .then(() => client.leaveGroup(chat.id))
-                .then(() => client.deleteChat(chat.id))
+                hurtz.sendText(chat.id, `Berhubungan Server terbatas bot ini hanya untuk grup DGC dan cabangnya!\n\nJika ada pihak yang membutuhkan bot ini untuk digrup donasi dan konfirmasi owner bot\n\nterima kasih.`)
+                .then(() => hurtz.sendContact(chat.id, '6285559038021@c.us'))
+                .then(() => hurtz.leaveGroup(chat.id))
+                .then(() => hurtz.deleteChat(chat.id))
             // } else {
-                    // client.sendText(chat.id, `Halo semua DGC ChatBot siap melayani semuanya, kecuali klo mati :'D`)
+                    // hurtz.sendText(chat.id, `Halo semua DGC ChatBot siap melayani semuanya, kecuali klo mati :'D`)
             // } 
         }))
 
 
-        /*client.onAck((x => {
+        /*hurtz.onAck((x => {
             const { from, to, ack } = x
-            if (x !== 3) client.sendSeen(to)
+            if (x !== 3) hurtz.sendSeen(to)
         }))*/
 
         // listening on Incoming Call
-        client.onIncomingCall(( async (call) => {
-            await client.sendText(call.peerJid, 'Maaf, saya tidak bisa menerima panggilan. Telah ditetapkan telpon/vc = block')
-            .then(() => client.contactBlock(call.peerJid))
+        hurtz.onIncomingCall(( async (call) => {
+            await hurtz.sendText(call.peerJid, 'Maaf, saya tidak bisa menerima panggilan. Telah ditetapkan telpon/vc = block')
+            .then(() => hurtz.contactBlock(call.peerJid))
         }))
     }
 
@@ -112,6 +112,9 @@ function uncache(module = '.') {
 }
 
 
-create(options(true, start))
-    .then(client => start(client))
+create({
+    sessionId: 'MRHRTZ',
+    ...options(true, start)
+    })
+    .then(hurtz => start(hurtz))
     .catch((error) => console.log(error))
