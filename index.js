@@ -48,7 +48,7 @@ const start = async (hurtz = new Hurtz()) => {
         hurtz.onGlobalParicipantsChanged((async (xixi) => {
             // await welcomeD(hurtz, heuh)
             //left(hurtz, heuh)
-            console.log(xixi.event)
+            // console.log(xixi)
             }))
         
          hurtz.onAddedToGroup((async (chat) => {

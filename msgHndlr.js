@@ -1659,6 +1659,7 @@ MOHON BERTRANSAKSI MENGGUNAKAN FORMAT ORDER DAN BERTRANSAKSI VIA GRUP AGAR ADMIN
                 `, id)
             break
         case '#ml':
+            if (chat.id !== '6285216810127-1602212654@g.us') return 
             hurtz.reply(from, `
 LIST DM MLBB/MOBILE LEGENDS
 
@@ -1701,7 +1702,7 @@ VIA BANK  BRI, GOPAY,OVO, DANA, QRISS
 50 💎 =6.500
 70💎 =9.370
 100💎 =13.700
-140💎 =18.500
+140💎 =18.550
 210💎 =28.250
 355 💎 =46.600
 500 💎 =66.200
@@ -1710,8 +1711,8 @@ VIA BANK  BRI, GOPAY,OVO, DANA, QRISS
 1000 💎 =131.600
 1355💎 =177.100
 2000 💎 =255.100
-MM = 28.200
-MB = 111 300
+MM = 28.300
+MB = 111.410
 
 
 NB :
@@ -3293,10 +3294,10 @@ Nomor : wa.me/${hapusser[0]}
          default:
             // if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             if (command.startsWith('!')) {
-                // hurtz.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
-                const que61 = body.slice(1)
-                const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
-                hurtz.reply(from, sigot61.success, id)
+                hurtz.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
+                // const que61 = body.slice(1)
+                // const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
+                // hurtz.reply(from, sigot61.success, id)
                 // console.log(sigot61)
                 }
                 await hurtz.sendSeen(from)

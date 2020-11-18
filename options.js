@@ -31,7 +31,7 @@ module.exports = options = (headless, start) => {
         authTimeout:0, //set to 0 to wait forever for connection to phone
         restartOnCrash: start,
         cacheEnabled: false,
-        executablePath: execPath,
+        // executablePath: execPath,
         useChrome: true,
         killProcessOnBrowserClose: false,
         throwErrorOnTosBlock: false,
