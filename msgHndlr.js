@@ -266,6 +266,10 @@ module.exports = msgHandler = async (hurtz, message) => {
         if (!isMuted(chat.id) == true) return console.log(`Muted ${chat.id} ${name}`)
         //hurtz.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Coba lagi besok..._`, id)
 
+        if (args[0] == 'Tes') {
+            hurtz.reply(from, `Oke nyala..`, id)
+        }
+
         if (args[0] == "Assalamualaikum" || args[0] == "Assalamu'alaikum" || args[0] == "Samlikum" || args[0] == "Samlekom"){
                 return hurtz.reply(from, "Wa'alaikumsalam warahmatullahi wabarokatuh", id)
         } else if (args[0] == "Anjing" || args[0] == "Goblok" || args[0] == "Ngentod" || args[0] == "Bangsat"){
@@ -550,6 +554,19 @@ module.exports = msgHandler = async (hurtz, message) => {
             console.log(gettingqu)
             await hurtz.sendSeen(from)
             break
+        case '!pictquote':
+        case '!pictquotes':
+            if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)            
+            try {
+            hurtz.reply(from, mess.wait)
+            const pictq = await get.get('https://inspirobot.me/api?generate=true')
+            console.log(pictq.body)
+            hurtz.sendFileFromUrl(from, pictq.body, 'QUOTES.jpg', `Quotes untuk ${pushname}`, id)
+        } catch (e){
+            console.log(e)
+            hurtz.reply(from, `Kesalahan saat mengambil data quotes!`, id)
+        } 
+            break
         case '!cekjodoh':
 //https://api.i-tech.id/tools/cekjodoh?key=iwEdte-kAPiT1-3Cj3JD-siWNHI-xc6jV7&query=aku-kamu
             if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)            
@@ -723,8 +740,8 @@ Pesanan:`, id)
             }
             await hurtz.sendSeen(from)
             break
-        case '!stickerori':
-        case '!stikerori':
+        case '!sticker':
+        case '!stiker':
         /*
 if (isMedia) {
                 if (mimetype === 'video/mp4' && message.duration < 10 || mimetype === 'image/gif' && message.duration < 10) {
@@ -773,8 +790,8 @@ if (isMedia) {
             }
             await hurtz.sendSeen(from)
             break
-        case '!sticker':
-        case '!stiker':
+        case '!stickerres':
+        case '!stikerres':
         /*
 if (isMedia) {
                 if (mimetype === 'video/mp4' && message.duration < 10 || mimetype === 'image/gif' && message.duration < 10) {
@@ -917,7 +934,7 @@ if (isMedia) {
                 // const jsonsercmuv = await resmusv.json()
                 // let berhitung1 = 1
                 const { result } = await jsonsercmuv
-                let xixixai = `*Hasil pencarian dari ${querv}*\n\n_Note : Apabila kesusahan mengambil data id, untuk download musik tag pesan ini dan berikan perintah : *!getmusik urutan* contoh : *!getmusik 2*_\n`
+                let xixixai = `*Hasil pencarian dari ${querv}*\n\n_Note : Apabila kesusahan mengambil data id, untuk download video tag pesan ini dan berikan perintah : *!getvideo urutan* contoh : *!getvideo 2*_\n`
                 for (let i = 0; i < result.length; i++) {
                     xixixai += `\n*Urutan* : ${i+1}\n*Title* : ${result[i].title}\n*Channel* : ${result[i].channel}\n*Durasi* : ${result[i].duration}\n*Perintah download* : _!getvideo ${result[i].id}_\n`
                 }
@@ -1358,7 +1375,7 @@ if (isMedia) {
                     //const response15 = await fetch(`https://api.vhtear.com/ytdl?link=https://www.youtube.com/watch?v=${args[1]}&apikey=botnolepbydandyproject`)
                     const mhankyt35 = await get.get(`https://nzcha-api.herokuapp.com/ytdl?id=${pilur[args[1]]}`).json()
                     //if (!response15.ok) throw new Error(`unexpected response vhtear ${response15.statusText}`)
-                    // console.log(mhankyt35.status)
+                    console.log(mhankyt35.status)
                     //if (!mhankyt35.ok) throw new Error(`Error barbaryt3 ${mhankyt35.statusText}`)
 
                     //const json = await response15.json()
@@ -1373,11 +1390,13 @@ if (isMedia) {
                     const shortytm4 = await urlShortener(audio[0].url)
                         if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n*Deskripsi* : ${desc.simpleText}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
                     //     // if (Number(filesize.split(' MB')[0]) >= 40.00) return hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortytm3}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
-                        
+                     // console.log(title)   
                     // // if (Number(filesize.split(' MB')[0]) >= 40.00) return hurtz.reply(from, '_Mohon maaf sepertinya durasi video telah melebihi batas._', id)
                     // // console.log(`BarBar Giliran ${ext}\n${filesize}\n${status}`)
                     // //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
                      const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Deskripsi* : ${desc.simpleText}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                     hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, captions, id)
+                        await hurtz.sendFileFromUrl(from, audio[0].url, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt4, id))
                     
                         } catch (err){
                             console.log(err)
@@ -1907,6 +1926,22 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
             await hurtz.sendSeen(from)
             
             break
+        case '!tostikergif':
+            if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
+            hurtz.reply(from, mess.wait, id)
+            try {
+                if (quotedMsgObj == null) {
+                    if (args.length === 1) return hurtz.reply(from, 'Kirim perintah *!tostikergif _Teks_* Contoh : *!tostikergif _MRHRTZ Was Created This Bot!_* Atau tag pesan sebelumnya dengan menggunakan perintah *!tostikergif*', id)
+                    await hurtz.sendStickerfromUrl(from, `https://api.vhtear.com/textxgif?text=${body.slice(13)}&apikey=nafiz2020prem`)
+                } else {
+                    await hurtz.sendStickerfromUrl(from, `https://api.vhtear.com/textxgif?text=${quotedMsg.body}&apikey=nafiz2020prem`)
+                    // console.log(`OBJ : ${quotedMsgObj}\nBODY : ${quotedMsg.body}`)
+                }
+            } catch(e){
+                console.log(e)
+                hurtz.reply(from, `Kesalahan saat membuat stiker gif!`, id)
+            }
+            break
         case '!fb':
         if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
            
@@ -2060,16 +2095,16 @@ MOHON BERTRANSAKSI MENGGUNAKAN FORMAT ORDER DAN BERTRANSAKSI VIA GRUP AGAR ADMIN
         //if (isLimit(serial)) return hurtz.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
             if (chat.id !== '6288233282599-1601304366@g.us') return
             hurtz.reply(from, `
-LIST DM MLBB
+*LIST DM MLBB*
 
-86💎 = 19.090 
-172💎 = 38.620
-257💎 = 58.240
-706💎 = 153.640
-2194💎 = 459.375
-3688💎 = 768.200
-5532💎 = 1.165.800
-9288💎 = 1.957.000
+86💎 = 19.380 
+172💎 = 38.460
+257💎 = 59.260
+706💎 = 152.640
+2194💎 = 454.275
+3688💎 = 752.850
+5532💎 = 1.131.500
+9288💎 = 1.867.350
 
 Berlaku kelipatan 172+172= 344 DM dst
                 `, id)
@@ -3258,10 +3293,10 @@ Nomor : wa.me/${hapusser[0]}
          default:
             // if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             if (command.startsWith('!')) {
-                hurtz.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
-                // const que61 = body.slice(1)
-                // const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
-                // hurtz.reply(from, sigot61.success, id)
+                // hurtz.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
+                const que61 = body.slice(1)
+                const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
+                hurtz.reply(from, sigot61.success, id)
                 // console.log(sigot61)
                 }
                 await hurtz.sendSeen(from)

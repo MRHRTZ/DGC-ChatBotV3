@@ -45,9 +45,10 @@ const start = async (hurtz = new Hurtz()) => {
         require('./msgHndlr')(hurtz, message)
         }))
 
-        hurtz.onGlobalParicipantsChanged((async (heuh) => {
+        hurtz.onGlobalParicipantsChanged((async (xixi) => {
             // await welcomeD(hurtz, heuh)
             //left(hurtz, heuh)
+            console.log(xixi.event)
             }))
         
          hurtz.onAddedToGroup((async (chat) => {
