@@ -7,12 +7,16 @@ const moment = require('moment-timezone')
 const get = require('got')
 const download = require('download-file')
 // const fetch = require('node-fetch')
+const speed = require('performance-now')
 const google = require('google-it')
 const color = require('./lib/color')
 const { promisify } = require('util')
 const { spawn, exec } = require('child_process')
 const { getLocationData } = require('./lib')
+const util = require('util')
 const nhentai = require('nhentai-js')
+const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
+const os = require('os')
 const cron = require('node-cron')
 const { API } = require('nhentai-api')
 const { liriklagu, quotemaker, randomNimek, fb, ig, twt, sleep, tulis, jadwalTv, ss, between } = require('./lib/functions')
@@ -120,6 +124,29 @@ module.exports = msgHandler = async (hurtz, message) => {
         //     console.log('Coming')
         // })
 
+
+        let rawText = type === 'chat' ?
+            message.body :
+            (type === 'image' || type === 'video') && caption ?
+            message.caption : ''
+
+        if (rawText.startsWith('> ') /* && sender.id == ownerNumber*/ ) {
+            console.log(sender.id, 'is trying to use the execute command')
+            let type = Function
+            if (/await/.test(rawText)) type = AsyncFunction
+            let func = new type('print', 'message', 'get', 'fs', rawText.slice(2))
+            let output
+            try {
+                output = func((...args) => {
+                    console.log(...args)
+                    hurtz.reply(from, util.format(...args), id)
+                }, hurtz, message, get, fs)
+                console.log(output)
+                await hurtz.reply(from, '*Console Output*\n\n' + util.format(output), id)
+            } catch (e) {
+                await hurtz.reply(from, '*Console Error*\n\n' + util.format(e), id)
+            }
+        }
 
 
         //EXPIRED ENDLINE
@@ -287,16 +314,47 @@ module.exports = msgHandler = async (hurtz, message) => {
                         
         switch(command) {
         case '!botstat':
-            try {    
-                const btre = await hurtz.getBatteryLevel()
-                const gcjm = await hurtz.getAllGroups()
-                const ctjm = await hurtz.getAllChats()
-                const stat = await hurtz.getConnectionState()
-                const charge = await hurtz.getIsPlugged()
-                await hurtz.reply(from, `*Menampilkan status bot*\n\nStatus koneksi : ${stat}\nJumlah Grup : ${gcjm.length}\nJumlah Chat New : ${ctjm.length}\nBaterai Bot : ${btre}\nBot Charging : ${charge}`, id)
-            } catch (e){
-                console.log(e)
+            function isCas() {
+                if (hurtz.getIsPlugged()) {
+                    return 'Charging ⚡'
+                } else {
+                    return 'Not Charging'
+                }
             }
+            const loadedMsg = await hurtz.getAmountOfLoadedMessages()
+            const chatIds = await hurtz.getAllChatIds()
+            const groups = await hurtz.getAllGroups()
+            const timestamp = speed();
+            const latensi = speed() - timestamp
+            const MyPhone = await hurtz.getMe()
+            const { battery, plugged, phone } = MyPhone
+            const { wa_version, mcc, mnc, os_version, device_manufacturer, device_model, os_build_number } = phone
+            // console.log(os.hostname())
+            hurtz.reply(from, `        〘 Server Info 〙
+
+*HOST* : _${os.hostname()}_
+*PLATFORM* : _${os.platform()}_
+*CPU* : _${os.cpus()[0].model}_
+*SPEED* : _${os.cpus()[0].speed} MHz_ 
+*CORE* : _${os.cpus().length}_
+*Penggunaan RAM* : _${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB / ${Math.round(require('os').totalmem / 1024 / 1024)}MB_
+
+*Pesan masuk* : _${loadedMsg}_ 
+*Group* : _${groups.length}_ 
+*Private Chat* : _${chatIds.length - groups.length}_ 
+*Total* : _${chatIds.length}_ 
+*Latensi* : _${latensi.toFixed(4)} detik/req_
+
+         〘 Phone Info 〙
+
+*Baterai* : _${battery} ${isCas()}_
+*Versi WhatsApp* : _${wa_version}_
+*MCC* : _${mcc}_
+*MNC* : _${mnc}_
+*Versi OS* : _${os_version}_
+*Tipe Perangkat* : _${device_manufacturer}_
+*Model Perangkat* : _${device_model}_
+*OS Build Number* : _${os_build_number}_`, id)
             break
         case '!unmute':
             console.log(`Unmuted ${name}!`)
@@ -889,6 +947,47 @@ if (isMedia) {
             }
             await hurtz.sendSeen(from)
             break
+        case '!read':
+            if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
+            if (args.length === 1 || args.length > 2) return hurtz.reply(from, 'Kirim perintah *!read* _Id postingan DGC_', id)
+                try {
+                    hurtz.reply(from, mess.wait, id)
+                    const readDGC = await get.get(`http://deepgore-article-api.herokuapp.com/api/article/${args[1]}`).json()
+                    const readArr = `         ☠️🇮🇩 *${readDGC.categories[0]}* 🇮🇩☠️\n\n*Judul* : ${readDGC.title}\n*Author* : ${readDGC.author}\n*Waktu Upload* : ${readDGC.published.replace('T',' ').split('.')[0]}\n\n\n${readDGC.content}`
+                    await hurtz.sendFileFromUrl(from, readDGC.thumb, `thumb-dgc.png`, readArr, id)
+                } catch (e) {
+                    console.log(e)
+                    hurtz.reply(from, `Kesalahan, Periksa kembali ID read DGC Artikel!`)
+                }
+            break
+        case '!dgcartikel':
+        case '!artikeldgc':
+            if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
+            if (args.length === 1 || args.length > 2) return hurtz.reply(from, 'Kirim perintah *!artikelDgc* _Halaman_', id)
+            try {
+                hurtz.reply(from, mess.wait, id)
+                const jsonDGC = await get.get(`http://deepgore-article-api.herokuapp.com/api/latest-update/${args[1]}`).json()
+                const { result } = jsonDGC
+                console.log(jsonDGC.all_pages)
+                let capTDC = `         ☠️🇮🇩 *ARTIKEL DGC* 🇮🇩☠️\n\n*Jumlah Postingan* : ${jsonDGC.all_post}\n*Jumlah Halaman* : ${jsonDGC.all_pages}\n`
+                for (var i = 0; i < result.length; i++) {
+                    const iddgc = result[i].id
+                    const titel = result[i].title
+                    const publis = result[i].published
+                    const updat = result[i].update
+                    const kategor = result[i].category
+                    const desc = result[i].tiny_text
+                    const authh = result[i].author_post
+                    capTDC += `\n===============================\n\n\n*Urutan* : ${i+1}\n*Judul* : ${titel}\n*Author* : ${authh}\n*Kategori* : ${kategor}\n*Perintah baca* : !read ${iddgc}\n*Published* : ${publis.replace('T',' ').split('.')[0]}\n*Sinopsis* : ${desc}\n`    
+                }
+                    capTDC += `\n===============================\n\n\n       _Menampilkan ${args[1]} dari ${jsonDGC.all_pages} halaman_`
+                await hurtz.reply(from, capTDC, id)
+                // console.log(jsonDGC)
+            } catch (e) {
+                hurtz.reply(from, `Kesalahan! Cek kembali halaman yg tersedia.`, id)
+                console.log(e)
+            }
+            break
         case '!musik':
         case '!music':
             if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
@@ -1170,7 +1269,7 @@ if (isMedia) {
             break
         case '!stickergif':
         case '!stikergif':    
-        case '!sgi':
+        case '!sgif':
             // if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             // if (!isMedia) return hurtz.reply(from, '_Kesalahan! kirim video/gif dengan caption *!stikerGif* max 10 detik! bukan tag._', id)
             // if (isMedia) {
@@ -2069,8 +2168,7 @@ MOHON BERTRANSAKSI MENGGUNAKAN FORMAT ORDER DAN BERTRANSAKSI VIA GRUP AGAR ADMIN
         case '!ff':
             //if (isLimit(serial)) return hurtz.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
             if (chat.id !== '6288233282599-1601304366@g.us') return
-            hurtz.reply(from, `
-LIST DM FF
+            hurtz.reply(from, `LIST DM FF
 
 20💎 = Rp 2.850
 50💎 = Rp 6.840
@@ -2080,6 +2178,7 @@ LIST DM FF
 210💎 = Rp 28.215
 355💎 = Rp 47.025
 425💎 = Rp 56.430
+500💎 = Rp 66.690
 720💎 = Rp 94.050
 860💎 = Rp 112.860
 1000💎 = Rp 131.670
@@ -2328,73 +2427,65 @@ Nomor : wa.me/${hapusser[0]}
         case '!cewek':
         case '!cecan':
         if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
-        //hurtz.reply(from, `_Perintah fitur ini telah diganti ke *!timeline*_`, id)
-        //if (isVIP(sender.id)) return hurtz.reply(from, '_Ini khusus member premium om_', id)
-        //if (isLimit(serial)) return hurtz.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
-            // if(isMsgLimit(serial)){
-            //         return
-            //     }else{
-            //         await addMsgLimit(serial)
-            // }
-            await limitAdd(serial)
         hurtz.reply(from, mess.wait, id)
-        const imageToBase64 = require('image-to-base64')
-        var items = ["cewe cantik", "hijab cantik", "jilbab sma cantik", "jilbab sma", "cewe sma", "cantik", "sma jilbob", "sma hot"]; //Awokawoka meh laku sc uing :v
-        var cewe = items[Math.floor(Math.random() * items.length)];
-        var urlciw = "https://api.fdci.se/rep.php?gambar=" + cewe;
+        //     await limitAdd(serial)
+        // hurtz.reply(from, mess.wait, id)
+        // const imageToBase64 = require('image-to-base64')
+        // var items = ["cewe cantik", "hijab cantik", "jilbab sma cantik", "jilbab sma", "cewe sma", "cantik", "sma jilbob", "sma hot"]; //Awokawoka meh laku sc uing :v
+        // var cewe = items[Math.floor(Math.random() * items.length)];
+        // var urlciw = "https://api.fdci.se/rep.php?gambar=" + cewe;
         
-        axios.get(urlciw)
-        .then((result) => {
-        var b = JSON.parse(JSON.stringify(result.data));
-        var cewek =  b[Math.floor(Math.random() * b.length)];
-        imageToBase64(cewek) // Path to the image
-        .then(
-            (response) => {
-        let img = 'data:image/jpeg;base64,'+response
-        hurtz.sendFile(from, img, "result.jpg", `Nih ciwinya ${pushname}`, id)
-                }) 
-            .catch(
-                (error) => {
-                    console.log(error); // Logs an error if there was one
-                })
-        })
+        // axios.get(urlciw)
+        // .then((result) => {
+        // var b = JSON.parse(JSON.stringify(result.data));
+        // var cewek =  b[Math.floor(Math.random() * b.length)];
+        // imageToBase64(cewek) // Path to the image
+        // .then(
+        //     (response) => {
+        // let img = 'data:image/jpeg;base64,'+response
+        // hurtz.sendFile(from, img, "result.jpg", `Nih ciwinya ${pushname}`, id)
+        //         }) 
+        //     .catch(
+        //         (error) => {
+        //             console.log(error); // Logs an error if there was one
+        //         })
+        // })
             await hurtz.sendSeen(from)
             break
         case '!cowok':
         case '!cogan':
         if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
-        //hurtz.reply(from, `_Perintah fitur ini telah diganti ke *!timeline*_`, id)
-        //if (isVIP(sender.id)) return hurtz.reply(from, '_Ini khusus member premium om_', id)
-        if (isLimit(serial)) return hurtz.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
-            if(isMsgLimit(serial)){
-                    return
-                }else{
-                    await addMsgLimit(serial)
-            }
-            await limitAdd(serial)
         hurtz.reply(from, mess.wait, id)
-        const imageToBase64a = require('image-to-base64')
-        const ithem = ["handsome boy", "cowo ganteng", "cogan", "korean boy"]
-        var cowo = ithem[Math.floor(Math.random() * ithem.length)]
-        //console.log(cowo)
-        var urlciwa = "https://api.fdci.se/rep.php?gambar=" + cowo
+        // if (isLimit(serial)) return hurtz.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
+        //     if(isMsgLimit(serial)){
+        //             return
+        //         }else{
+        //             await addMsgLimit(serial)
+        //     }
+        //     await limitAdd(serial)
+        // hurtz.reply(from, mess.wait, id)
+        // const imageToBase64a = require('image-to-base64')
+        // const ithem = ["handsome boy", "cowo ganteng", "cogan", "korean boy"]
+        // var cowo = ithem[Math.floor(Math.random() * ithem.length)]
+        // //console.log(cowo)
+        // var urlciwa = "https://api.fdci.se/rep.php?gambar=" + cowo
 
-        axios.get(urlciwa)
-        .then((result) => {
-        // console.log(result)
-        var b = JSON.parse(JSON.stringify(result.data));
-        var cowok =  b[Math.floor(Math.random() * b.length)];
-        imageToBase64a(cowok) // Path to the image
-        .then(
-            (response) => {
-        let imga = 'data:image/jpeg;base64,'+response
-        hurtz.sendFile(from, imga, "result.jpg", `Nih cogans nya ${pushname}`, id)
-                }) 
-            .catch(
-                (error) => {
-                    console.log(error); // Logs an error if there was one
-                })
-        })
+        // axios.get(urlciwa)
+        // .then((result) => {
+        // // console.log(result)
+        // var b = JSON.parse(JSON.stringify(result.data));
+        // var cowok =  b[Math.floor(Math.random() * b.length)];
+        // imageToBase64a(cowok) // Path to the image
+        // .then(
+        //     (response) => {
+        // let imga = 'data:image/jpeg;base64,'+response
+        // hurtz.sendFile(from, imga, "result.jpg", `Nih cogans nya ${pushname}`, id)
+        //         }) 
+        //     .catch(
+        //         (error) => {
+        //             console.log(error); // Logs an error if there was one
+        //         })
+        // })
             await hurtz.sendSeen(from)
             break
         case '!igtes':
@@ -2570,7 +2661,7 @@ Nomor : wa.me/${hapusser[0]}
                     tanya
                 }
                 hurtz.reply(from, `➣ *Pertanyaan* : ${tanya.split('.')[0]}\n\n➣ *Jumlah jawaban* : ${Number(jum)}`, id)
-                await BrainlySearch(tanya.split('.')[0],Number(jum), function(res){
+                await BrainlySearch(tanya.split('.')[0],Number(jum),`id`, function(res){
                     res.forEach(x=>{
                         if (x.jawaban.fotoJawaban.length == 0) {
                             hurtz.reply(from, `➣ *Pertanyaan* : ${x.pertanyaan}\n\n➣ *Jawaban* : ${x.jawaban.judulJawaban}\n`, id)
@@ -2631,20 +2722,21 @@ Nomor : wa.me/${hapusser[0]}
         if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
        
             try {
-                arg = body.trim().split('|')
-                if (arg.length >= 4) {
-                    hurtz.reply(from, mess.wait, id)
-                    const quotes = arg[1]
-                    const author = arg[2]
-                    const theme = arg[3]
-                    await quotemaker(quotes, author, theme).then(amsu => {
-                        hurtz.sendFile(from, amsu, 'quotesmaker.jpg', `Nih buat kamu >//< ${pushname}`, id).catch(() => {
-                           hurtz.reply(from, mess.error.Qm, id)
-                        })
-                    })
-                } else {
-                    hurtz.reply(from, 'Usage: \n!quotemaker |teks|watermark|theme\n\nEx :\n!quotemaker |ini contoh|bicit|random', id)
-                }
+                hurtz.reply(from, mess.mt, id)
+                // arg = body.trim().split('|')
+                // if (arg.length >= 4) {
+                //     hurtz.reply(from, mess.wait, id)
+                //     const quotes = arg[1]
+                //     const author = arg[2]
+                //     const theme = arg[3]
+                //     await quotemaker(quotes, author, theme).then(amsu => {
+                //         hurtz.sendFile(from, amsu, 'quotesmaker.jpg', `Nih buat kamu >//< ${pushname}`, id).catch(() => {
+                //            hurtz.reply(from, mess.error.Qm, id)
+                //         })
+                //     })
+                // } else {
+                //     hurtz.reply(from, 'Usage: \n!quotemaker |teks|watermark|theme\n\nEx :\n!quotemaker |ini contoh|bicit|random', id)
+                // }
             }catch (err){
                 hurtz.reply(from, 'Gagal membuat gambar, mohon jangan gunakan simbol/kata-kata selain latin')
                 console.log(err)
@@ -2807,10 +2899,15 @@ Nomor : wa.me/${hapusser[0]}
             // console.log(isBotGroupAdmins)
             //const telahfixorg = orang.replace('+', '')
             try {
-                await hurtz.addParticipant(from, `${orang}@c.us`).catch((err) => console.log(err))
+                await hurtz.addParticipant(from, orang)
+                .then((how) => {
+                    console.log(how)
+                })
+                // await hurtz.addParticipant(from, `${orang}@c.us`).catch((err) => console.log(err))
                 // console.log(orang)
-            } catch {
+            } catch (e) {
                 hurtz.reply(from, mess.error.Ad, id)
+                console.log(e)
             }
             await hurtz.sendSeen(from)
         } catch(e) {
@@ -3072,16 +3169,17 @@ Nomor : wa.me/${hapusser[0]}
             await hurtz.sendSeen(from)
             break
         case '!jadwaltvnow':
-        if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
-       
+            if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             const jadwalNow = await get.get('https://api.haipbis.xyz/jadwaltvnow').json()
             hurtz.reply(from, `Jam : ${jadwalNow.jam}\n\nJadwalTV : ${jadwalNow.jadwalTV}`, id)
             await hurtz.sendSeen(from)
             break
-        // case '!loli':
-        //     const loli = await get.get('https://mhankbarbar.herokuapp.com/api/randomloli').json()
-        //     hurtz.sendFileFromUrl(from, loli.result, 'loli.jpeg', `Nih lolinya ${pushname}`, id)
-        //     await hurtz.sendSeen(from)
+        case '!loli':
+            if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
+            hurtz.reply(from, mess.wait, id)
+            const loli = await get.get('https://mhankbarbar.herokuapp.com/api/randomloli').json()
+            hurtz.sendFileFromUrl(from, loli.result, 'loli.jpeg', `loli buat ${pushname}`, id)
+            await hurtz.sendSeen(from)
             break
         // case '!waifu':
         //     const waifu = await get.get('https://mhankbarbar.herokuapp.com/api/waifu').json()
@@ -3294,10 +3392,10 @@ Nomor : wa.me/${hapusser[0]}
          default:
             // if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             if (command.startsWith('!')) {
-                hurtz.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
-                // const que61 = body.slice(1)
-                // const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
-                // hurtz.reply(from, sigot61.success, id)
+                // hurtz.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
+                const que61 = body.slice(1)
+                const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
+                hurtz.reply(from, sigot61.success, id)
                 // console.log(sigot61)
                 }
                 await hurtz.sendSeen(from)

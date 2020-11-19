@@ -46,9 +46,14 @@ const start = async (hurtz = new Hurtz()) => {
         }))
 
         hurtz.onGlobalParicipantsChanged((async (xixi) => {
-            // await welcomeD(hurtz, heuh)
+            // await welcome(hurtz, xixi)
             //left(hurtz, heuh)
-            // console.log(xixi)
+            if (xixi.action == 'remove' || xixi.action == 'leave') {
+                hurtz.sendTextWithMentions(chat.id, `Semoga tenang dialam sana @${xixi.who} 😊`)
+            } else if (xixi.action == 'add') {
+                hurtz.sendTextWithMentions(chat.id, `Welcome new mem @${xixi.who} :)`)
+            }
+            console.log(xixi.action+'ing'+' '+xixi.who)
             }))
         
          hurtz.onAddedToGroup((async (chat) => {
