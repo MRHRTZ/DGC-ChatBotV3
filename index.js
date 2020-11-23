@@ -46,7 +46,7 @@ const start = async (hurtz = new Hurtz()) => {
         }))
 
         hurtz.onGlobalParicipantsChanged((async (xixi) => {
-            // await welcome(hurtz, xixi)
+            await welcome(hurtz, xixi)
             //left(hurtz, heuh)
             if (xixi.action == 'remove' || xixi.action == 'leave') {
                 hurtz.sendTextWithMentions(chat.id, `Semoga tenang dialam sana @${xixi.who} 😊`)

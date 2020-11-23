@@ -45,7 +45,7 @@ moment.tz.setDefault('Asia/Jakarta').locale('id')
 
 module.exports = msgHandler = async (hurtz, message) => {
     try {
-        const { type, id, from, t, sender, isGroupMsg, chat, caption, isMedia, mimetype, quotedMsg, quotedMsgObj, mentionedJidList } = message
+        const { type, id, from, t, sender, isGroupMsg, chat, caption, isMedia, mimetype, quotedMsg, quotedMsgObj, mentionedJidList, fromMe, self } = message
         let { body } = message
         const { name, formattedTitle } = chat
         let { pushname, verifiedName } = sender
@@ -62,6 +62,9 @@ module.exports = msgHandler = async (hurtz, message) => {
                     return `${message}`
                 }
             }
+        }
+        if (self == true) {
+        console.log(`BEDANYA \n FROMME : ${fromMe}\nSELF : ${self} EMMM\n${body}`)
         }
 
         const mess = {
@@ -100,7 +103,8 @@ module.exports = msgHandler = async (hurtz, message) => {
         const isOwner = sender.id === ownerNumber
         const isBlocked = blockNumber.includes(sender.id)
         const isPrivate = sender.id === chat.contact.id
-        const menuPriv = `*Fitur bot private yang tersedia* :\n\n➣ *!sendowner*\n➣ *!bug _teksnya_*\n➣ *!tostiker _Teksnya_*\n➣ *!stikergif*\n➣ *!stiker*\n\n   🎤〘 Anonymous Chat 〙💺\n\n➣ *!kirim _Teksnya_*\n➣ *!daftar _62855xxxx_*\n➣ *!hapus _62855xxxx_*\n\n_Apabila ingin full fitur menu donasi untuk sewa bot digrup, minat? ketik *!sendOwner*_`
+        const menuPriv = `Perintah private sekarang hanya anonymous chat!\n\nHal ini dikarenakan terlalu banyak request di pc (private chat) sehingga bot rentan terblokir WhatsApp\n\nBot ini disewakan khusus grup, ketik *!SendOwner* untuk mengirim nomer pemilik bot\n\nFitur Private yg tersedia :\n 🎤〘 Anonymous Chat 〙💺\n\n➣ *!kirim _Teksnya_*\n➣ *!daftar _62855xxxx_*\n➣ *!hapus _62855xxxx_*`
+        // `*Fitur bot private yang tersedia* :\n\n➣ *!sendowner*\n➣ *!bug _teksnya_*\n➣ *!tostiker _Teksnya_*\n➣ *!stikergif*\n➣ *!stiker*\n\n   🎤〘 Anonymous Chat 〙💺\n\n➣ *!kirim _Teksnya_*\n➣ *!daftar _62855xxxx_*\n➣ *!hapus _62855xxxx_*\n\n_Apabila ingin full fitur menu donasi untuk sewa bot digrup, minat? ketik *!sendOwner*_`
         const isNsfw = isGroupMsg ? nsfw_.includes(chat.id) : false
         const uaOverride = 'WhatsApp/2.2029.4 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
         const isUrl = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/gi)
@@ -134,7 +138,7 @@ module.exports = msgHandler = async (hurtz, message) => {
             console.log(sender.id, 'is trying to use the execute command')
             let type = Function
             if (/await/.test(rawText)) type = AsyncFunction
-            let func = new type('print', 'message', 'get', 'fs', rawText.slice(2))
+            let func = new type('print', 'hurtz', 'message', 'get', 'fs', rawText.slice(2))
             let output
             try {
                 output = func((...args) => {
@@ -147,6 +151,7 @@ module.exports = msgHandler = async (hurtz, message) => {
                 await hurtz.reply(from, '*Console Error*\n\n' + util.format(e), id)
             }
         }
+
 
 
         //EXPIRED ENDLINE
@@ -304,23 +309,26 @@ module.exports = msgHandler = async (hurtz, message) => {
                 return hurtz.reply(from, "WOYY JANGAN TOXIC MEMBER BANGSAT SETAN!", id)
                 .then(() => hurtz.removeParticipant(groupId, sender.id))
                 .then(() => {
-                    if (!isBotGroupAdmins) return hurtz.sendText(from, `Untung bot bukan admin kalo ngga udah terkick tuh >:(`)
                     hurtz.sendText(from, `Awokawoka mampuss terwisuda🐦`)
-                })
+                }).catch(() => hurtz.sendText(from, `Untung bot bukan admin kalo ngga udah terkick tuh >:(`))
             } else {
                 return hurtz.reply(from, "Mohon jaga ucapannya ya mimin:)", id)
             }
         }
                         
         switch(command) {
+        case '!cke':
+            hurtz.getIsPlugged().then((a) => console.log(a))
+            break
         case '!botstat':
             function isCas() {
-                if (hurtz.getIsPlugged()) {
+                
+                if (hurtz.getIsPlugged().then((plog) => { return plog }) == true) {
                     return 'Charging ⚡'
                 } else {
                     return 'Not Charging'
                 }
-            }
+            } 
             const loadedMsg = await hurtz.getAmountOfLoadedMessages()
             const chatIds = await hurtz.getAllChatIds()
             const groups = await hurtz.getAllGroups()
@@ -800,24 +808,7 @@ Pesanan:`, id)
             break
         case '!sticker':
         case '!stiker':
-        /*
-if (isMedia) {
-                if (mimetype === 'video/mp4' && message.duration < 10 || mimetype === 'image/gif' && message.duration < 10) {
-                    const mediaData = await decryptMedia(message, uaOverride)
-                    hurtz.reply(from, `_Permintaan anda sedang diproses mohon tunggu sebentar_ ⏲️ _Tunggu perkiraan kurang lebih 1 menit_`, id)
-                    const filename = `./media/aswu.${mimetype.split('/')[1]}`
-                    await fs.writeFileSync(filename, mediaData)
-                    await exec(`gifify ${filename} -o ./media/output-stik.${mimetype} --resize=240:240`, async function (error, stdout, stderr) {
-                        const gif = await fs.readFileSync('./media/output.${mimetype}', { encoding: "base64" })
-                        await hurtz.sendImageAsSticker(from, `data:${mimetype};base64,${mediaData.toString('base64')}`)
-                    })
-                } else (
-                    hurtz.reply(from, `_Kesalahan ⚠️ Hanya bisa video/gif apabila file media berbentuk gambar ketik *!stiker*_`, id)
-                )
-            }
-        */
-       
-        // if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
+        if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             if (isMedia && type === 'image') {
                 hurtz.reply(from, mess.wait, id)
                 const mediaDataa = await decryptMedia(message, uaOverride)
@@ -1131,7 +1122,7 @@ if (isMedia) {
         case '!tostiker':
         case '!tosticker':
             //if (args.length === 1) return hurtz.reply(from, `Penggunaan teks to sticker : *!tosticker [Teks]*\n\nContoh : !tosticker bot ganteng`)
-            // if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
+            if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             if (isMedia && type === 'image' || quotedMsg && quotedMsg.type === 'image') return hurtz.reply(from, 'Fitur ini hanya untuk teks! bukan gambar.', id)
            
             const texk = body.slice(10)
@@ -1270,7 +1261,7 @@ if (isMedia) {
         case '!stickergif':
         case '!stikergif':    
         case '!sgif':
-            // if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
+            if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             // if (!isMedia) return hurtz.reply(from, '_Kesalahan! kirim video/gif dengan caption *!stikerGif* max 10 detik! bukan tag._', id)
             // if (isMedia) {
             
@@ -1468,35 +1459,43 @@ if (isMedia) {
                     if (!Number(args[1])) return hurtz.reply(from, `_Apabila ditag hanya cantumkan nomer urutan bukan ID Download!_  contoh : *!getmusik _1_*`, id)
                     const dataDownmp3 = quotedMsg.type == 'chat' ? quotedMsg.body : quotedMsg.type == 'image' ? quotedMsg.caption : ''
                     const pilur = dataDownmp3.split('(#)')
-                    // console.log(pilur[args[1]])
                     hurtz.reply(from, mess.wait, id)
-                    //hurtz.reply(from, `_Sedang mencari file download dengan id ${args[1]}_`, id)
-                    //const response15 = await fetch(`https://api.vhtear.com/ytdl?link=https://www.youtube.com/watch?v=${args[1]}&apikey=botnolepbydandyproject`)
-                    const mhankyt35 = await get.get(`https://nzcha-api.herokuapp.com/ytdl?id=${pilur[args[1]]}`).json()
-                    //if (!response15.ok) throw new Error(`unexpected response vhtear ${response15.statusText}`)
+                    const mhankyt35 = await get.get(`https://mhankbarbar.herokuapp.com/api/yta?url=https://youtu.be/${pilur[args[1]]}&apiKey=9eqNrrqr6UxSlck3uGDD`).json()
+                    const hzyt35 = await get.get(`https://nzcha-api.herokuapp.com/ytdl?id=${pilur[args[1]]}`).json()
                     console.log(mhankyt35.status)
-                    //if (!mhankyt35.ok) throw new Error(`Error barbaryt3 ${mhankyt35.statusText}`)
-
-                    //const json = await response15.json()
-                    //const jsonre = await json.result
-                    if (mhankyt35.error) {                          //Send File MP3 Berbentuk MP3
-                        //hurtz.reply(from, mess.error, id)
-                        hurtz.reply(from, `_Maaf Terdapat kesalahan saat mengambil data, mohon pilih media lain..._`, id)
+                    if (hzyt35.error) {                          //Send File MP3 Berbentuk MP3
+                        // hurtz.reply(from, `_Maaf Terdapat kesalahan saat mengambil data, mengganti method..._`, id)
+                        // const { title, published, duration, author, thumb, video, audio } = await barbarytp45
+                        // const shortytm4 = await urlShortener(audio[0].url)
+                        // if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n*Deskripsi* : ${desc.simpleText}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                        // const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                        // //console.log(response1)                    
+                        // hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, captions, id)
+                        // await hurtz.sendFileFromUrl(from, audio[0].url, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
                     } else {
                         // Data memenuhi syarat?
                         try{
-                         const { title, published, duration, desc, author, thumb, video, audio } = await mhankyt35
-                    const shortytm4 = await urlShortener(audio[0].url)
-                        if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n*Deskripsi* : ${desc.simpleText}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
-                    //     // if (Number(filesize.split(' MB')[0]) >= 40.00) return hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortytm3}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
-                     // console.log(title)   
-                    // // if (Number(filesize.split(' MB')[0]) >= 40.00) return hurtz.reply(from, '_Mohon maaf sepertinya durasi video telah melebihi batas._', id)
-                    // // console.log(`BarBar Giliran ${ext}\n${filesize}\n${status}`)
-                    // //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
-                     const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Deskripsi* : ${desc.simpleText}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
-                     hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, captions, id)
-                        await hurtz.sendFileFromUrl(from, audio[0].url, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt4, id))
-                    
+                         // const { title, thumb, filesize, result } = await mhankyt35
+                    // const shortytm4 = await urlShortener(result)
+                        // if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                    //     if (Number(filesize.split(' MB')[0]) >= 40.00) return hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortytm3}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                    //  // console.log(title)   
+                    // // // if (Number(filesize.split(' MB')[0]) >= 40.00) return hurtz.reply(from, '_Mohon maaf sepertinya durasi video telah melebihi batas._', id)
+                    // // // console.log(`BarBar Giliran ${ext}\n${filesize}\n${status}`)
+                    // // //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
+                    //  const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Size* : ${filesize}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                    //  hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, captions, id)
+                    //     await hurtz.sendFileFromUrl(from, result, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
+                
+                        const { title, published, duration, author, thumb, video, audio } = await hzyt35
+                        const shortytm4 = await urlShortener(audio[0].url)
+                        if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                        //console.log(response1)                    
+                        hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, captions, id)
+                        await hurtz.sendFileFromUrl(from, audio[0].url, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
+
+
                         } catch (err){
                             console.log(err)
                         }
@@ -1574,15 +1573,15 @@ if (isMedia) {
                         console.log(err)
                     }
                 } else {
-                    const { title, published, duration, desc, author, thumb, video, audio } = await barbarytp45
+                    const { title, published, duration, author, thumb, video, audio } = await barbarytp45
                     const shortytm4 = await urlShortener(video[0].url)
-                        if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n*Deskripsi* : ${desc.simpleText}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                        if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
                     // console.log(duration.replace(':','').replace(':',''))
                     // console.log(barbarytp4)
                     // console.log(dapetidmp4)
                     //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
                     //try {
-                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Deskripsi* : ${desc.simpleText}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
                         //console.log(response1)                    
                         hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, captions, id)
                         await hurtz.sendFileFromUrl(from, video[0].url, `${title}.mp4`, `Video telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt4, id))
@@ -1832,7 +1831,8 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
             try {
                 hurtz.reply(from, mess.wait, id)
                 //const response1 = await fetch(`https://api.vhtear.com/ytdl?link=${args[1]}&apikey=botnolepbydandyproject`)
-                const barbarytp3 = await get.get(`https://nzcha-api.herokuapp.com/ytdl?id=${encodeURIComponent(dapetidmp3)}`).json()
+                const barbarytp3 = await get.get(`https://mhankbarbar.herokuapp.com/api/yta?url=https://youtu.be/${dapetidmp3}&apiKey=9eqNrrqr6UxSlck3uGDD`).json()
+                const hzyt3 = await get.get(`https://nzcha-api.herokuapp.com/ytdl?id=${dapetidmp3}`).json()    
                 //if (!response1.ok) throw new Error(`unexpected response vhtear ${response1.statusText}`)
                 // if (!mhankyt3.ok) throw new Error(`Error barbaryt3 ${mhankyt3.statusText}`)
                 // const barbarytp3 = await mhankyt3.json()
@@ -1842,6 +1842,19 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
                 if (barbarytp3.error) {                          //Send File MP3 Berbentuk Dokumen
                     hurtz.reply(from, `_Kesalahan sedang mengganti metode download..._`, id)
                     try {
+                         const { title, published, duration, author, thumb, video, audio } = await hzyt3
+                    const shortytm4 = await urlShortener(audio[0].url)
+                        if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                    // console.log(duration.replace(':','').replace(':',''))
+                    // console.log(barbarytp4)
+                    // console.log(dapetidmp4)
+                    //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
+                    //try {
+                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                        //console.log(response1)                    
+                        hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, captions, id)
+                        await hurtz.sendFileFromUrl(from, audio[0].url, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
+                   
                         // const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
                         // const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
                         // hurtz.sendFileFromUrl(from, imgUrl, `thumb.jpg`, captions, id)
@@ -1850,30 +1863,20 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
                     } catch (err){
                         console.log(err)
                     }
-                } else if(barbarytp3.status !== true) {
+                } else {
                     // Data memenuhi syarat?
-                    const { title, published, duration, desc, author, thumb, video, audio } = await barbarytp3
-                    const shortytm4 = await urlShortener(audio[0].url)
-                        if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n*Deskripsi* : ${desc.simpleText}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
-                    //     // if (Number(filesize.split(' MB')[0]) >= 40.00) return hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortytm3}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
-                        
+                    const { title, thumb, filesize, result } = await barbarytp3
+                    const shortytm4 = await urlShortener(result)
+                        // if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                        if (Number(filesize.split(' MB')[0]) >= 40.00) return hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortytm3}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                     // console.log(title)   
                     // // if (Number(filesize.split(' MB')[0]) >= 40.00) return hurtz.reply(from, '_Mohon maaf sepertinya durasi video telah melebihi batas._', id)
                     // // console.log(`BarBar Giliran ${ext}\n${filesize}\n${status}`)
                     // //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
-                     const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Deskripsi* : ${desc.simpleText}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
-                    //     //console.log(response1)               
-
-                    /*
-                    *   Proses konversi
-                    *   Using ffmpeg
-                    */
-                        hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, captions, id)
-
-                    // await exec(`ffmpeg "${audio[0]}"  -vn -ab 128k -ar 44100 -preset ultrafast -y ./media/ytmp3-aud.mp3`, async function (error, stdout, stderr) {
-                        await hurtz.sendFileFromUrl(from, audio[0], `${title}.mp3`, ``, id).catch(() => {
-                            hurtz.reply(from, mess.error.Yt3, id)
-                        })
-                    // })
+                     const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Size* : ${filesize}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                     hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, captions, id)
+                        await hurtz.sendFileFromUrl(from, result, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
+                      // })
 
                         // await hurtz.sendAudio(from, audio[0].url)
                 }
@@ -1914,15 +1917,15 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
                         console.log(err)
                     }
                 } else if (barbarytp4.status !== true) {
-                    const { title, published, duration, desc, author, thumb, video, audio } = await barbarytp4
+                    const { title, published, duration, author, thumb, video, audio } = await barbarytp4
                     const shortytm4 = await urlShortener(video[0].url)
-                        if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n*Deskripsi* : ${desc.simpleText}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                        if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
                     // console.log(duration.replace(':','').replace(':',''))
                     // console.log(barbarytp4)
                     // console.log(dapetidmp4)
                     //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
                     //try {
-                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Deskripsi* : ${desc.simpleText}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
                         //console.log(response1)                    
                         hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, captions, id)
                         await hurtz.sendFileFromUrl(from, video[0].url, `${title}.mp4`, `Video telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt4, id))
@@ -2059,9 +2062,12 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
                 // urlnyah['short'] = shortener
                 // short.push(url)
                 // await hurtz.sendLinkWithAutoPreview(from, arsg[1], `${epbe.capt}\n\nUntuk server fb sementara media berbentuk link :\n${shortener}`)
-                await urlShortener(urlnyah).then((res) => hurtz.reply(from, `${epbe.capt}\n\nLink : ${res}\n\n_Dikarenakan terdapat kesalahan sistem link fb sementara dalam bentuk link_`, id))
+                // await urlShortener(urlnyah).then((res) => hurtz.reply(from, `${epbe.capt}\n\nLink : ${res}\n\n_Dikarenakan terdapat kesalahan sistem link fb sementara dalam bentuk link_`, id))
                 
-                //await hurtz.sendFileFromUrl(from, urlnyah, `Cuih${epbe.exts}`, epbe.capt, id).catch((e) => console.log(e))
+                await hurtz.sendFileFromUrl(from, urlnyah, `Cuih${epbe.exts}`, epbe.capt, id).catch((e) => {
+                    hurtz.reply(from, `Mohon maaf kesalahan saat mengakses url web!`)
+                    console.log(e)
+                })
             } catch (err) {
                 //hurtz.reply(from, `Kesalahan dengan kode error : ${err}`)
                 console.log(err)
@@ -2146,23 +2152,19 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
         case '!pubg':
             // if (isLimit(serial)) return hurtz.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
             if (chat.id !== '6288233282599-1601304366@g.us') return
-            hurtz.reply(from, `
-LIST PUBG REG INDO
+            hurtz.reply(from, `LIST PUBG REG INDO
 
-74 💸 = Rp 15.600
-148 💸 = Rp 28.800
-221 💸 = Rp 41.800
-295 💸 = Rp 55.100
-770 💸 = Rp 131.900
-2013 💸 = Rp 329.000
-4200 💸 = Rp 650.000
-8750 💸 = Rp 1.300.000
+74 💸 = Rp 14.900
+221 💸 = Rp 40.900
+770 💸 = Rp 130.300
+2013 💸 = Rp 321.600
+4200 💸 = Rp 642.500
+8750 💸 = Rp 1.279.000
 
-ROYALE PASS = Rp 140.000
+ROYALE PASS = Rp 139.400
 
 PENTING! 
-MOHON BERTRANSAKSI MENGGUNAKAN FORMAT ORDER DAN BERTRANSAKSI VIA GRUP AGAR ADMIN FAST RESPON
-                `, id)
+MOHON BERTRANSAKSI MENGGUNAKAN FORMAT ORDER DAN BERTRANSAKSI VIA GRUP AGAR ADMIN FAST RESPON`, id)
             await hurtz.sendSeen(from)
             break
         case '!ff':
@@ -2194,20 +2196,23 @@ MOHON BERTRANSAKSI MENGGUNAKAN FORMAT ORDER DAN BERTRANSAKSI VIA GRUP AGAR ADMIN
         case '!ml':
         //if (isLimit(serial)) return hurtz.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
             if (chat.id !== '6288233282599-1601304366@g.us') return
-            hurtz.reply(from, `
-*LIST DM MLBB*
+            hurtz.reply(from, `LIST DM MLBB
 
-86💎 = 19.380 
-172💎 = 38.460
-257💎 = 59.260
-706💎 = 152.640
-2194💎 = 454.275
-3688💎 = 752.850
-5532💎 = 1.131.500
-9288💎 = 1.867.350
-
-Berlaku kelipatan 172+172= 344 DM dst
-                `, id)
+86💎 = 19.060 
+172💎 = 37.820
+257💎 = 56.350
+344💎 = 75.190
+429💎 = 93.860
+514💎 = 112.480
+600💎 = 131.160
+706💎 = 149.930
+878💎 = 187.300
+963💎 = 206.880
+1050💎 = 224.720
+2195💎 = 445.490
+3688💎 = 740.200
+5532💎 = 1.112.500
+9288💎 = 1.850.700`, id)
             await hurtz.sendSeen(from)
             break
         case '!payment':
@@ -2280,19 +2285,19 @@ JANGAN LUPA SERTAKAN BUKTI PEMBAYARAN NYA☺
             if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             if (!isGroupAdmins) return hurtz.reply(from, 'Perintah ini hanya bisa di gunakan oleh Admin group!', id)
             if (isLimit(serial)) return hurtz.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
-            hurtz.reply(from, mess.mt, id)
-            // if (args.length === 1) return hurtz.reply(from, 'Pilih Aktif atau Mati!', id)
-            // if (args[1].toLowerCase() === 'aktif') {
-            //     welkom.push(chat.id)
-            //     fs.writeFileSync('./lib/welcome.json', JSON.stringify(welkom))
-            //     hurtz.reply(from, 'Fitur penyambutan berhasil di aktifkan di group ini!', id)
-            // } else if (args[1].toLowerCase() === 'mati') {
-            //     welkom.splice(chat.id, 1)
-            //     fs.writeFileSync('./lib/welcome.json', JSON.stringify(welkom))
-            //     hurtz.reply(from, 'Fitur penyambutan berhasil di nonaktifkan di group ini!', id)
-            // } else {
-            //     hurtz.reply(from, 'Penggunaan *!sambutan aktif* atau *!sambutan mati*', id)
-            // }
+            // hurtz.reply(from, mess.mt, id)
+            if (args.length === 1) return hurtz.reply(from, 'Pilih Aktif atau Mati!', id)
+            if (args[1].toLowerCase() === 'aktif') {
+                welkom.push(chat.id)
+                fs.writeFileSync('./lib/welcome.json', JSON.stringify(welkom))
+                hurtz.reply(from, 'Fitur penyambutan berhasil di aktifkan di group ini!', id)
+            } else if (args[1].toLowerCase() === 'mati') {
+                welkom.splice(chat.id, 1)
+                fs.writeFileSync('./lib/welcome.json', JSON.stringify(welkom))
+                hurtz.reply(from, 'Fitur penyambutan berhasil di nonaktifkan di group ini!', id)
+            } else {
+                hurtz.reply(from, 'Penggunaan *!sambutan aktif* atau *!sambutan mati*', id)
+            }
             await hurtz.sendSeen(from)
             break
         case '!nsfwmenu':
@@ -2416,76 +2421,76 @@ Nomor : wa.me/${hapusser[0]}
         case '!timeline':
             if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             // if (isLimit(serial)) return hurtz.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
-            
+            hurtz.reply(from, mess.wait, id)
             // await limitAdd(serial)  
             hurtz.reply(from, `_Fitur *!cogan* dan *!cecan* aktif kembali!_`, id)          
             // const taimlen = await get.get('https://api.i-tech.id/tools/gambar?key=ijmalalfafanajib').json()                                 
             // await hurtz.sendFileFromUrl(from, taimlen.result , 'temlen.jpg',`_Timeline buat ${pushname}.._`, id)
-            await hurtz.sendSeen(from)
+            // await hurtz.sendSeen(from)
             break
         case '!ciwi':
         case '!cewek':
         case '!cecan':
         if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
+        // hurtz.reply(from, `_Fitur ini diganti kembali ke *!timeline*`, id)
+            await limitAdd(serial)
         hurtz.reply(from, mess.wait, id)
-        //     await limitAdd(serial)
-        // hurtz.reply(from, mess.wait, id)
-        // const imageToBase64 = require('image-to-base64')
-        // var items = ["cewe cantik", "hijab cantik", "jilbab sma cantik", "jilbab sma", "cewe sma", "cantik", "sma jilbob", "sma hot"]; //Awokawoka meh laku sc uing :v
-        // var cewe = items[Math.floor(Math.random() * items.length)];
-        // var urlciw = "https://api.fdci.se/rep.php?gambar=" + cewe;
+        const imageToBase64 = require('image-to-base64')
+        var items = ["sma cecan", "cewe cantik", "hijab cantik", "jilbab sma cantik", "jilbab sma", "cewe sma", "cantik", "sma jilbob", "sma hot"]; //Awokawoka meh laku sc uing :v
+        var cewe = items[Math.floor(Math.random() * items.length)];
+        var urlciw = "https://api.fdci.se/rep.php?gambar=" + cewe;
         
-        // axios.get(urlciw)
-        // .then((result) => {
-        // var b = JSON.parse(JSON.stringify(result.data));
-        // var cewek =  b[Math.floor(Math.random() * b.length)];
-        // imageToBase64(cewek) // Path to the image
-        // .then(
-        //     (response) => {
-        // let img = 'data:image/jpeg;base64,'+response
-        // hurtz.sendFile(from, img, "result.jpg", `Nih ciwinya ${pushname}`, id)
-        //         }) 
-        //     .catch(
-        //         (error) => {
-        //             console.log(error); // Logs an error if there was one
-        //         })
-        // })
+        axios.get(urlciw)
+        .then((result) => {
+        var b = JSON.parse(JSON.stringify(result.data));
+        var cewek =  b[Math.floor(Math.random() * b.length)];
+        imageToBase64(cewek) // Path to the image
+        .then(
+            (response) => {
+        let img = 'data:image/jpeg;base64,'+response
+        hurtz.sendFile(from, img, "result.jpg", `Nih ciwinya ${pushname}`, id)
+                }) 
+            .catch(
+                (error) => {
+                    console.log(error); // Logs an error if there was one
+                })
+        })
             await hurtz.sendSeen(from)
             break
         case '!cowok':
         case '!cogan':
         if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
+        hurtz.reply(from, mess.mt, id)
+        if (isLimit(serial)) return hurtz.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
+            if(isMsgLimit(serial)){
+                    return
+                }else{
+                    await addMsgLimit(serial)
+            }
+            await limitAdd(serial)
         hurtz.reply(from, mess.wait, id)
-        // if (isLimit(serial)) return hurtz.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
-        //     if(isMsgLimit(serial)){
-        //             return
-        //         }else{
-        //             await addMsgLimit(serial)
-        //     }
-        //     await limitAdd(serial)
-        // hurtz.reply(from, mess.wait, id)
-        // const imageToBase64a = require('image-to-base64')
-        // const ithem = ["handsome boy", "cowo ganteng", "cogan", "korean boy"]
-        // var cowo = ithem[Math.floor(Math.random() * ithem.length)]
-        // //console.log(cowo)
-        // var urlciwa = "https://api.fdci.se/rep.php?gambar=" + cowo
+        const imageToBase64a = require('image-to-base64')
+        const ithem = ["handsome boy", "cowo ganteng", "cogan"]
+        var cowo = ithem[Math.floor(Math.random() * ithem.length)]
+        //console.log(cowo)
+        var urlciwa = "https://api.fdci.se/rep.php?gambar=" + cowo
 
-        // axios.get(urlciwa)
-        // .then((result) => {
-        // // console.log(result)
-        // var b = JSON.parse(JSON.stringify(result.data));
-        // var cowok =  b[Math.floor(Math.random() * b.length)];
-        // imageToBase64a(cowok) // Path to the image
-        // .then(
-        //     (response) => {
-        // let imga = 'data:image/jpeg;base64,'+response
-        // hurtz.sendFile(from, imga, "result.jpg", `Nih cogans nya ${pushname}`, id)
-        //         }) 
-        //     .catch(
-        //         (error) => {
-        //             console.log(error); // Logs an error if there was one
-        //         })
-        // })
+        axios.get(urlciwa)
+        .then((result) => {
+        // console.log(result)
+        var b = JSON.parse(JSON.stringify(result.data));
+        var cowok =  b[Math.floor(Math.random() * b.length)];
+        imageToBase64a(cowok) // Path to the image
+        .then(
+            (response) => {
+        let imga = 'data:image/jpeg;base64,'+response
+        hurtz.sendFile(from, imga, "result.jpg", `Nih cogans nya ${pushname}`, id)
+                }) 
+            .catch(
+                (error) => {
+                    console.log(error); // Logs an error if there was one
+                })
+        })
             await hurtz.sendSeen(from)
             break
         case '!igtes':
@@ -2511,6 +2516,25 @@ Nomor : wa.me/${hapusser[0]}
         //         console.log(err)
         //     }                                
         //     await hurtz.sendSeen(from)
+            break
+        case '!setpp':
+            const pepes = await fs.readFileSync('./media/DGC.jpg', { encoding: "base64" })
+            await hurtz.setProfilePic(`data:image/jpg;base64,${pepes.toString('base64')}`)
+            .then((a) => {
+                hurtz.reply(from, util.format(a), id)
+            }).catch((e) => {
+                hurtz.reply(from, util.format(e), id)
+            })
+            break
+        case '!setnick':
+            await hurtz.setMyName(`DGC CHATBOT V3.5`)
+            .then((c) => {
+                console.log(c)
+                hurtz.reply(from, util.format(c), id)
+            }).catch((e) => {
+
+                hurtz.reply(from, util.format(e), id)
+            })
             break
         case '!igstalk':
         if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
@@ -3390,8 +3414,8 @@ Nomor : wa.me/${hapusser[0]}
             await hurtz.sendSeen(from)
             break
          default:
-            // if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             if (command.startsWith('!')) {
+                if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
                 // hurtz.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
                 const que61 = body.slice(1)
                 const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
