@@ -21,7 +21,9 @@ const cron = require('node-cron')
 const { API } = require('nhentai-api')
 const { liriklagu, quotemaker, randomNimek, fb, ig, twt, sleep, tulis, jadwalTv, ss, between } = require('./lib/functions')
 const { help, snk, info, donate, readme, listChannel, bahasa_list } = require('./lib/help')
+const { yta, ytv, buffer2Stream, ytsr, baseURI, stream2Buffer, noop } = require('./lib/ytdl')
 const { stdout } = require('process')
+const ffmpeg = require('fluent-ffmpeg')
 const nsfw_ = JSON.parse(fs.readFileSync('./lib/NSFW.json'))
 const welkomD = JSON.parse(fs.readFileSync('./lib/dmff.json'))
 const welkom = JSON.parse(fs.readFileSync('./lib/welcome.json'))
@@ -108,6 +110,13 @@ module.exports = msgHandler = async (hurtz, message) => {
         const isNsfw = isGroupMsg ? nsfw_.includes(chat.id) : false
         const uaOverride = 'WhatsApp/2.2029.4 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
         const isUrl = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/gi)
+        const isImage = type === 'image'
+        const isVideo = type === 'video'
+        const isQuotedImage = quotedMsg && quotedMsg.type === 'image'
+        const isQuotedVideo = quotedMsg && quotedMsg.type === 'video'
+        const isQuotedAudio = quotedMsg && (quotedMsg.type === 'audio' || quotedMsg.type === 'ptt')
+        const isQuotedFile = quotedMsg && quotedMsg.type === 'document'
+        const isQuotedSticker = quotedMsg && quotedMsg.type === 'sticker'
         if (!isGroupMsg && command.startsWith('!')) console.log('\x1b[1;31m~\x1b[1;37m>>', '[\x1b[1;32mOUT\x1b[1;37m]', time, color(msgs(command)), 'from', color(pushname))
         if (isGroupMsg && command.startsWith('!')) console.log('\x1b[1;31m~\x1b[1;37m>>', '[\x1b[1;32mOUT\x1b[1;37m]', time, color(msgs(command)), 'from', color(pushname), 'in', color(formattedTitle))
         if (!isGroupMsg && !command.startsWith('!')) console.log('\x1b[1;33m~\x1b[1;37m>>', '[\x1b[1;31mMSG\x1b[1;37m]', time, color('pesan'), 'from', color(pushname))
@@ -134,19 +143,19 @@ module.exports = msgHandler = async (hurtz, message) => {
             (type === 'image' || type === 'video') && caption ?
             message.caption : ''
 
-        if (rawText.startsWith('> ') /* && sender.id == ownerNumber*/ ) {
+        if (rawText.startsWith('> ') && isOwner) {
             console.log(sender.id, 'is trying to use the execute command')
             let type = Function
             if (/await/.test(rawText)) type = AsyncFunction
-            let func = new type('print', 'hurtz', 'message', 'get', 'fs', rawText.slice(2))
+            let func = new type('print', 'os', 'axios', 'moment', 'ytsr', 'hurtz', 'from', 'id', 'message', 'get', 'fs' , 'yta', 'ytv', rawText.slice(2))
             let output
             try {
                 output = func((...args) => {
                     console.log(...args)
                     hurtz.reply(from, util.format(...args), id)
-                }, hurtz, message, get, fs)
-                console.log(output)
-                await hurtz.reply(from, '*Console Output*\n\n' + util.format(output), id)
+                }, os, axios, moment, ytsr, hurtz, from, id, message, get, fs, yta, ytv)
+                // console.log(output)
+                // await hurtz.reply(from, '*Console Output*\n\n' + util.format(output), id)
             } catch (e) {
                 await hurtz.reply(from, '*Console Error*\n\n' + util.format(e), id)
             }
@@ -317,8 +326,40 @@ module.exports = msgHandler = async (hurtz, message) => {
         }
                         
         switch(command) {
-        case '!cke':
-            hurtz.getIsPlugged().then((a) => console.log(a))
+        case '!egg':
+            if (isMedia || isQuotedVideo || isQuotedFile) {
+        const encryptMedia = isQuotedVideo || isQuotedFile ? quotedMsg : message
+        const _mimetype = encryptMedia.mimetype
+        hurtz.reply(from, 'webp', 'Stiker itu pakai format *webp*', id)
+        console.log(color('[WAPI]'), 'Downloading and decrypting media...')
+        const mediaData = await decryptMedia(encryptMedia)
+        if (_mimetype === 'image/webp') hurtz.sendRawWebpAsSticker(from, baseURI(mediaData.toString('base64')), true)
+        const sticker = await stream2Buffer(write => {
+            ffmpeg(buffer2Stream(mediaData))
+                .inputOptions([
+                    '-t', 15
+                ])
+                // .complexFilter([
+                //     (30 >= 1 ? 'fps=' + 30 + ',' : '') + 'scale=512:512:flags=lanczos:force_original_aspect_ratio=decrease,format=rgba,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=#00000000,setsar=1'
+                // ])
+                .outputOptions([
+                    // '-qscale', 1,
+                    // '-fs', '1M' || '1M',
+                    '-vcodec', 'libwebp',
+                    // '-lossless', '1',
+                    '-preset', 'default',
+                    '-loop', '0',
+                    '-an',
+                    '-vsync', '0'
+                ])
+                .format('webp')
+                .on('start', commandLine => console.log(color('[FFmpeg]'), 'commandLine'))
+                .on('progress', progress => console.log(color('[FFmpeg]'), 'progress'))
+                .on('end', () => console.log(color('[FFmpeg]'), 'Processing finished!'))
+                .stream(write)
+        })
+        hurtz.sendRawWebpAsSticker(from, sticker.toString('base64'), false)
+    }
             break
         case '!botstat':
             function isCas() {
@@ -979,6 +1020,32 @@ if (isMedia) {
                 console.log(e)
             }
             break
+        case '!play':
+            if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
+            if (args.length === 1) return hurtz.reply(from, 'Kirim perintah *!play* _Judul lagu yang akan dicari_')
+            const playy = await get.get(`https://api.vhtear.com/youtube?query=${encodeURIComponent(body.slice(6))}&apikey=botnolepbydandyproject`).json()
+            const mulaikah = playy.result[0].urlyt
+            try {
+                hurtz.reply(from, mess.wait, id)
+                yta(mulaikah)
+                .then((res) => {
+                    const { dl_link, thumb, title, filesizeF, filesize } = res
+                    axios.get(`https://tinyurl.com/api-create.php?url=${dl_link}`)
+                    .then((a) => {
+                    if (Number(filesize) >= 30000) return hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesizeF}\n*Link* : ${a.data}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                    const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Size* : ${filesizeF}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                    hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, captions, id)
+                    hurtz.sendFileFromUrl(from, dl_link, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
+                    })
+
+                })
+            } catch (err) {
+                hurtz.sendText(ownerNumber, 'Error ytmp3 : '+ err)
+                console.log(err)
+                hurtz.reply(from, mess.error.Yt3, id)
+            }
+            await hurtz.sendSeen(from)
+            break
         case '!musik':
         case '!music':
             if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
@@ -1460,78 +1527,37 @@ if (isMedia) {
                     const dataDownmp3 = quotedMsg.type == 'chat' ? quotedMsg.body : quotedMsg.type == 'image' ? quotedMsg.caption : ''
                     const pilur = dataDownmp3.split('(#)')
                     hurtz.reply(from, mess.wait, id)
-                    const mhankyt35 = await get.get(`https://mhankbarbar.herokuapp.com/api/yta?url=https://youtu.be/${pilur[args[1]]}&apiKey=9eqNrrqr6UxSlck3uGDD`).json()
-                    const hzyt35 = await get.get(`https://nzcha-api.herokuapp.com/ytdl?id=${pilur[args[1]]}`).json()
-                    console.log(mhankyt35.status)
-                    if (hzyt35.error) {                          //Send File MP3 Berbentuk MP3
-                        // hurtz.reply(from, `_Maaf Terdapat kesalahan saat mengambil data, mengganti method..._`, id)
-                        // const { title, published, duration, author, thumb, video, audio } = await barbarytp45
-                        // const shortytm4 = await urlShortener(audio[0].url)
-                        // if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n*Deskripsi* : ${desc.simpleText}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
-                        // const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
-                        // //console.log(response1)                    
-                        // hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, captions, id)
-                        // await hurtz.sendFileFromUrl(from, audio[0].url, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
-                    } else {
-                        // Data memenuhi syarat?
-                        try{
-                         // const { title, thumb, filesize, result } = await mhankyt35
-                    // const shortytm4 = await urlShortener(result)
-                        // if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
-                    //     if (Number(filesize.split(' MB')[0]) >= 40.00) return hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortytm3}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
-                    //  // console.log(title)   
-                    // // // if (Number(filesize.split(' MB')[0]) >= 40.00) return hurtz.reply(from, '_Mohon maaf sepertinya durasi video telah melebihi batas._', id)
-                    // // // console.log(`BarBar Giliran ${ext}\n${filesize}\n${status}`)
-                    // // //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
-                    //  const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Size* : ${filesize}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
-                    //  hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, captions, id)
-                    //     await hurtz.sendFileFromUrl(from, result, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
-                
-                        const { title, published, duration, author, thumb, video, audio } = await hzyt35
-                        const shortytm4 = await urlShortener(audio[0].url)
-                        if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
-                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
-                        //console.log(response1)                    
-                        hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, captions, id)
-                        await hurtz.sendFileFromUrl(from, audio[0].url, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
+                    yta(`https://youtu.be/${pilur[args[1]]}`)
+                    .then((res) => {
+                        const { dl_link, thumb, title, filesizeF, filesize } = res
+                        axios.get(`https://tinyurl.com/api-create.php?url=${dl_link}`)
+                        .then((a) => {
+                        if (Number(filesize) >= 30000) return hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesizeF}\n*Link* : ${a.data}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Size* : ${filesizeF}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                        hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, captions, id)
+                        hurtz.sendFileFromUrl(from, dl_link, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
+                        })
 
+                    })
 
-                        } catch (err){
-                            console.log(err)
-                        }
-                    }    
                 } else if (quotedMsg && quotedMsg.type == 'chat') { 
                     hurtz.reply(from, `_Salah tag! hanya tag pesan berisi data hasil dari penelusuran musik._`, id)
                 } else {
                     if (args.length === 1) return hurtz.reply(from, 'Kirim perintah *!getmusik _IdDownload_*, untuk contoh silahkan kirim perintah *!readme*')
                     if (args[1] <= 25) return hurtz.reply(from, `_Apabila ingin mengambil data musik dengan nomor urutan, mohon tag pesan bot tentang pencarian musik!_`,)
                     hurtz.reply(from, mess.wait, id)
-                    //hurtz.reply(from, `_Sedang mencari file download dengan id ${args[1]}_`, id)
-                    //const response15 = await fetch(`https://api.vhtear.com/ytdl?link=https://www.youtube.com/watch?v=${args[1]}&apikey=botnolepbydandyproject`)
-                    const barbarytp35 = await get.get(`https://st4rz.herokuapp.com/api/yta2?url=https://youtu.be/${args[1]}`).json()
-                    //if (!response15.ok) throw new Error(`unexpected response vhtear ${response15.statusText}`)
-                    // if (!mhankyt35.ok) throw new Error(`Error barbaryt3 ${mhankyt35.statusText}`)
-                    if (barbarytp35.error) return barbarytp35.error
-                    // const barbarytp35 = await mhankyt35.json()
-                    //const json = await response15.json()
-                    //const jsonre = await json.result
-                    if (barbarytp35.status != 200) {                          //Send File MP3 Berbentuk Dokumen
-                        hurtz.reply(from, resp.error, id)
-                    } else {
-                        // Data memenuhi syarat?
-
-                        const { title, ext, filesize, result, status, thumb } = await barbarytp35
-                        const shortvid2 = await urlShortener(result)
-                        // if (Number(filesize.split(' MB')[0]) >= 50.00) return hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortvid2}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
-                        // console.log(`BarBar Giliran ${ext}\n${filesize}\n${status}`)
-                        // console.log(status)
-                        //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre 
-                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                    yta(`https://youtu.be/${args[1]}`)
+                    .then((res) => {
+                        const { dl_link, thumb, title, filesizeF, filesize } = res
+                        axios.get(`https://tinyurl.com/api-create.php?url=${dl_link}`)
+                        .then((a) => {
+                        if (Number(filesize) >= 30000) return hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesizeF}\n*Link* : ${a.data}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Size* : ${filesizeF}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
                         hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, captions, id)
-                        //await hurtz.sendAudio(from, UrlMp3, id)        
-                        await hurtz.sendFileFromUrl(from, result, `${title}.mp3`, '', id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
+                        hurtz.sendFileFromUrl(from, dl_link, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
+                        })
 
-                   }
+                    })
                 }
             } catch (err) {
                 hurtz.sendText(ownerNumber, 'Error ytmp3 : '+ err)
@@ -1824,62 +1850,22 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
         case '!ytmp3':
             if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             if (args.length === 1) return hurtz.reply(from, 'Kirim perintah *!ytmp3 [linkYt]*, untuk contoh silahkan kirim perintah *!readme*')
-           
             let isLinks = args[1].match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/)
             if (!isLinks) return hurtz.reply(from, mess.error.Iv, id)
-            const dapetidmp3 = getYouTubeID(args[1])
             try {
                 hurtz.reply(from, mess.wait, id)
-                //const response1 = await fetch(`https://api.vhtear.com/ytdl?link=${args[1]}&apikey=botnolepbydandyproject`)
-                const barbarytp3 = await get.get(`https://mhankbarbar.herokuapp.com/api/yta?url=https://youtu.be/${dapetidmp3}&apiKey=9eqNrrqr6UxSlck3uGDD`).json()
-                const hzyt3 = await get.get(`https://nzcha-api.herokuapp.com/ytdl?id=${dapetidmp3}`).json()    
-                //if (!response1.ok) throw new Error(`unexpected response vhtear ${response1.statusText}`)
-                // if (!mhankyt3.ok) throw new Error(`Error barbaryt3 ${mhankyt3.statusText}`)
-                // const barbarytp3 = await mhankyt3.json()
-                //const json = await response1.json()
-               // const jsonre = await json.result
-               // console.log(barbarytp3.status)
-                if (barbarytp3.error) {                          //Send File MP3 Berbentuk Dokumen
-                    hurtz.reply(from, `_Kesalahan sedang mengganti metode download..._`, id)
-                    try {
-                         const { title, published, duration, author, thumb, video, audio } = await hzyt3
-                    const shortytm4 = await urlShortener(audio[0].url)
-                        if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
-                    // console.log(duration.replace(':','').replace(':',''))
-                    // console.log(barbarytp4)
-                    // console.log(dapetidmp4)
-                    //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
-                    //try {
-                        const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
-                        //console.log(response1)                    
-                        hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, captions, id)
-                        await hurtz.sendFileFromUrl(from, audio[0].url, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
-                   
-                        // const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
-                        // const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
-                        // hurtz.sendFileFromUrl(from, imgUrl, `thumb.jpg`, captions, id)
-                        // await hurtz.sendFileFromUrl(from, UrlMp3, `${title}.mp3`, '', id).catch(() => hurtz.reply(from, mess.error.Yt4, id))
-                        hurtz.reply(from, `Fiturnya down cok :(`, id)
-                    } catch (err){
-                        console.log(err)
-                    }
-                } else {
-                    // Data memenuhi syarat?
-                    const { title, thumb, filesize, result } = await barbarytp3
-                    const shortytm4 = await urlShortener(result)
-                        // if (Number(duration.replace(':','').replace(':','')) > 1300) return hurtz.sendFileFromUrl(from, thumb.url, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Channel* : ${author.name}\n*Durasi* : ${duration}\n*Link* : ${shortytm4}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
-                        if (Number(filesize.split(' MB')[0]) >= 40.00) return hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesize}\n*Link* : ${shortytm3}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
-                     // console.log(title)   
-                    // // if (Number(filesize.split(' MB')[0]) >= 40.00) return hurtz.reply(from, '_Mohon maaf sepertinya durasi video telah melebihi batas._', id)
-                    // // console.log(`BarBar Giliran ${ext}\n${filesize}\n${status}`)
-                    // //const { title, UrlVideo, UrlMp3, imgUrl } = await jsonre
-                     const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Size* : ${filesize}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
-                     hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, captions, id)
-                        await hurtz.sendFileFromUrl(from, result, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
-                      // })
+                yta(args[1])
+                .then((res) => {
+                    const { dl_link, thumb, title, filesizeF, filesize } = res
+                    axios.get(`https://tinyurl.com/api-create.php?url=${dl_link}`)
+                    .then((a) => {
+                    if (Number(filesize) >= 30000) return hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesizeF}\n*Link* : ${a.data}\n\n_Untuk durasi lebih dari batas disajikan dalam bentuk link_`, id)
+                    const captions = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Size* : ${filesizeF}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+                    hurtz.sendFileFromUrl(from, thumb, `thumb.jpg`, captions, id)
+                    hurtz.sendFileFromUrl(from, dl_link, `${title}.mp3`, `Audio telah terkirim ${pushname}`, id).catch(() => hurtz.reply(from, mess.error.Yt3, id))
+                    })
 
-                        // await hurtz.sendAudio(from, audio[0].url)
-                }
+                })
             } catch (err) {
                 hurtz.sendText(ownerNumber, 'Error ytmp3 : '+ err)
                 console.log(err)
@@ -2423,7 +2409,7 @@ Nomor : wa.me/${hapusser[0]}
             // if (isLimit(serial)) return hurtz.reply(from, `_Hai ${pushname} Limit request anda sudah mencapai batas, Akan direset kembali setiap jam 9 dan gunakan seperlunya!_`, id)
             hurtz.reply(from, mess.wait, id)
             // await limitAdd(serial)  
-            hurtz.reply(from, `_Fitur *!cogan* dan *!cecan* aktif kembali!_`, id)          
+            hurtz.reply(from, `_Fitur *!cogan* dan *!cecan* aktif kembalii!_`, id)          
             // const taimlen = await get.get('https://api.i-tech.id/tools/gambar?key=ijmalalfafanajib').json()                                 
             // await hurtz.sendFileFromUrl(from, taimlen.result , 'temlen.jpg',`_Timeline buat ${pushname}.._`, id)
             // await hurtz.sendSeen(from)
@@ -3416,11 +3402,11 @@ Nomor : wa.me/${hapusser[0]}
          default:
             if (command.startsWith('!')) {
                 if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
-                // hurtz.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
-                const que61 = body.slice(1)
-                const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
-                hurtz.reply(from, sigot61.success, id)
-                // console.log(sigot61)
+                hurtz.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
+                // const que61 = body.slice(1)
+                // const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
+                // hurtz.reply(from, sigot61.success, id)
+                // // console.log(sigot61)
                 }
                 await hurtz.sendSeen(from)
         }

@@ -26,6 +26,7 @@
     "google-it": "^1.5.4",
     "got": "^11.8.0",
     "image-to-base64": "^2.1.1",
+    "jsdom": "^16.4.0",
     "moment-timezone": "^0.5.31",
     "mysql": "^2.18.1",
     "needle": "^2.5.2",
