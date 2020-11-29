@@ -24,19 +24,8 @@ module.exports = options = (headless, start) => {
         process.exit(1)
     }
 
-      const options = {
-        headless: headless,
-        autoRefresh: true,
-        qrTimeout:0,   //set to 0 to wait forever for a qr scan
-        authTimeout:0, //set to 0 to wait forever for connection to phone
-        restartOnCrash: start,
-        cacheEnabled: false,
-        // executablePath: execPath,
-        useChrome: true,
-        killProcessOnBrowserClose: false,
-        throwErrorOnTosBlock: false,
-        chromiumArgs: [
-            '--disable-2d-canvas-clip-aa',
+    let argsC = [
+        '--disable-2d-canvas-clip-aa',
             '--disable-2d-canvas-image-chromium',
             '--disable-3d-apis',
             '--disable-accelerated-2d-canvas',
@@ -107,8 +96,33 @@ module.exports = options = (headless, start) => {
             '--single-process',
             '--unhandled-rejections=strict',
             '--window-position=0,0'
-        ]
+    ]
+
+    const argsO = [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--aggressive-cache-discard',
+        '--disable-cache',
+        '--disable-application-cache',
+        '--disable-offline-load-stale-cache',
+        '--disk-cache-size=0'
+    ]
+      const options = {
+        headless: false,
+        autoRefresh: true,
+        qrTimeout:0,   //set to 0 to wait forever for a qr scan
+        authTimeout:0, //set to 0 to wait forever for connection to phone
+        restartOnCrash: start,
+        cacheEnabled: false,
+        // defaultViewport: null,
+        // executablePath: execPath,
+        useChrome: true,
+        killProcessOnBrowserClose: true,
+        throwErrorOnTosBlock: false,
+        chromiumArgs: argsC
     }
+
+      if (!headless) options['defaultViewport'] = null
     return options
 }
 
