@@ -1,0 +1,15 @@
+const badword = ["anjing","goblok","ngentod","bangsat"]
+        if (args[0] == "Assalamualaikum" || args[0] == "Assalamu'alaikum" || args[0] == "Samlikum" || args[0] == "Samlekom"){
+                return hurtz.reply(dari, "Wa'alaikumsalam warahmatullahi wabarokatuh", id)
+        } else if (badword.includes(args[0].toLowerCase())){
+            if (!isGroupAdmins) {
+                return hurtz.reply(dari, "WOYY JANGAN TOXIC MEMBER BANGSAT SETAN!", id)
+                .then(() => hurtz.removeParticipant(groupId, sender.id))
+                .then(() => {
+                    hurtz.sendText(dari, `Awokawoka mampuss terwisuda🐦`)
+                }).catch(() => hurtz.sendText(dari, `Untung bot bukan admin kalo ngga udah terkick tuh >:(`))
+            } else {
+                return hurtz.reply(dari, "Mohon jaga ucapannya ya mimin:)", id)
+            }
+        }
+        if (isBlo

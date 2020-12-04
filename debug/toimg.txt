@@ -1,0 +1,3 @@
+ const pepes = await fs.readFileSync('./media/DGC.jpg', { encoding: "base64" })
+            await hurtz.setProfilePic(`data:image/jpg;base64,${pepes.toString('base64')}`)
+           
