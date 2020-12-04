@@ -1,8 +1,8 @@
-const { create, hurtz } = require('@open-wa/wa-automate')
+const wa = require('@open-wa/wa-automate')
 const welcome = require('./lib/welcome')
 const fs = require('fs-extra')
 const welcomeF = require('./lib/freedom')
-//const cron = require('node-cron')
+const color = require('./lib/color')
 const welcomeD = require('./lib/dmff')
 const moment = require('moment-timezone')
 //const msgHandler = require('./msgHndlr')
@@ -12,16 +12,21 @@ const options = require('./options')
 //let {prefix, banChats, restartState: isRestart,mtc: mtcState, whitelist ,sAdmin, limitCount, memberLimit, groupLimit} = setting
 
 moment.tz.setDefault('Asia/Jakarta').locale('id')
-const time = moment().format('MMMM Do YYYY, h:mm:ss a')
+const time = moment().format('DD/MM HH:mm:ss')
 // Cache handler and check for file change
+function INFOLOG(info) {
+    return console.log('\x1b[1;31m~\x1b[1;37m>>', '[\x1b[1;33mINFO\x1b[1;37m]', time, color(info))
+}
+
 require('./msgHndlr')
-nocache('./msgHndlr', module => console.log(`${time} '${module}' Updated!`))
+nocache('./msgHndlr', module => INFOLOG(`${module} Telah diupdate!`))
 
 const start = async (hurtz = new Hurtz()) => {
         console.log('[SERVER] Server Started!')
         // Force it to keep the current session
         hurtz.onStateChanged(state=>{
-            console.log('statechanged', state)
+            // console.log('statechanged', state)
+            INFOLOG(`Status berubah ${state}`)
             if(state==="CONFLICT" || state==="UNLAUNCHED") hurtz.forceRefocus();
         })
         // cron.schedule('* * * * *', () =>  {
@@ -118,7 +123,7 @@ function uncache(module = '.') {
 }
 
 
-create({
+wa.create({
     sessionId: 'MRHRTZ',
     ...options(false, start)
     })
