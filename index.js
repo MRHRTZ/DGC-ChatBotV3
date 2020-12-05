@@ -1,4 +1,5 @@
 const wa = require('@open-wa/wa-automate')
+const { ev } = require('@open-wa/wa-automate')
 const welcome = require('./lib/welcome')
 const fs = require('fs-extra')
 const welcomeF = require('./lib/freedom')
@@ -7,21 +8,32 @@ const welcomeD = require('./lib/dmff')
 const moment = require('moment-timezone')
 //const msgHandler = require('./msgHndlr')
 const options = require('./options')
-
-//let setting = JSON.parse(fs.readFileSync('./lib/config.json'));
-//let {prefix, banChats, restartState: isRestart,mtc: mtcState, whitelist ,sAdmin, limitCount, memberLimit, groupLimit} = setting
+let setting = JSON.parse(fs.readFileSync('./lib/config.json'));
+let {prefix, banChats, restartState: isRestart, mtc: mtcState, whitelist ,sAdmin, limitCount, memberLimit, groupLimit} = setting
+const sesi = process.argv[2] ? process.argv[2] : "MRHRTZ"
 
 moment.tz.setDefault('Asia/Jakarta').locale('id')
 const time = moment().format('DD/MM HH:mm:ss')
 // Cache handler and check for file change
 function INFOLOG(info) {
-    return console.log('\x1b[1;31m~\x1b[1;37m>>', '[\x1b[1;33mINFO\x1b[1;37m]', time, color(info))
+    return console.log('\x1b[1;34m~\x1b[1;37m>>', '[\x1b[1;33mINFO\x1b[1;37m]', time, color(info))
+}
+
+function restartAwal(hurtz){
+    setting.restartState = false
+    isRestart = false
+    hurtz.sendText(setting.restartId, '✅ _Reset config Completed!_')
+    setting.restartId = 'undefined'
+    fs.writeFileSync('./lib/setting.json', JSON.stringify(setting, null,2));
 }
 
 require('./msgHndlr')
 nocache('./msgHndlr', module => INFOLOG(`${module} Telah diupdate!`))
 
 const start = async (hurtz = new Hurtz()) => {
+
+        if(isRestart){restartAwal(hurtz);}
+
         console.log('[SERVER] Server Started!')
         // Force it to keep the current session
         hurtz.onStateChanged(state=>{
@@ -124,7 +136,7 @@ function uncache(module = '.') {
 
 
 wa.create({
-    sessionId: 'MRHRTZ',
+    sessionId: sesi,
     ...options(false, start)
     })
     .then(hurtz => start(hurtz))
