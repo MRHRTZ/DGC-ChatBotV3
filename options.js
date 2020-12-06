@@ -110,7 +110,7 @@ module.exports = options = (headless, start) => {
       const options = {
         headless: false,
         autoRefresh: true,
-        qrTimeout:0,   //set to 0 to wait forever for a qr scan
+        qrTimeout:600,   //set to 0 to wait forever for a qr scan
         authTimeout:0, //set to 0 to wait forever for connection to phone
         restartOnCrash: start,
         cacheEnabled: false,

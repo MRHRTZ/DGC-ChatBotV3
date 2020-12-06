@@ -127,7 +127,7 @@ module.exports = msgHandler = async (hurtz, message) => {
 
         
         function INFOLOG(info) {
-            return console.log('\x1b[1;34m~\x1b[1;37m>>', '[\x1b[1;33mINFO\x1b[1;37m]', time, color(info))
+            return console.log('\x1b[1;34m~\x1b[1;37m>>', '[\x1b[1;33mINF\x1b[1;37m]', time, color(info))
         }
         
         function ERRLOG(e) {
@@ -161,7 +161,7 @@ module.exports = msgHandler = async (hurtz, message) => {
             if (isLinkOn) {
                 INFOLOG(`Terdeteksi antilink pada grup ${name}`)
                 if (!isGroupMsg) return hurtz.reply(from, `*[ ! ]* Anti promosi hanya untuk grup`,id)
-                hurtz.reply(from,`*[ANTI LINK]*\n*Terdeteksi link bot akan kick otomatis member!!*`,id)
+                hurtz.reply(from,`*⚠️ [ LINK DETECTED ] ⚠️*\n*Terdeteksi link bot akan kick otomatis member!!*`,id)
 
                 if (!isBotGroupAdmins) return hurtz.reply(from, `*[ ! ]* Fitur kick member di anti link gc dapat bekerja jika bot menjadi admin!`,id) // bot no admin
                 
@@ -242,13 +242,13 @@ module.exports = msgHandler = async (hurtz, message) => {
             INFOLOG(pushname, 'mencoba execute perintah')
             let type = Function
             if (/await/.test(rawText)) type = AsyncFunction
-            let func = new type('print', 'chat', 'quotedMsg', 'os', 'axios', 'moment', 'ytsr', 'hurtz', 'from', 'id', 'message', 'get', 'fs' , 'yta', 'ytv', rawText.slice(2))
+            let func = new type('print', 'exec', 'chat', 'quotedMsg', 'os', 'axios', 'moment', 'ytsr', 'hurtz', 'from', 'id', 'message', 'get', 'fs' , 'yta', 'ytv', rawText.slice(2))
             let output
             try {
                 output = func((...args) => {
                     INFOLOG(...args)
                     hurtz.reply(from, util.format(...args), id)
-                }, chat, quotedMsg, os, axios, moment, ytsr, hurtz, from, id, message, get, fs, yta, ytv)
+                }, exec, chat, quotedMsg, os, axios, moment, ytsr, hurtz, from, id, message, get, fs, yta, ytv)
                 // console.log(output)
                 // await hurtz.reply(from, '*Console Output*\n\n' + util.format(output), id)
             } catch (e) {
@@ -500,31 +500,31 @@ module.exports = msgHandler = async (hurtz, message) => {
         if (isBlocked ) return
                         
     switch(command) {
-        case switch_pref+'groupprifile':
+        case switch_pref+'groupprofile':
         case switch_pref+'profilgrup':
             if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
-            const fitur_antil = isLinkOn ? "" : ""
+            const fitur_antil = isLinkOn ? "✅" : "❌"
             const pepea = await hurtz.getProfilePicFromServer(chat.id)
             let totalMemny = await chat.groupMetadata.participants.length
-            const captets = `
-*Nama grup* : ${name}
+            const captetsg = `
+🗒️ *Nama grup* : ${chat.formattedTitle}
 
-*Grup dibuat pada* : ${Date(chat.groupMetadata.creation * 1000)}
+🕒 *Grup dibuat pada* : ${Date(chat.groupMetadata.creation * 1000)}
 
-*Owner grup* : ${chat.groupMetadata.owner}
+📧 *Owner grup* : ${chat.groupMetadata.owner.replace('@c.us','')}
 
-*Jumlah member* : ${totalMemny}
+👁️‍ *Jumlah member* : ${totalMemny}
 
-*Fitur antilink* : 
+🛠️ *Fitur antilink* : ${fitur_antil}
 
-*Desc diubah pada* : ${Date(chat.groupMetadata.descTime * 1000)}
+⌛ *Desc diubah pada* : ${Date(chat.groupMetadata.descTime * 1000)}
 
-*Desc grup* : ${chat.groupMetadata.desc}
+📚 *Desc grup* : ${chat.groupMetadata.desc}
 `
             if (pepea == '' || pepea == undefined) {
-                await hurtz.sendFileFromUrl(from, 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTQcODjk7AcA4wb_9OLzoeAdpGwmkJqOYxEBA&usqp=CAU', 'profile.jpg', captets, id)
+                await hurtz.sendFileFromUrl(from, 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTQcODjk7AcA4wb_9OLzoeAdpGwmkJqOYxEBA&usqp=CAU', 'profile.jpg', captetsg, id)
             } else {
-                await hurtz.sendFileFromUrl(from, pepe, 'profile.jpg', captets, id)
+                await hurtz.sendFileFromUrl(from, pepea, 'profile.jpg', captetsg, id)
             }
             break
         case switch_pref+'egg':
@@ -593,11 +593,11 @@ module.exports = msgHandler = async (hurtz, message) => {
                 const encryptMedia = isQuotedImage || isQuotedFile ? quotedMsg : message
                 const _mimetype = encryptMedia.mimetype
                 const mediaData = await decryptMedia(encryptMedia)
-                if (_mimetype === 'image/webp') client.sendRawWebpAsSticker(from, mediaData.toString('base64'), false)
+                if (_mimetype === 'image/webp') hurtz.sendRawWebpAsSticker(from, mediaData.toString('base64'), false)
         
                 const sticker = await processSticker(mediaData, 'contain')
                 await hurtz.sendRawWebpAsSticker(from, sticker.toString('base64'), false)
-            } else client.reply(from, `Tagdata stiker atau kirim media gambar!`, id)
+            } else hurtz.reply(from, `Tagdata stiker atau kirim media gambar!`, id)
             break
         case switch_pref+'stiker_rename':
             try {
@@ -841,6 +841,7 @@ module.exports = msgHandler = async (hurtz, message) => {
         case switch_pref+'restart':
         case switch_pref+'reset':
             if (!isOwner) return hurtz.reply(from, `_Hanya Owner Bot Yang Bisa Mereset config!_`, id)
+            if (args.length === 1) return hurtz.reply(from, `_Masukan nama sesi!_`, id)
             hurtz.reply(from, '⚠️ *[INFO]* Reseting ...', id)
             setting.restartState = true
             setting.restartId = chat.id
@@ -864,11 +865,12 @@ module.exports = msgHandler = async (hurtz, message) => {
                 })
             }}
             var osa = new os_func();
-            osa.execCommand('pm2 restart index').then(res => {
+            osa.execCommand(`pm2 restart ${args[1]}`).then(res => {
                 hurtz.reply(from, `✅ _Reset config Completed!_`, id)
                 INFOLOG(res)
             }).catch(err=> {
                 ERRLOG("os >>>", err);
+                hurtz.reply(from, `Kesalahan saat restart bot!`, id)
             })
             await hurtz.sendSeen(from)
             break
@@ -3070,48 +3072,6 @@ Video : ${vid_post_}
             })
             break
         //END VEZA API
-        case switch_pref+'wait':
-            if (isMedia && type === 'image' || quotedMsg && quotedMsg.type === 'image') {
-                if (isMedia) {
-                    var mediaData = await decryptMedia(message, uaOverride)
-                } else {
-                    var mediaData = await decryptMedia(quotedMsg, uaOverride)
-                }
-                const fetch = require('node-fetch')
-                const imgBS4 = `data:${mimetype};base64,${mediaData.toString('base64')}`
-                hurtz.reply(from, 'Searching....', id)
-                fetch('https://trace.moe/api/search', {
-                    method: 'POST',
-                    body: JSON.stringify({ image: imgBS4 }),
-                    headers: { "Content-Type": "application/json" }
-                })
-                .then(respon => respon.json())
-                .then(resolt => {
-                	if (resolt.docs && resolt.docs.length <= 0) {
-                		hurtz.reply(from, 'Maaf, saya tidak tau ini anime apa', id)
-                	}
-                    const { is_adult, title, title_chinese, title_romaji, title_english, episode, similarity, filename, at, tokenthumb, anilist_id } = resolt.docs[0]
-                    teks = ''
-                    if (similarity < 0.92) {
-                    	teks = '*Saya memiliki keyakinan rendah dalam hal ini* :\n\n'
-                    }
-                    teks += `➣ *Title Japanese* : ${title}\n➣ *Title chinese* : ${title_chinese}\n➣ *Title Romaji* : ${title_romaji}\n➣ *Title English* : ${title_english}\n`
-                    teks += `➣ *Ecchi* : ${is_adult}\n`
-                    teks += `➣ *Eps* : ${episode.toString()}\n`
-                    teks += `➣ *Kesamaan* : ${(similarity * 100).toFixed(1)}%\n`
-                    var video = `https://media.trace.moe/video/${anilist_id}/${encodeURIComponent(filename)}?t=${at}&token=${tokenthumb}`;
-                    hurtz.sendFileFromUrl(from, video, 'nimek.mp4', teks, id).catch(() => {
-                        hurtz.reply(from, teks, id)
-                    })
-                })
-                .catch(() => {
-                    hurtz.reply(from, 'Error !', id)
-                })
-            } else {
-                hurtz.sendFile(from, './media/img/tutod.jpg', 'Tutor.jpg', `Nih buat kamu >//< ${pushname}`, id)
-            }
-            await hurtz.sendSeen(from)
-            break
         case switch_pref+'quotesmaker':
         case switch_pref+'quotemaker':
         if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
@@ -3505,6 +3465,7 @@ Video : ${vid_post_}
             await hurtz.sendSeen(from)
             break
         case switch_pref+'lirik':
+        case switch_pref+'lyric':
         if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             
             if (args.length == 1) return hurtz.reply(from, 'Kirim perintah *!lirik [optional]*, contoh *!lirik aku bukan boneka*', id)
@@ -3764,7 +3725,8 @@ Video : ${vid_post_}
         case switch_pref+'help':
         case switch_pref+'menu':
         if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
-        const qotuesa = await get.get('https://mrhrtz-api.herokuapp.com/api/randomquotes').json()
+        const qotues_json = JSON.parse(fs.readFileSync('./lib/quotes.json'))
+        const qotuesa = qotues_json[Math.floor(Math.random() * qotues_json.length)]
         const isCas2 = await hurtz.getIsPlugged() ? "Charging ✅⚡" : "Not Charged 🔌❌"
         const loadedMsg2 = await hurtz.getAmountOfLoadedMessages()
         const groupsaa = await hurtz.getAllGroups()
@@ -3900,6 +3862,7 @@ ________________________________________
 
             🔭 〘 Search 〙 🔍
 
+➣ *!tempat* _Nama tempat_
 ➣ *!ceklokasi* (tag lokasi anda, sharelok)
 ➣ *!gambar* _KataKunci_
 ➣ *!cekjodoh*

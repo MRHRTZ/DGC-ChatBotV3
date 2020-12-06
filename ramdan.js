@@ -16,7 +16,7 @@ moment.tz.setDefault('Asia/Jakarta').locale('id')
 const time = moment().format('DD/MM HH:mm:ss')
 // Cache handler and check for file change
 function INFOLOG(info) {
-    return console.log('\x1b[1;34m~\x1b[1;37m>>', '[\x1b[1;33mINFO\x1b[1;37m]', time, color(info))
+    return console.log('\x1b[1;34m~\x1b[1;37m>>', '[\x1b[1;33mINF\x1b[1;37m]', time, color(info))
 }
 
 function restartAwal(hurtz){
