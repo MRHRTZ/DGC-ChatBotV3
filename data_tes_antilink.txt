@@ -1,0 +1,26 @@
+const isLinks3 = isGroupMsg ? link_.includes(chat.id) : false
+if (body.match("https://chat.whatsapp.com")){
+    if (isLinks3) {
+        console.log('DETECT!')
+        if (!isGroupMsg) return hurtz.reply(dari, `*[ ! ]* Anti promosi hanya untuk grup`,id)
+        hurtz.reply(dari,`*[ANTI LINK]*Halo bos *${pushname}*
+ngeshare link gc lu jngn disini anjeng konsekuensinya??
+        
+kick & banned permanen.. muehehe :v`,id)
+
+        if (!isBotGroupAdmins) return hurtz.reply(dari, `*[ ! ]* Fitur kick member di anti link gc dapat bekerja jika bot menjadi admin!`,id) // bot no admin
+        
+        if (isOwner) {
+            hurtz.reply(dari, `*[ ! ]* Bot tidak dapat kick pengurus bot!!`,id) // no kick owner bot
+        } else if (isGroupAdmins) {
+            hurtz.reply(dari, `*[ ! ]* Bot tidak dapat kick pengurus grup!!`,id) // no kick owner bot
+            hurtz.reply(dari, util.format(isGroupAdmins), id)
+        } else {
+            await hurtz.reply(dari, `boom terkeluarkan!`, id)
+        }
+    } else {
+        console.log('Undetect')
+        hurtz.sendText(dari, `Ga dinyalain fiturnya gan :v`)
+        // await hurtz.removeParticipant(groupId, `${sender.id}`)
+    }
+}
