@@ -22,7 +22,7 @@ function INFOLOG(info) {
 function restartAwal(hurtz){
     setting.restartState = false
     isRestart = false
-    hurtz.sendText(setting.restartId, '✅ _Reset config Completed!_')
+    hurtz.sendText(setting.restartId, '✅ _Restart was Completed!_')
     setting.restartId = 'undefined'
     fs.writeFileSync('./lib/setting.json', JSON.stringify(setting, null,2));
 }

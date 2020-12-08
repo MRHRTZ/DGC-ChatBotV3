@@ -842,7 +842,7 @@ module.exports = msgHandler = async (hurtz, message) => {
         case switch_pref+'reset':
             if (!isOwner) return hurtz.reply(from, `_Hanya Owner Bot Yang Bisa Mereset config!_`, id)
             if (args.length === 1) return hurtz.reply(from, `_Masukan nama sesi!_`, id)
-            hurtz.reply(from, '⚠️ *[INFO]* Reseting ...', id)
+            hurtz.reply(from, '⚠️ *[INFO]* Restarting server please wait ...', id)
             setting.restartState = true
             setting.restartId = chat.id
             // let obj = {id: `${sender.id}`, limit:0};
@@ -3110,17 +3110,17 @@ Video : ${vid_post_}
             }
             await hurtz.sendSeen(from)
             break
-        // case switch_pref+'bc':
-        //     if (!isOwner) return hurtz.reply(from, 'Perintah ini hanya untuk Owner bot!', id)
-        //     let msg = body.slice(4)
-        //     const chatz = await hurtz.getAllChatIds()
-        //     for (let ids of chatz) {
-        //         var cvk = await hurtz.getChatById(ids)
-        //         if (!cvk.isReadOnly) await hurtz.sendText(ids, `[ Shinomiya Kaguya BOT Broadcast ]\n\n${msg}`)
-        //     }
-        //     hurtz.reply(from, 'Broadcast Success!', id)
-        //     await hurtz.sendSeen(from)
-            // break
+        case switch_pref+'bc':
+            if (!isOwner) return hurtz.reply(from, 'Perintah ini hanya untuk Owner bot!', id)
+            let msg = body.slice(4)
+            const chatz = await hurtz.getAllChatIds()
+            for (let ids of chatz) {
+                var cvk = await hurtz.getChatById(ids)
+                if (!cvk.isReadOnly) await hurtz.sendText(ids, `${msg}\n\n*[ INFO FROM OWNER ]*`)
+            }
+            hurtz.reply(from, 'Broadcast Success!', id)
+            await hurtz.sendSeen(from)
+            break
             case switch_pref+'bcgc':
                 if (!isOwner) return hurtz.reply(from, `Khusus owner aja yoo`, id)
                 await hurtz.getAllGroups().then((ez) => {
@@ -3410,12 +3410,16 @@ Video : ${vid_post_}
             await hurtz.sendTextWithMentions(from, `Perintah diterima, menghapus jabatan @${mentionedJidList[0]}.`)
             await hurtz.sendSeen(from)
             break
+        case switch_pref+'masuk':
         case switch_pref+'join':
             //if (isGroupMsg) return hurtz.reply(from, 'Fitur ini hanya bisa di gunakan private chat dengan botnya', id)
             if (!isOwner) return hurtz.reply(from, 'Join ke gc lain? konfirm dulu ke owner.', id)
-            if (args.length <= 1) return hurtz.reply(from, 'Kirim perintah *!join* linkgroup\n\nEx:\n!join https://chat.whatsapp.com/blablablablablabla LicenseKey', id)
+            if (args.length <= 2) return hurtz.reply(from, 'Kirim perintah *!join* linkgroup waktu(dalam hari)\n\nEx:\n!join https://chat.whatsapp.com/blablablablablabla 15', id)
             // if (args[2] !== 'MRHRTZ-BOT-WHATSAPP') return hurtz.reply(from, `Kayanya LicenseKey salah! mohon chat owner. ketik *!sendOwner*`, id)
+            let data_sewa = JSON.parse(fs.readFileSync('./lib/antilink.json'))
+            const isSewa = isGroupMsg ? data_sewa.includes(chat.id) : false
             const link = args[1]
+            const countHari = args[2]
             const tGr = await hurtz.getAllGroups()
             const minMem = 30
             const isLink = link.match(/(https:\/\/chat.whatsapp.com)/gi)
@@ -3424,7 +3428,25 @@ Video : ${vid_post_}
             //if (tGr.length > 15) return hurtz.reply(from, 'Maaf jumlah group sudah maksimal!', id)
             //if (check.size < minMem) return hurtz.reply(from, 'Member group tidak melebihi 30, bot tidak bisa masuk', id)
             if (check.status === 200) {
-                await hurtz.joinGroupViaLink(link).then(() => hurtz.reply(from, 'Bot akan segera masuk!', id))
+                const name_gc = check.subject
+                const id_gc = check.id
+                const member_gc = check.size
+                const create_gc = check.creation
+                const owner_gc = check.subjectOwner.replace('@c.us','')
+                data_sewa.push({
+                    id: id_gc,
+                    nama: name_gc,
+                    count: countHari
+                })
+                fs.writeFileSync('./lib/sewa_bot.json', JSON.stringify(data_sewa, null, 2))
+                await hurtz.joinGroupViaLink(link).then(() => hurtz.sendTextWithMentions(from, `*Bot berhasil masuk ke grup* :
+
+*ID Grup* : ${id_gc}
+*Nama* : ${name_gc}
+*Jumlah member* : ${member_gc}
+*Tanggal pembuatan* : ${create_gc}
+*Owner grup* : @${owner_gc}
+`, id))
             } else {
                 hurtz.reply(from, 'Link group tidak valid!', id)
             }
@@ -3959,10 +3981,10 @@ Contoh : _!gambar mobil_
          default:
             if (command.startsWith('!')) {
                 if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
-                // hurtz.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
-                const que61 = body.slice(1)
-                const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
-                hurtz.reply(from, sigot61.success, id)
+                hurtz.reply(from, `Hai ${pushname} sayangnya.. bot tidak mengerti perintah *${args[0]}* mohon ketik *!menu*\n\n_Fitur limit dan spam dimatikan, gunakan bot seperlunya aja_`, id)
+                // const que61 = body.slice(1)
+                // const sigot61 = await get.get(`http://simsumi.herokuapp.com/api?text=${que61}&lang=id`).json()
+                // hurtz.reply(from, sigot61.success, id)
                 // // console.log(sigot61)
                 await hurtz.sendSeen(from)}
         }
