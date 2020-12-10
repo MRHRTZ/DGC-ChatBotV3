@@ -1,4 +1,6 @@
 const { decryptMedia } = require('@open-wa/wa-decrypt')
+const puppeteer = require('puppeteer')
+const cheerio = require('cheerio')
 const getYouTubeID = require('get-youtube-id')
 const sharp = require('sharp')
 const fs = require('fs-extra')
@@ -50,10 +52,11 @@ const {prefix, banChats, restartState: isRestart,mtc: mtcState, whitelist ,sAdmi
 
 moment.tz.setDefault('Asia/Jakarta').locale('id')
 
-module.exports = msgHandler = async (hurtz, message) => {
+module.exports = freeHandler = async (hurtz, message) => {
     try {
         const { from, to, type, id, t, chatId, sender, isGroupMsg, chat, caption, isMedia, mimetype, quotedMsg, quotedMsgObj, mentionedJidList, fromMe, self } = message
         let { body } = message
+        // if (chat.id !== '6288233282599-1601304366@g.us') return
         if (sender && sender.isMe) from = to
         const { name, formattedTitle } = chat
         let { pushname, verifiedName } = sender
@@ -1115,32 +1118,6 @@ Pesanan:`, id)
                     hurtz.reply(from, mess.error.St, id)
             }
             await hurtz.sendSeen(from)
-            break
-        case switch_pref+'screenshot':
-            if (args.length === 1) return hurtz.reply(from, 'Mohon masukan url, contoh : *!screenshot _https://google.com_*', id)
-            if (!args[1].match(isUrl)) return hurtz.reply(from, `Sepertinya itu bukan url yg benar!`, id)
-            const pageUrl = body.slice(12)
-            const browser = await puppeteer.launch({
-                defaultViewport: {
-                    width: 800,
-                    height: 500,
-                    isLandscape: true
-                }
-            });
-            const page = await browser.newPage();
-            await page.goto(
-                pageUrl,
-                { waitUntil: 'networkidle2' }
-            );
-            // await page.screenshot({
-            //     omitBackground: true
-            // });
-            // await page.goto('https://bitsofco.de');
-
-            // 4. Take screenshot
-            await page.screenshot({path: './media/screenshot.png'});
-            await browser.close();
-            await hurtz.sendFile(from, './media/screenshot.png', 'ss.png', 'Nih ssnya', id)
             break
         case switch_pref+'newbot':
             if (!isOwner) return hurtz.reply(from, `Hanya owner oke!`, id)
@@ -3158,6 +3135,26 @@ Video : ${vid_post_}
             }
             hurtz.reply(from, 'Broadcast Success!', id)
             await hurtz.sendSeen(from)
+            break
+        case switch_pref+'codmw':
+            const browser = await puppeteer.launch({
+                headless: true,
+                executablePath: 'C://Program Files//Google//Chrome//Application//chrome.exe',
+                defaultViewport: null
+            });
+            const page = await browser.newPage();
+            await page.goto('https://textpro.me/green-neon-text-effect-874.html');
+            await page.type('#text-0', text);
+            await page.click('[name="submit"]')
+            await page.waitForNavigation()
+            const bodyHandle = await page.$('body');
+            const html = await page.evaluate(body => body.innerHTML, bodyHandle);
+            await bodyHandle.dispose();
+            const $ = cheerio.load(html)
+            const resuuult = $('#content-wrapper > section > div > div.col-md-9 > div:nth-child(4) > div > img').attr('src')
+            // console.log('https://textpro.me'+result)
+            await hurtz.sendFileFromUrl(from, resuuult, 'codmw.jpg', `Nih dah jadi ${pushname}`, id)
+            await browser.close();
             break
             case switch_pref+'bcgc':
                 if (!isOwner) return hurtz.reply(from, `Khusus owner aja yoo`, id)
