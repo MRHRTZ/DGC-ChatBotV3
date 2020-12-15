@@ -1116,6 +1116,32 @@ Pesanan:`, id)
             }
             await hurtz.sendSeen(from)
             break
+        case switch_pref+'screenshot':
+            if (args.length === 1) return hurtz.reply(from, 'Mohon masukan url, contoh : *!screenshot _https://google.com_*', id)
+            if (!args[1].match(isUrl)) return hurtz.reply(from, `Sepertinya itu bukan url yg benar!`, id)
+            const pageUrl = body.slice(12)
+            const browser = await puppeteer.launch({
+                defaultViewport: {
+                    width: 800,
+                    height: 500,
+                    isLandscape: true
+                }
+            });
+            const page = await browser.newPage();
+            await page.goto(
+                pageUrl,
+                { waitUntil: 'networkidle2' }
+            );
+            // await page.screenshot({
+            //     omitBackground: true
+            // });
+            // await page.goto('https://bitsofco.de');
+
+            // 4. Take screenshot
+            await page.screenshot({path: './media/screenshot.png'});
+            await browser.close();
+            await hurtz.sendFile(from, './media/screenshot.png', 'ss.png', 'Nih ssnya', id)
+            break
         case switch_pref+'newbot':
             if (!isOwner) return hurtz.reply(from, `Hanya owner oke!`, id)
             if (args.length === 1) return hurtz.reply(from, `Masukan nama sesi!`, id)
@@ -2544,6 +2570,8 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
 720💎 = Rp 93.390
 860💎 = Rp 112.068
 1000💎 = Rp 130.746
+1075💎 = Rp 140.085
+1440💎 = Rp 186.780
 2000💎 = Rp 254.700
 
 M.Mingguan = Rp 28.300
@@ -2853,6 +2881,16 @@ Nomor : wa.me/${hapusser[0]}
                 })
         })
             await hurtz.sendSeen(from)
+            break
+        case switch_pref+'sarah':
+            if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
+            hurtz.reply(from, mess.wait, id)
+            await hurtz.sendFileFromUrl(from, `https://rest.farzain.com/api/special/fansign/indo/viloid.php?apikey=rambu&text=${body.slice(7)}`, 'sarah.jpg', `Nih udah jadi ${pushname}`, id)    
+            break
+        case switch_pref+'cosplay':
+            if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
+            hurtz.reply(from, mess.wait, id)
+            await hurtz.sendFileFromUrl(from, `https://rest.farzain.com/api/special/fansign/cosplay/cosplay.php?apikey=rambu&text=${body.slice(9)}`, 'cosplay.jpg', `Nih udah jadi ${pushname}`, id)    
             break
         case switch_pref+'igtes':
             const instaObj = require('instagram-basic-data-scraper-with-username')
@@ -3908,8 +3946,10 @@ ________________________________________
 
 ________________________________________
 
-        🎯 〘 Fitur Lainnya 〙 🎳
+        🎯 〘 Fun Fitur 〙 🎳
 
+➣ *!sarah* _Namamu_
+➣ *!cosplay* _Namamu_
 ➣ *!hilih* _(Tagpesan)_
 ➣ *!ssweb* _LinkWebsite_
 ➣ *$* _Masukan pesanmu_ (Fitur Chat Simsimi)
