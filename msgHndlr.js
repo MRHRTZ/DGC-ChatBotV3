@@ -123,7 +123,7 @@ module.exports = msgHandler = async (hurtz, message) => {
         if (isGroupMsg && command.startsWith('!')) console.log('\x1b[1;31m~\x1b[1;37m>>', '[\x1b[1;32mOUT\x1b[1;37m]', time, color(msgs(command)), 'from', color(pushname), 'in', color(formattedTitle))
         if (!isGroupMsg && !command.startsWith('!')) console.log('\x1b[1;33m~\x1b[1;37m>>', '[\x1b[1;34mMSG\x1b[1;37m]', time, color('pesan'), 'from', color(pushname))
         if (isGroupMsg && !command.startsWith('!')) console.log('\x1b[1;33m~\x1b[1;37m>>', '[\x1b[1;34mMSG\x1b[1;37m]', time, color('pesan'), 'from', color(pushname), 'in', color(formattedTitle))
-        const switch_pref = /^[°•π÷×¶∆£¢€¥®™✓_=|~!?@#$%^&.\/\\©^]/.test(command) ? command.match(/^[°•π÷×¶∆£¢€¥®™✓_=|~!?@#$%^&.\/\\©^]/gi) : ''
+        const switch_pref = /^[°•π÷×¶∆£¢€¥®™✓_=|~!?@#$%^&.\/\\©^]/.test(command) ? command.match(/^[°•π÷×¶∆£¢€¥®™✓_=|~!?@#$%^&.\/\\©^]/gi) : '-'
 
         
         function INFOLOG(info) {
@@ -3658,7 +3658,7 @@ Video : ${vid_post_}
         case switch_pref+'loli':
             if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             hurtz.reply(from, mess.wait, id)
-            const loli = await get.get('https://mhankbarbar.herokuapp.com/api/randomloli').json()
+            const loli = await get.get('https://mhankbarbars.herokuapp.com/api/randomloli').json()
             hurtz.sendFileFromUrl(from, loli.result, 'loli.jpeg', `loli buat ${pushname}`, id)
             await hurtz.sendSeen(from)
             break
