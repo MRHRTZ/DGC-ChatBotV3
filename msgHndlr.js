@@ -133,27 +133,50 @@ module.exports = msgHandler = async (hurtz, message) => {
         function ERRLOG(e) {
             return console.log('\x1b[1;31m~\x1b[1;37m>>', '[\x1b[1;31mERROR\x1b[1;37m]', time, color('\tname: ' + e.name + ' message: ' + e.message + ' at: ' + e.at))
         }
-        // if (isQuotedSticker) {   
-        //     mediaData = await decryptMedia(quotedMsg, uaOverride)
-        //     // await hurtz.sendImage(from, `data:${quotedMsg.mimetype};base64,${mediaData.toString('base64')}`, `${pushname}.jpg`, `Sticker berhasil dikonversi! ${pushname}`)
-        //     await hurtz.sendImageAsSticker(ownerNumber, `data:${quotedMsg.mimetype};base64,${mediaData.toString('base64')}`)
-        //     console.log(mediaData)
-        // }
- 
-            //hurtz.reply(from, `_Sepertinya anda telah terblokir dikarenakan vc/call bot._`)
-        //if (!isOwner) return
-    //try { 
 
 
-        //EXPIRED BEGIN
 
-        // cron.schedule('00 15 * * * *', () => {
-        //     const hzbot = '6285559038021-1603688917@g.us'
-        //     hurtz.sendText(hzbot, `Terima kasih telah menggunakan jasa DGC ChatBot grup ini telah expired pada tanggal 52 bot akan otomatis leave terima kasih.`)
-        //     // .then(() => hurtz.leaveGroup(hzbot))
-        //     // .then(() => hurtz.deleteChat(hzbot))
-        //     console.log('Coming')
-        // })
+        const dataWaktu = JSON.parse(fs.readFileSync('./lib/dataadz.json', 'utf-8'))
+
+        const updateTime = Axios.get('https://api.pray.zone/v2/times/today.json?city=bandung')
+             .then(({ data }) => {
+                  const isi = data.results.datetime[0].times
+                  const shubuh = isi.Fajr
+                  const magrib = isi.Maghrib
+
+                  dataWaktu[0].shubuh = shubuh
+                  dataWaktu[0].magrib = magrib
+
+                  fs.writeFileSync('./lib/dataadz.json', JSON.stringify(dataWaktu, null, 2))
+             })
+
+        const jamsub = Number(dataWaktu[0].shubuh.split(':')[0])
+        const menitsub = Number(dataWaktu[0].shubuh.split(':')[1])
+
+        const jammag = Number(dataWaktu[0].magrib.split(':')[0])
+        const menitmag = Number(dataWaktu[0].magrib.split(':')[1])
+
+        let adzlist = JSON.parse(fs.readFileSync('./lib/listadzan.json'))
+        const isADZ = adzlist.includes(chat.id) ? true : false
+
+
+        cron.schedule(`0 ${menitsub} ${jamsub} * * *`, () => {
+             if (!isADZ) return
+             INFOLOG('Waktu Shubuh')
+             hurtz.sendFile(from, './media/adzan/shubuh_bdg.png', 'adz.png', `*Saatnya sholat shubuh untuk BANDUNG dan Sekitarnya..*`)
+             hurtz.sendPtt(from, './media/adzan/adzan_bayati.mp3')
+             updateTime
+        })
+
+        cron.schedule(`0 ${menitmag} ${jammag} * * *`, () => {
+             if (!isADZ) return
+             INFOLOG('Waktu Maghrib')
+             hurtz.sendFile(from, './media/adzan/magrib_bdg.jpg', 'adz.jpg', `*Saatnya sholat magrib untuk BANDUNG dan Sekitarnya..*`)
+             hurtz.sendPtt(from, './media/adzan/adzan_bayati.mp3')
+             updateTime
+        })
+
+        
         let antli = JSON.parse(fs.readFileSync('./lib/antilink.json'))
         const isLinkOn = isGroupMsg ? antli.includes(chat.id) : false
         
@@ -675,6 +698,19 @@ module.exports = msgHandler = async (hurtz, message) => {
                 hurtz.reply(from, `✅ Antilink telah diaktifkan! ketik *!deantilink* untuk mematikannya.`, id)
             }
             await hurtz.sendSeen(from)
+            break
+        case switch_pref+'adzan':
+            if (!isGroupAdmins) return hurtz.reply(from, 'Maaf, perintah ini hanya dapat dilakukan oleh admin grup!', id)
+            if (body.slice(7).toLowerCase() == 'aktif') {
+                adzlist.push(chat.id)
+                fs.writeFileSync('./lib/listadzan.json', JSON.stringify(adzlist, null, 2))
+                hurtz.reply(from, `Adzan otomatis terah diaktifkan untuk grup ini!`, id)       
+            } else if (body.slice(7).toLowerCase() == 'mati') {
+                let indexaz = adzlist.indexOf(chat.id);
+                adzlist.splice(indexaz,1)
+                fs.writeFileSync('./lib/listadzan.json', JSON.stringify(muted, null, 2))
+                hurtz.reply(from, `Adzan otomatis telah dimatikan!`, id)   
+            }
             break
         case switch_pref+'mute':
             if (!isGroupAdmins) return hurtz.reply(from, 'Maaf, perintah ini hanya dapat dilakukan oleh admin grup!', id)
@@ -1346,7 +1382,7 @@ if (isMedia) {
         case switch_pref+'play':
             if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             if (args.length === 1) return hurtz.reply(from, 'Kirim perintah *!play* _Judul lagu yang akan dicari_')
-            const playy = await get.get(`http://nzcha-api.herokuapp.com/ytsearch?q=${encodeURIComponent(body.slice(6))}`).json()
+            const playy = await get.get(`http://nzcha-apii.herokuapp.com/ytsearch?q=${encodeURIComponent(body.slice(6))}`).json()
             const mulaikah = playy.result[0].url
             try {
                 hurtz.reply(from, mess.wait, id)
@@ -1370,7 +1406,7 @@ if (isMedia) {
             await hurtz.sendSeen(from)
             break
         case switch_pref+'reqmu':
-            const datarqsd = await get.get(`http://nzcha-api.herokuapp.com/ytsearch?q=why`).json()
+            const datarqsd = await get.get(`http://nzcha-apii.herokuapp.com/ytsearch?q=why`).json()
             console.log(datarqsd.result)
             break
         case switch_pref+'musik':
@@ -1382,7 +1418,7 @@ if (isMedia) {
             hurtz.reply(from, mess.wait, id)
             try {
                 //hurtz.reply(from, '_Sedang mencari data..._', id)
-                const jsonsercmu = await get.get(`http://nzcha-api.herokuapp.com/ytsearch?q=${encodeURIComponent(quer)}`).json()
+                const jsonsercmu = await get.get(`http://nzcha-apii.herokuapp.com/ytsearch?q=${encodeURIComponent(quer)}`).json()
                 // console.log(jsonsercmu)
                 // if (!resmus.ok) throw new Error(`unexpected response ${resmus.statusText}`)
                 // const jsonsercmu = await resmus.json()
@@ -1414,7 +1450,7 @@ if (isMedia) {
             hurtz.reply(from, mess.wait, id)
             try {
                 //hurtz.reply(from, '_Sedang mencari data..._', id)
-                const jsonsercmuv = await get.get(`http://nzcha-api.herokuapp.com/ytsearch?q=${encodeURIComponent(querv)}`).json()
+                const jsonsercmuv = await get.get(`http://nzcha-apii.herokuapp.com/ytsearch?q=${encodeURIComponent(querv)}`).json()
                 // if (!resmusv.ok) throw new Error(`unexpected response ${resmusv.statusText}`)
                 // const jsonsercmuv = await resmusv.json()
                 // let berhitung1 = 1
@@ -1490,7 +1526,7 @@ if (isMedia) {
             hurtz.reply(from, mess.wait, id)
             try {
                 //hurtz.reply(from, '_Sedang mencari data..._', id)
-                const jsonserc = await Axios.get(`http://nzcha-api.herokuapp.com/ytsearch?q=${encodeURIComponent(keywot)}`)
+                const jsonserc = await Axios.get(`http://nzcha-apii.herokuapp.com/ytsearch?q=${encodeURIComponent(keywot)}`)
                 // if (!response2.ok) throw new Error(`unexpected response ${response2.statusText}`)
                 // const jsonserc = await response2.json()
                 // ytsr(args[1]).then((a) => console.log(a))
@@ -1660,7 +1696,7 @@ if (isMedia) {
             try {
                 hurtz.reply(from, mess.wait, id)
                 const quegam = body.slice(8)
-                const gamb = `http://nzcha-api.herokuapp.com/googleimage?q=${encodeURIComponent(quegam)}`
+                const gamb = `http://nzcha-apii.herokuapp.com/googleimage?q=${encodeURIComponent(quegam)}`
                 const gettinggam = await get.get(gamb).json()
                 if (gettinggam.error) return console.log(`error ${gettinggam.error}`)
                 var plorgam = Math.floor(Math.random() * gettinggam.result.length)
@@ -1971,8 +2007,8 @@ if (isMedia) {
                 console.log(pilur[args[1]])
                 hurtz.reply(from, mess.wait, id)
                 //const response1a = await fetch(`https://api.vhtear.com/ytdl?link=https://www.youtube.com/watch?v=${args[1]}&apikey=Dim4z05`)
-                // const barbarytp45 = await get.get(`https://nzcha-api.herokuapp.com/ytdl?id=${pilur[args[1]]}`).json()
-                //await get.get(`https://nzcha-api.herokuapp.com/ytdl?id=${encodeURIComponent(pilur[args[1]])}`).json()
+                // const barbarytp45 = await get.get(`https://nzcha-apii.herokuapp.com/ytdl?id=${pilur[args[1]]}`).json()
+                //await get.get(`https://nzcha-apii.herokuapp.com/ytdl?id=${encodeURIComponent(pilur[args[1]])}`).json()
                 //if (!response1a.ok) throw new Error(`unexpected response vhtear ${response1a.statusText}`);
                 // if (!mhankyt45.ok) throw new Error(`Err mhankyt4 ${mhankyt45.statusText}`)
                 // if (barbarytp45.error) return console.log(barbarytp45.error)
@@ -3094,13 +3130,14 @@ Video : ${vid_post_}
         case switch_pref+'brainly':
             if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             // hurtz.reply(from, mess.mt, id)
+            hurtz.reply(from, mess.wait, id)
             await Axios.get(`https://api.vhtear.com/branly?query=${encodeURIComponent(body.slice(9))}&apikey=mrhrtz-for-vhtear`)
             .then(({ data }) => {
-                hurtz.reply(from, `${data.result.data}`)
+                hurtz.reply(from, data.result.data, id)
+                console.log(data)
             })
             await hurtz.sendSeen(from)
             break
-
         case switch_pref+'alamat':
         case switch_pref+'tempat':
             if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
@@ -3541,7 +3578,7 @@ Video : ${vid_post_}
             const query__ = body.slice(7)
             hurtz.reply(from, mess.wait, id)
             //hurtz.reply(from, `_Sedang mencari chord ${query__}_`, id)
-            const chord = await get.get('https://mrhrtz-api.herokuapp.com/api/chord?q='+ query__).json()
+            const chord = await get.get('https://epiiai.herokuapp.com/api/chord?q='+ query__).json()
             if (chord.error) return hurtz.reply(from, chord.error, id)
             console.log(chord)
             hurtz.reply(from, chord.result, id)
@@ -3573,16 +3610,24 @@ Video : ${vid_post_}
         case switch_pref+'jadwalshalat':
             if (args.length === 1) return hurtz.reply(from, '[❗] Kirim perintah *!jadwalShalat [daerah]*\ncontoh : *!jadwalShalat Tangerang*\nUntuk list daerah kirim perintah *!listDaerah*')
             const daerah = body.slice(14)
-            
-            
-            const jadwalShalat = await get.get(`https://api.haipbis.xyz/jadwalsholat?daerah=${daerah}`).json()
-            if (jadwalShalat.error) return hurtz.reply(from, jadwalShalat.error, id)
-            const { Imsyak, Subuh, Dhuha, Dzuhur, Ashar, Maghrib, Isya } = await jadwalShalat
             arrbulan = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
             tgl = new Date().getDate()
             bln = new Date().getMonth()
             thn = new Date().getFullYear()
-            const resultJadwal = `Jadwal shalat di ${daerah}, ${tgl}-${arrbulan[bln]}-${thn}\n\nImsyak : ${Imsyak}\nSubuh : ${Subuh}\nDhuha : ${Dhuha}\nDzuhur : ${Dzuhur}\nAshar : ${Ashar}\nMaghrib : ${Maghrib}\nIsya : ${Isya}`
+            const jadwalShalat = await get.get(`https://api.pray.zone/v2/times/day.json?city=${daerah}&date=${thn}-${bln}-${tgl}`).json()
+            if (jadwalShalat.error) return hurtz.reply(from, jadwalShalat.error, id)
+            const { Imsak,
+                    Sunrise,
+                    Fajr,
+                    Dhuhr,
+                    Asr,
+                    Sunset,
+                    Maghrib,
+                    Isha,
+                    Midnight
+                } = await jadwalShalat.results.datetime[0].times
+            
+            const resultJadwal = `Jadwal shalat di ${daerah}, ${tgl}-${arrbulan[bln]}-${thn}\n\nImsyak : ${Imsak}\nSubuh : ${Fajr}\nTerbit : ${Sunrise}\nDzuhur : ${Dhuhr}\nAshar : ${Asr}\nMaghrib : ${Maghrib}\nIsya : ${Isha}`
             hurtz.reply(from, resultJadwal, id)
             await hurtz.sendSeen(from)
             break
@@ -3750,7 +3795,7 @@ Video : ${vid_post_}
        
             const nulis = encodeURIComponent(body.slice(7))
             hurtz.reply(from, `_Bot lagi menulis ni ${pushname}..._`, id)
-            let urlnulis = `https://mrhrtz-api.herokuapp.com/nulis?text=${nulis}`
+            let urlnulis = `https://epiiai.herokuapp.com/nulis?text=${nulis}`
             const awalnul = await get.get(urlnulis).json()
             // console.log(awalnul.code)
             await hurtz.sendImage(from, awalnul.result, 'Nulis.jpg', 'Oke done ni tulisannya', id).catch(e => hurtz.reply(from, "Error: "+ e));
@@ -3761,7 +3806,7 @@ Video : ${vid_post_}
         if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
        
             const quotes = await get.get('https://api.kanye.rest').json()
-            const qotues = await get.get('https://mrhrtz-api.herokuapp.com/api/randomquotes').json()
+            const qotues = await get.get('https://epiiai.herokuapp.com/api/randomquotes').json()
             await hurtz.reply(from, `*Quote* : ${qotues.quotes}\n*Author* : ${qotues.author}`, id)
                     // console.log(result.data[0])
             //hurtz.reply(from, `➣ *Quotes* : ${quotes.quotes}`, id)
@@ -3787,12 +3832,6 @@ Video : ${vid_post_}
         if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
         const qotues_json = JSON.parse(fs.readFileSync('./lib/quotes.json'))
         const qotuesa = qotues_json[Math.floor(Math.random() * qotues_json.length)]
-        const isCas2 = await hurtz.getIsPlugged() ? "Charging ✅⚡" : "Not Charged 🔌❌"
-        const loadedMsg2 = await hurtz.getAmountOfLoadedMessages()
-        const groupsaa = await hurtz.getAllGroups()
-        const timestamp2 = speed();
-        const MyPhone2 = await hurtz.getMe()
-        const latensi2 = speed() - timestamp2
         const helpa = `
 ▃▄▅▆▇█████╬██╬█████▇▆▅▄▃
 ███   🤖 *DGC  ChatBotV3* 🤖   ███
@@ -3800,22 +3839,12 @@ Video : ${vid_post_}
 
 ❝${qotuesa.quotes}❞
 
-     _quotes by ${qotuesa.author}_
+         _quotes by ${qotuesa.author}_
 
 
 💡 Follow Insta Bot Dev : @hanif_az.sq.61
-💌 Contact Me On WhatsApp : @6285559038021
+💌 Contact Me On WhatsApp : wa.me/6285559038021
 
-
-🔋 *Battery* : _${MyPhone2.battery}% ${isCas2}_
-📬 *Loaded Message* : _${loadedMsg2}_ 
-📮 *Group* : _${groupsaa.length}_ 
-💻 *Host* : _${os.hostname()}_
-📱 *Device* : _${MyPhone2.phone.device_manufacturer}_
-⚖️ *Ram Usage* : _${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB / ${Math.round(require('os').totalmem / 1024 / 1024)}MB_
-🧿 *Platform* : _${os.platform()}_
-🔌 *CPU* : _${os.cpus()[0].model}_
-⚡ *Speed Process* : _${latensi2.toFixed(4)}_
 
 ________________________________________
 
@@ -3970,7 +3999,7 @@ Contoh : _!gambar mobil_
 
 ╰╼ _DGC_CHATBOT@3.0 ©2020 ᴍᴀᴅᴇ ʙʏ_ 💗
 `
-            hurtz.sendTextWithMentions(from, helpa, id)
+            hurtz.reply(from, helpa, id)
             await hurtz.sendSeen(from)
             break
         case switch_pref+'readme':
