@@ -2,6 +2,7 @@ const { decryptMedia } = require('@open-wa/wa-decrypt')
 const getYouTubeID = require('get-youtube-id')
 const sharp = require('sharp')
 const fs = require('fs-extra')
+const cheerio = require('cheerio')
 const urlShortener = require('./lib/shortener')
 const axios = require('axios')
 const moment = require('moment-timezone')
@@ -10,10 +11,12 @@ const download = require('download-file')
 // const fetch = require('node-fetch')
 const speed = require('performance-now')
 const google = require('google-it')
+const gis = require('g-i-s')
 const color = require('./lib/color')
 const { getUser, getPost, searchUser } = require('./lib/Insta')
 const { promisify } = require('util')
 const { spawn, exec } = require('child_process')
+const tiktok = require('tiktok-scraper')
 const { getLocationData } = require('./lib')
 const { BrainlySearch } = require('./lib/brainly')
 const util = require('util')
@@ -127,11 +130,11 @@ module.exports = msgHandler = async (hurtz, message) => {
 
         
         function INFOLOG(info) {
-            return console.log('\x1b[1;34m~\x1b[1;37m>>', '[\x1b[1;33mINF\x1b[1;37m]', time, color(info))
+            console.log('\x1b[1;34m~\x1b[1;37m>>', '[\x1b[1;33mINF\x1b[1;37m]', time, color(info))
         }
         
         function ERRLOG(e) {
-            return console.log('\x1b[1;31m~\x1b[1;37m>>', '[\x1b[1;31mERROR\x1b[1;37m]', time, color('\tname: ' + e.name + ' message: ' + e.message + ' at: ' + e.at))
+            console.log('\x1b[1;31m~\x1b[1;37m>>', '[\x1b[1;31mERROR\x1b[1;37m]', time, color('\tname: ' + e.name + ' message: ' + e.message + ' at: ' + e.at))
         }
 
 
@@ -704,7 +707,7 @@ module.exports = msgHandler = async (hurtz, message) => {
             if (body.slice(7).toLowerCase() == 'aktif') {
                 adzlist.push(chat.id)
                 fs.writeFileSync('./lib/listadzan.json', JSON.stringify(adzlist, null, 2))
-                hurtz.reply(from, `Adzan otomatis terah diaktifkan untuk grup ini!`, id)       
+                hurtz.reply(from, `Adzan otomatis telah diaktifkan untuk grup ini!`, id)       
             } else if (body.slice(7).toLowerCase() == 'mati') {
                 let indexaz = adzlist.indexOf(chat.id);
                 adzlist.splice(indexaz,1)
@@ -1287,8 +1290,8 @@ if (isMedia) {
                 const get_stick = await fs.readFileSync('./media/saved_stickers/' + body.slice(11) + '.jpg', { encoding: "base64" })
                 await hurtz.sendImageAsSticker(from, `data:image/jpeg;base64,${get_stick.toString('base64')}`)
             } catch (e){
-                ERRLOG(e)
                 hurtz.reply(from, `Kesalahan mengambil stiker! cek kembali nama stiker dengan ketik *!liststiker*`)
+                ERRLOG(e)
             }
             break
         case switch_pref+'delstiker':
@@ -1696,12 +1699,34 @@ if (isMedia) {
             try {
                 hurtz.reply(from, mess.wait, id)
                 const quegam = body.slice(8)
-                const gamb = `http://nzcha-apii.herokuapp.com/googleimage?q=${encodeURIComponent(quegam)}`
-                const gettinggam = await get.get(gamb).json()
-                if (gettinggam.error) return console.log(`error ${gettinggam.error}`)
-                var plorgam = Math.floor(Math.random() * gettinggam.result.length)
+                async function ImageSearch(query) {
+                    return new Promise((resolve, reject) => {
+                        gis(query, logResults)
+                        function logResults(error, results) {
+                            if (error) {
+                                reject(error)
+                            }
+                            else {
+                                let url = []
+                                for (let i = 0; i < results.length; i++) {
+                                    url.push(decodeURIComponent(JSON.parse(`"${results[i].url}"`)))
+                                }
+                                resolve(url)
+                            }
+                        }
+                    })
+                }
+                ImageSearch(quegam)
+                    .then((result) => {
+                        let acak = Math.floor(Math.random() * result.length)
+                        hurtz.sendFileFromUrl(from, result[acak], `gam.${result[acak].substr(-3)}`, `*Hasil pencarian google image dari ${quegam}*`, id).catch((e) => { ERRLOG(e); hurtz.reply(from, `_Data tersebut tidak ditemukan!_`, id)})
+                    })
+                // const gamb = `http://nzcha-apii.herokuapp.com/googleimage?q=${encodeURIComponent(quegam)}`
+                // const gettinggam = await get.get(gamb).json()
+                // if (gettinggam.error) return console.log(`error ${gettinggam.error}`)
+                // var plorgam = Math.floor(Math.random() * gettinggam.result.length)
                 // console.log(plorgam)
-                await hurtz.sendFileFromUrl(from, gettinggam.result[plorgam], `gam.${gettinggam.result[plorgam].substr(-3)}`, `*Hasil pencarian google image from ${quegam}*`, id).catch((e) => { ERRLOG(e); hurtz.reply(from, `_Data tersebut tidak ditemukan!_`, id)})
+                // await hurtz.sendFileFromUrl(from, gettinggam.result[plorgam], `gam.${gettinggam.result[plorgam].substr(-3)}`, `*Hasil pencarian google image from ${quegam}*`, id).catch((e) => { ERRLOG(e); hurtz.reply(from, `_Data tersebut tidak ditemukan!_`, id)})
             } catch (e) {
                 ERRLOG(e)
             }
@@ -2349,20 +2374,73 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
         case switch_pref+'tiktok':
             if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
             if (args.length === 1) return hurtz.reply(from, 'Kirim perintah *!tiktok* _linkVideoTikTod_, untuk contoh silahkan kirim perintah *!readme*', id)
-           
+            hurtz.reply(from, mess.wait, id)
             try{
-            hurtz.reply(from, '_Mohon tunggu sebentar, sedang di proses..._', id)
-            const jsontik = await get.get(`https://api.vhtear.com/tiktokdl?link=${args[1]}&apikey=Dim4z05`).json()
-                // if (!restik.ok) throw new Error(`Kesalahan respon : ${restik.statusText}`)
-                // const jsontik = await restik.json()
-                if (jsontik.error){
-                    hurtz.reply(from, `Mohon maaf kesalahan saat mendownload data!`, id)
-                } else {
-                    const captik = `*Data berhasil Didapatkan*\n\n*Title* : ${jsontik.result.title}\n*Durasi* : ${jsontik.result.duration}\n*Deskripsi* : ${jsontik.result.desk}`
-                    console.log(jsontik)
-                    hurtz.sendFileFromUrl(from, jsontik.result.image.toString(), `tiktod.jpg`, captik, id)
-                    await hurtz.sendFileFromUrl(from, jsontik.result.video.toString(), `${jsontik.result.title}.mp4`, `Video berhasil terkirim ${pushname}`, id)
+            function tiktod(url) {
+              return new Promise((resolve, reject) => {
+                try {
+                  tiktok.getVideoMeta(url)
+                  .then((result) => {
+                    const data = result.collector[0]
+                    let Tag = []
+                    for (let i = 0; i < data.hashtags.length; i++) {
+                      const name = data.hashtags[i].name
+                      Tag.push(name)
+                    }
+                    // console.log(data)
+                    const id = data.id
+                    const text = data.text
+                    const date = data.createTime
+                    const name = data.authorMeta.name
+                    const nick = data.authorMeta.nickName
+                    const music = data.musicMeta.musicName
+                    const thumb = data.imageUrl
+                    const hastag = Tag
+
+                    resolve({
+                      id: id,
+                      name: name,
+                      nickname: nick,
+                      timestamp: date,
+                      thumb: thumb,
+                      text: text,
+                      music: music,
+                      hastag: hastag
+                    })
+                  })
+                .catch(reject)
+              } catch (error) {
+                console.log(error)
+              }
+              })
+            }
+
+            tiktod(args[1]).then(resul => {
+              const meta = resul
+              const exekute = exec('tiktok-scraper video ' + args[1] + ' -d')
+
+              exekute.stdout.on('data', function(data) {
+                const res = { loc: `${data.replace('Video location: ','').replace('\n','')}` }
+                const json = {
+                  meta,
+                  res,
+                } 
+                let hastagtik = `[ `
+                for (var i = 0; i < json.meta.hastag.length; i++) {
+                    hastagtik += `${json.meta.hastag[i]} `
                 }
+                hastagtik += ` ]`
+                const capt_tikt = `*Data berhasil didapatkan!*
+
+*Nama* : ${json.meta.name}
+*Nickname* : ${json.meta.nickname}
+*Text* : ${json.meta.text}
+*Music* : ${json.meta.music}
+*Hastag* : ${hastagtik}
+`
+            hurtz.sendFile(from, json.res.loc, `tiktod.${json.res.loc.substr(-3)}`, capt_tikt, id)
+              })
+            })
             } catch (err){
                 ERRLOG(err)
                 hurtz.sendText(ownerNumber, 'Error tiktod = '+err)
@@ -2494,7 +2572,7 @@ https://chat.whatsapp.com/HHfql9wXQ7O2b3laFIV1Hm
                     const bulan = a.getMonth()
                     const tanggal = a.getDate()
                     const tahun = a.getFullYear()
-                    const captig = `*Media berhasil terkirim!*\n\n*Username* : ${post.owner_user}\n*Waktu Publish* : ${jam}:${menit} ${tanggal}-${arrBln[bulan - 1]}-${tahun}\n*Text* : ${post.text}`
+                    const captig = `*Media berhasil terkirim!*\n\n*Username* : ${post.owner_user}\n*Waktu Publish* : ${jam}:${menit} ${tanggal}-${arrBln[bulan - 1]}-${tahun}\n*Capt* : ${post.capt}`
                     hurtz.sendFileFromUrl(from, post.url, `Insta`, captig, id)
                 })
                 // const responseig = await Axios.get(`http://localhost:3000/igpost?url=${args[1]}`).
@@ -2886,13 +2964,6 @@ Nomor : wa.me/${hapusser[0]}
         case switch_pref+'cogan':
         if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
         // hurtz.reply(from, mess.mt, id)
-        
-            if(isMsgLimit(serial)){
-                    return
-                }else{
-                    await addMsgLimit(serial)
-            }
-            await limitAdd(serial)
         hurtz.reply(from, mess.wait, id)
         const imageToBase64a = require('image-to-base64')
         const ithem = ["handsome boy", "cowo ganteng", "cogan"]
@@ -3637,16 +3708,73 @@ Video : ${vid_post_}
             break
         case switch_pref+'jadwaltv':
         if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
-       
-            try {
-                if (args.length === 1) return hurtz.reply(from, 'Kirim perintah *!jadwalTv [channel]*', id)
-                const query = body.slice(10).toLowerCase()
-                const jadwal = await jadwalTv(query)
-                hurtz.reply(from, jadwal, id)
-            } catch (err) {
-                const query = body.slice(10).toLowerCase()
-                hurtz.reply(from, `Maaf terdapat kesalahan saat mengakses stasiun tv ${query}`)
-            }
+        const channelna = body.slice(10)
+        let stasiun = [
+                "rcti",
+                "nettv",
+                "antv",
+                "gtv",
+                "indosiar",
+                "inewstv",
+                "kompastv",
+                "metrotv",
+                "mnctv",
+                "rtv",
+                "sctv",
+                "trans7",
+                "transtv",
+                "tvone",
+                "tvri"
+            ]
+        let isist = `*Channel yang tersedia* :\n\n`
+        for (let i = 0; i < stasiun.length; i++) {
+            isist += `➣  ${stasiun[i]}\n`
+        }
+        try {
+            
+            // const tv_switch = stasiun[0]
+            Axios.get('https://www.jadwaltv.net/channel/' + channelna)
+                .then(({ data }) => {
+                    const $ = cheerio.load(data)
+                    let isitable1 = []
+                    let isitable2 = []
+                    $('div > div > table:nth-child(3) > tbody > tr').each(function(i, result) {
+                        isitable1.push({
+                            jam: result.children[0].children[0].data,
+                            tayang: result.children[1].children[0].data
+                        })
+                    })
+                    // console.log(isitable1)
+                    $('div > div > table:nth-child(5) > tbody > tr').each(function(i, result) {
+                        isitable2.push({
+                            jam: result.children[0].children[0].data,
+                            tayang: result.children[1].children[0].data
+                        })
+                    })
+                    const semuatable = []
+
+                    for (let i = 0; i < isitable1.length; i++) {
+                        semuatable.push(isitable1[i])                    
+                    }
+                    for (let i = 0; i < isitable2.length; i++) {
+                        semuatable.push(isitable2[i])
+                    }
+                    // console.log(semuatable)
+                    let daftartay = `*Menampilkan daftar tayang channel ${channelna}*\n\n`
+                    for (let i = 0; i < semuatable.length; i++) {
+                        daftartay += `${semuatable[i].jam}  ${semuatable[i].tayang}\n`
+                    }
+                    hurtz.reply(from, daftartay, id)
+                    console.log(semuatable)
+                })
+                .catch((e) => {
+                    hurtz.reply(from, isist, id)
+                    console.log(e)
+                })
+        } catch (e) {
+            hurtz.reply(from, isist, id)
+            console.log(e)
+        }
             await hurtz.sendSeen(from)
             break
         case switch_pref+'jadwaltvnow':
