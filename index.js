@@ -83,10 +83,10 @@ const start = async (hurtz = new Hurtz()) => {
             //     hurtz.sendText(chat.groupMetadata.id, `Halo warga grup *${chat.contact.name}* terimakasih sudah menginvite bot ini, untuk melihat menu silahkan kirim *!menu*`)
             // } 
             // if (!whitelist.include(chat.id)) {
-                hurtz.sendText(chat.id, `Berhubungan Server terbatas bot ini hanya untuk grup DGC dan cabangnya!\n\nJika ada pihak yang membutuhkan bot ini untuk digrup donasi dan konfirmasi owner bot\n\nterima kasih.`)
-                .then(() => hurtz.sendContact(chat.id, '6285559038021@c.us'))
-                .then(() => hurtz.leaveGroup(chat.id))
-                .then(() => hurtz.deleteChat(chat.id))
+                hurtz.sendText(chat.id, `Terimakasih ${chat.contact.name} telah mengundang *DGC ChatBotV3* ☺️\n\nBot ini harus diaktifkan dengan kontak yang diizinkan!\nApabila nomer anda telah terdaftar ketik :\n\n*!aktifkan*\n\nApabila nomer anda tidak terdaftar chat owner (pemilik bot) untuk sewa bot ini wa.me/6285559038021\n\nHave a nice day!`)
+                // .then(() => hurtz.sendContact(chat.id, '6285559038021@c.us'))
+                // .then(() => hurtz.leaveGroup(chat.id))
+                // .then(() => hurtz.deleteChat(chat.id))
             // } else {
                     // hurtz.sendText(chat.id, `Halo semua DGC ChatBot siap melayani semuanya, kecuali klo mati :'D`)
             // } 
