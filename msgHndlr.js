@@ -30,6 +30,8 @@ const { help, snk, info, donate, readme, listChannel, bahasa_list } = require('.
 const { yta, ytv, buffer2Stream, ytsr, baseURI, stream2Buffer, noop } = require('./lib/ytdl')
 const { stdout, send } = require('process')
 const ffmpeg = require('fluent-ffmpeg')
+const writeFile = util.promisify(fs.writeFile)
+const readFile = util.promisify(fs.readFile)
 const nsfw_ = JSON.parse(fs.readFileSync('./lib/NSFW.json'))
 const welkomD = JSON.parse(fs.readFileSync('./lib/dmff.json'))
 const welkom = JSON.parse(fs.readFileSync('./lib/welcome.json'))
@@ -55,7 +57,7 @@ moment.tz.setDefault('Asia/Jakarta').locale('id')
 
 module.exports = msgHandler = async (hurtz, message) => {
     try {
-        const { from, to, type, id, t, chatId, sender, isGroupMsg, chat, caption, isMedia, mimetype, quotedMsg, quotedMsgObj, mentionedJidList, fromMe, self } = message
+        let { from, to, type, id, t, chatId, sender, isGroupMsg, chat, caption, isMedia, mimetype, quotedMsg, quotedMsgObj, mentionedJidList, fromMe, self } = message
         let { body } = message
         if (sender && sender.isMe) from = to
         const { name, formattedTitle } = chat
@@ -178,24 +180,131 @@ module.exports = msgHandler = async (hurtz, message) => {
              hurtz.sendPtt(from, './media/adzan/adzan_bayati.mp3')
              updateTime
         })
+        async function charaCheck(query) {
+             return new Promise((resolve, reject) => {
+                  const char = query
+                  Axios.get('https://myanimelist.net/character.php?cat=character&q=' + char)
+                  .then(({ data }) => {
+                       const $ = cheerio.load(data)
+                       const selector = '#content > table > tbody > tr:nth-child(1) > td > a'
+                       const small = $('#content > table > tbody > tr:nth-child(1) > td:nth-child(2) > small').text()
+                       const name = $(selector).text() + ' ' + small
+                       const url = $(selector).attr('href')
+                       resolve({
+                            status: 200,
+                            name: name,
+                            message: `Found chara ${name} and added to database!`
+                       })
+
+                  }).catch(e => reject({
+                       status: 404,
+                       message: `Character ${query} was not found!`
+                  }))
+             })
+        }
+
+        async function chara(query) {
+             return new Promise((resolve, reject) => {
+                  const char = query
+                  Axios.get('https://myanimelist.net/character.php?cat=character&q=' + char)
+                  .then(({ data }) => {
+                       const $ = cheerio.load(data)
+                       const selector = '#content > table > tbody > tr:nth-child(1) > td > a'
+                       const small = $('#content > table > tbody > tr:nth-child(1) > td:nth-child(2) > small').text()
+                       const name = $(selector).text() + ' ' + small
+                       const url = $(selector).attr('href')
+                       selector_mov = '#content > table > tbody > tr:nth-child(1) > td:nth-child(3) > small > a'
+                       let serial = []
+                       let manga = []
+                       $(selector_mov).get().map((res) => {
+                            const name = $(res).text()
+                            const url = 'https://myanimelist.net' + $(res).attr('href')
+                            serial.push({
+                                 Anime: name,
+                                 url: url
+                            })
+                       })
+                       let grab_frinst = $('#content > table > tbody > tr:nth-child(1) > td > small > div > a')
+                       manga.push({
+                            name: $(grab_frinst).text(),
+                            url: 'https://myanimelist.net' + $(`${grab_frinst}`).attr('href')
+                       })
+
+                       Axios.get(url)
+                       .then(({ data }) => {
+                            const $ = cheerio.load(data)
+                            const res_desc = $('#content > table > tbody > tr > td:nth-child(2)').text().split('\n\n\n\n\n\t  ')[1].split('            \n        \n')[0].replace(')',')\n')
+                            const img = $('#content > table > tbody > tr > td.borderClass > div > a > img').attr('data-src')
+                            const result = {
+                                 status: 200,
+                                 name: name,
+                                 image: img,
+                                 full_desc: res_desc,
+                                 url: url,
+                                 anime: serial,
+                                 manga: manga
+                            }
+                            resolve(result)
+                       }).catch(reject)
+                  }).catch(e => reject({
+                       status: 404,
+                       message: `Character ${query} was not found!`
+                  }))
+             })
+        }
 
         let characounter = JSON.parse(fs.readFileSync('./lib/characounter.json'))
         let charasession = JSON.parse(fs.readFileSync('./lib/charasession.json'))
         const isCharsesi = charasession.includes(chat.id) ? true : false
         let charlist = JSON.parse(fs.readFileSync('./lib/charlist.json'))
         let chargame = JSON.parse(fs.readFileSync('./lib/chargame.json'))
+        const CharaPath = './lib/chara/' + chat.id + '.json'
+        let dirChar = fs.readdirSync('./lib/chara')
+        let PathC = []
+        for (var i = 0; i < dirChar.length; i++) {
+            PathC.push(dirChar[i].replace('.json',''))
+        }
+        let isExistCharPath = PathC.includes(chat.id) ? true : false
+        let buffChara = isExistCharPath ? JSON.parse(fs.readFileSync(CharaPath)) : ''
+        
 
-        // if (isCharsesi && body) {
-        //     console.log(isCharsesi)
-        //     let charMsg = []
-        //     const objcharcount = {
-        //             groupId: chat.id,
-        //             GroupMsg: charMsg
-        //         }
-        //     // fs.writeFileSync('./lib/characounter.json', JSON.stringify(objcharcount, null, 2))
-        //     charMsg.push(body)
-        //     characounter.push(objcharcount)
-        //     fs.writeFileSync('./lib/characounter.json', JSON.stringify(characounter, null, 2))      
+        if (isExistCharPath && body) {
+            // console.log(characounter)
+            if (buffChara.status === 'active') {
+                buffChara.msgID.push(id)
+                buffChara.messages.push(body)
+                fs.writeFileSync(CharaPath, JSON.stringify(buffChara, null, 2))
+                let afterLength = 15
+                if (buffChara.messages.length == 14) {
+                    const getCharInt = body.toLowerCase().indexOf(buffChara.chara_name.toLowerCase())
+                    console.log(getCharInt)
+                }
+                if (buffChara.messages.length == afterLength) {
+                    buffChara.chara_name = charlist[Math.floor(Math.random() * charlist.length + 1)].keyword
+                    buffChara.msgID = []
+                    buffChara.messages = []
+                    fs.writeFileSync(CharaPath, JSON.stringify(buffChara, null, 2))
+                    chara(buffChara.chara_name).then((char) => {
+                        buffChara.anime_result.push(char)
+                        fs.writeFileSync(CharaPath, JSON.stringify(buffChara, null, 2))
+                        hurtz.reply(from, `*Guess this chara*
+
+*anime* : ${char}
+`, id)
+                        console.log(char)
+                    })
+                }
+            }
+            
+            // let charMsg = []
+            // const objcharcount = {
+            //         groupId: chat.id,
+            //         GroupMsg: charMsg
+            //     }
+            // fs.writeFileSync('./lib/characounter.json', JSON.stringify(objcharcount, null, 2))
+            // charMsg.push(body)
+            // characounter.push(objcharcount)
+            // fs.writeFileSync('./lib/characounter.json', JSON.stringify(characounter, null, 2))      
         //     for (var i = 0; i < charasession.length; i++) {
         //         for (var j = 0; j < characounter.length; j++) {
 
@@ -230,7 +339,7 @@ module.exports = msgHandler = async (hurtz, message) => {
         //             }
         //         }
         //     }      
-        // }
+        }
 
         let ulang_list = JSON.parse(fs.readFileSync('./lib/repeat.json'))
         const isUlang = ulang_list.includes(chat.id) ? true : false
@@ -269,71 +378,6 @@ module.exports = msgHandler = async (hurtz, message) => {
             }
         }
 
-        async function charaCheck(query) {
-             return new Promise((resolve, reject) => {
-                  const char = query
-                  Axios.get('https://myanimelist.net/character.php?cat=character&q=' + char)
-                  .then(({ data }) => {
-                       const $ = cheerio.load(data)
-                       const selector = '#content > table > tbody > tr:nth-child(1) > td > a'
-                       const small = $('#content > table > tbody > tr:nth-child(1) > td:nth-child(2) > small').text()
-                       const name = $(selector).text() + ' ' + small
-                       const url = $(selector).attr('href')
-                       resolve({
-                            status: 200,
-                            name: name,
-                            message: `Found chara ${name} and added to database!`
-                       })
-
-                  }).catch(e => reject({
-                       status: 404,
-                       message: `Character ${query} was not found!`
-                  }))
-             })
-        }
-
-        async function chara(query) {
-             return new Promise((resolve, reject) => {
-                  const char = query
-                  Axios.get('https://myanimelist.net/character.php?cat=character&q=' + char)
-                  .then(({ data }) => {
-                       const $ = cheerio.load(data)
-                       const selector = '#content > table > tbody > tr:nth-child(1) > td > a'
-                       const small = $('#content > table > tbody > tr:nth-child(1) > td:nth-child(2) > small').text()
-                       const name = $(selector).text() + ' ' + small
-                       const url = $(selector).attr('href')
-                       selector_mov = '#content > table > tbody > tr:nth-child(1) > td:nth-child(3) > small > a'
-                       let serial = []
-                       $(selector_mov).get().map((res) => {
-                            const name = $(res).text()
-                            const url = 'https://myanimelist.net' + $(res).attr('href')
-                            serial.push({
-                                 Anime: name,
-                                 url: url
-                            })
-                       })
-
-                       Axios.get(url)
-                       .then(({ data }) => {
-                            const $ = cheerio.load(data)
-                            const res_desc = $('#content > table > tbody > tr > td:nth-child(2)').text().split('\n\n\n\n\n\t  ')[1].split('            \n        \n')[0].replace(')',')\n')
-                            const img = $('#content > table > tbody > tr > td.borderClass > div > a > img').attr('data-src')
-                            const result = {
-                                 status: 200,
-                                 name: name,
-                                 image: img,
-                                 full_desc: res_desc,
-                                 url: url,
-                                 anime: serial
-                            }
-                            resolve(result)
-                       }).catch(reject)
-                  }).catch(e => reject({
-                       status: 404,
-                       message: `Character ${query} was not found!`
-                  }))
-             })
-        }
 
         const isVIP = vip.includes(sender.id) ? "✅" : "❌"
         const isTerban = ''
@@ -668,7 +712,7 @@ module.exports = msgHandler = async (hurtz, message) => {
             }
     }
 
-    if (!groupIzin && command.startsWith(switch_pref) && body != switch_pref+'aktifkan' && body != '> ' && command != switch_pref+'izin') return hurtz.sendText(from, `Bot belum diaktifkan pada chat ini!\n\nketik : \n\n*!aktifkan* \n\n_Note : Hanya nomer yang diizinkan dapat mengaktifkan bot!_`)
+    if (!groupIzin && command.startsWith(switch_pref) && !sender.isMe && body != switch_pref+'aktifkan' && body != '> ' && command != switch_pref+'izin') return hurtz.sendText(from, `Bot belum diaktifkan pada chat ini!\n\nketik : \n\n*!aktifkan* \n\n_Note : Hanya nomer yang diizinkan dapat mengaktifkan bot!_`)
     // console.log(groupIzin)
                         
 
@@ -1189,8 +1233,14 @@ module.exports = msgHandler = async (hurtz, message) => {
             break
         case switch_pref+'pantun':
             //if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)            
-            const fakstpu = fs.readFileSync('./lib/random/katabijax.txt', 'utf-8').split('\n')
-            await hurtz.reply(from, `${fakstpu[Math.floor(Math.random() * fakstpu.length + 1)]}`, id).catch((e) => ERRLOG(e))
+            const fakstpu = fs.readFileSync('./lib/random/pantun.txt', 'utf-8').split('\n')
+            const pantunn = fakstpu[Math.floor(Math.random() * fakstpu.length + 1)].split(' aruga-line ')
+            let panteune = ''
+            for (var i = 0; i < pantunn.length; i++) {
+                panteune += `${pantunn[i].replace(' \r\n','')}\n`
+            }
+            console.log({res: panteune})
+            await hurtz.reply(from, `${panteune}`, id).catch((e) => ERRLOG(e))
             await hurtz.sendSeen(from)
             break
         case switch_pref+'quran':
@@ -1207,6 +1257,8 @@ module.exports = msgHandler = async (hurtz, message) => {
             await hurtz.reply(from, `${hasqu}`, id).catch((e) => hurtz.reply(from, `_Terdapat kesalahan saat ,encari surat ${args[1]}_`, id))
             console.log(gettingqu)
             await hurtz.sendSeen(from)
+            break
+        case switch_pref+'profil':
             break
         case switch_pref+'pictquote':
         case switch_pref+'pictquotes':
@@ -3195,7 +3247,7 @@ Nomor : wa.me/${hapusser[0]}
             await limitAdd(serial)
         hurtz.reply(from, mess.wait, id)
         const imageToBase64 = require('image-to-base64')
-        var items = ["sma cecan", "cewe cantik", "hijab cantik", "jilbab sma cantik", "jilbab sma", "cewe sma", "cantik", "sma jilbob", "sma hot"]; //Awokawoka meh laku sc uing :v
+        var items = ["cecan indo rambut panjang", "beautiful russian girl", "cecan indo pap rambut pendek", "cewek indo pap remaja rambut pendek", "cewe cantik", "sma jilbob", "sma hot"]; //Awokawoka meh laku sc uing :v
         var cewe = items[Math.floor(Math.random() * items.length)];
         var urlciw = "https://api.fdci.se/rep.php?gambar=" + cewe;
         
@@ -3908,8 +3960,33 @@ Video : ${vid_post_}
                 })
                 break
             case switch_pref+'charagame':     
-            //if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
-
+                if (args.length === 1) return hurtz.reply(from, `Please use command:\n*!charagame enable*\nor\n*!charagame disable*`, id)
+                try {
+                    if (args[1] == 'enable') {
+                        if (buffChara.status === 'active') return hurtz.reply(from, `Your group has been enable this chara game before`, id)
+                        const charDirObj = {
+                                status: 'active',
+                                anime_result: '',
+                                groupId: chat.id,
+                                msgID: [],
+                                messages: []
+                            }
+                        fs.writeFile(CharaPath, JSON.stringify(charDirObj, null, 2)).then(() => {
+                            console.log(buffChara)
+                            hurtz.reply(from, `Chara games now activated in this grup ✅\n\nThis will send anime randomly every 15 chat messages! and you have to guess that with type :\n*!claim _anime name_*\nEx : *!claim naruto*`, id)
+                        })
+                    } if (args[1] == 'disable') {
+                        if (!isExistCharPath) return hurtz.reply(from, `Please enable first if you want disabling this chara game!`, id)
+                        if (buffChara.status === 'active') {
+                            buffChara.status = 'unactive'
+                            fs.writeFileSync(CharaPath, JSON.stringify(buffChara, null, 2))
+                            hurtz.reply(from, `Chara games now disabled in this group ❌`, id)
+                        }
+                    }
+                } catch (e) {
+                    console.log(e)
+                    hurtz.reply(from, e, id)
+                }
                 break
             case switch_pref+'join7':
                 //if (isGroupMsg) return hurtz.reply(from, 'Fitur ini hanya bisa di gunakan private chat dengan botnya', id)
@@ -4245,9 +4322,8 @@ Video : ${vid_post_}
         case switch_pref+'quote':
         case switch_pref+'quotes':
         //if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
-       
-            const quotes = await get.get('https://api.kanye.rest').json()
-            const qotues = await get.get('https://epiiai.herokuapp.com/api/randomquotes').json()
+            const quotes = JSON.parse(fs.readFileSync('./lib/quotes.json'))
+            const qotues = quotes[Math.floor(Math.random() * quotes.length)]
             await hurtz.reply(from, `*Quote* : ${qotues.quotes}\n*Author* : ${qotues.author}`, id)
                     // console.log(result.data[0])
             //hurtz.reply(from, `➣ *Quotes* : ${quotes.quotes}`, id)
@@ -4521,7 +4597,7 @@ Contoh : _!gambar mobil_
         }
 
     } catch (e) {
-        console.log('\x1b[1;31m~\x1b[1;37m>>', '[\x1b[1;31mERROR\x1b[1;37m]', color(e))
-        //hurtz.kill().then(a => console.log(a))
+        // console.log('\x1b[1;31m~\x1b[1;37m>>', '[\x1b[1;31mERROR\x1b[1;37m]', color(e))
+        console.log(e)
     }
 }
