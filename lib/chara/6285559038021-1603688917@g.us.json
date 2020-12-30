@@ -1,7 +1,40 @@
 {
-  "status": "active",
-  "anime_result": "",
+  "status": "unactive",
+  "anime_result": {
+    "status": 200,
+    "name": "Mamoru ",
+    "image": "https://cdn.myanimelist.net/images/characters/8/71538.jpg",
+    "full_desc": "Mamoru  (衛)\nMamoru can be described as the sports girl type. Very athletic and energetic, she always looks forward to spending time with her brother, whether it be camping, running with him in sports events, going for a bicycle ride, or even teaching him how to swim. One of her signature features is jetting along in roller skates. Since she's more adapted to wearing sports related clothing, she easily becomes embarrassed when it comes to wearing a dress.\n\nIn RePure, it's obvious that she really values the time that she gets to spend with her brother, just the two of them, when she plans out a camping trip. Although viewed as somewhat of a tomboy, that image doesn't bother her as long as her brother is with her, supporting her in any way possible.",
+    "url": "https://myanimelist.net/character/8288/Mamoru",
+    "anime": [
+      {
+        "Anime": "Sister Princess: Re Pure Character's",
+        "url": "https://myanimelist.net/anime/21119/Sister_Princess__Re_Pure_Characters"
+      },
+      {
+        "Anime": "Sister Princess",
+        "url": "https://myanimelist.net/anime/836/Sister_Princess"
+      },
+      {
+        "Anime": "Sister Princess: Re Pure",
+        "url": "https://myanimelist.net/anime/835/Sister_Princess__Re_Pure"
+      }
+    ],
+    "manga": [
+      {
+        "name": "Sister Princess",
+        "url": "https://myanimelist.net/manga/8414/Sister_Princess"
+      }
+    ]
+  },
+  "chara_name": "mamoru",
   "groupId": "6285559038021-1603688917@g.us",
-  "msgID": [],
-  "messages": []
+  "msgID": [
+    "false_6285559038021-1603688917@g.us_22666EB03F8067E9119F9D3DA472E181",
+    "false_6285559038021-1603688917@g.us_3EB0EBB6714FCA8EBA38"
+  ],
+  "messages": [
+    "Gay",
+    "!charagame disable"
+  ]
 }

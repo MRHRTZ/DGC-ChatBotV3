@@ -276,7 +276,8 @@ module.exports = msgHandler = async (hurtz, message) => {
                 fs.writeFileSync(CharaPath, JSON.stringify(buffChara, null, 2))
                 let afterLength = 15
                 if (buffChara.messages.length == 14) {
-                    const getCharInt = body.toLowerCase().indexOf(buffChara.chara_name.toLowerCase())
+                    const getCharInt = buffChara.chara_name.toLowerCase().indexOf(body.toLowerCase())
+                    hurtz.reply(from, getCharInt, id)
                     console.log(getCharInt)
                 }
                 if (buffChara.messages.length == afterLength) {
@@ -284,14 +285,26 @@ module.exports = msgHandler = async (hurtz, message) => {
                     buffChara.msgID = []
                     buffChara.messages = []
                     fs.writeFileSync(CharaPath, JSON.stringify(buffChara, null, 2))
+                    const buffGaleryDir = fs.readdirSync('./lib/chara_galery')
+                    for (var i = 0; i < buffGaleryDir.length; i++) {
+                        const buffGaleryLoop = JSON.parse(fs.readFileSync('./lib/chara_galery/' + buffGaleryDir[i]))
+                        buffGaleryLoop.status = 'active'
+                        fs.writeFileSync('./lib/chara_galery/' + buffGaleryDir[i], JSON.stringify(buffGaleryLoop, null, 2))
+                    }
                     chara(buffChara.chara_name).then((char) => {
-                        buffChara.anime_result.push(char)
+                        buffChara.anime_result = char
                         fs.writeFileSync(CharaPath, JSON.stringify(buffChara, null, 2))
-                        hurtz.reply(from, `*Guess this chara*
+                        const contentChar = `*Guess this chara*
 
-*anime* : ${char}
-`, id)
-                        console.log(char)
+*anime* : ${char.anime.length != 0 ? char.anime[0].Anime : '_Cannot display anime_'}
+*manga* : ${char.manga.length != 0 ? char.manga[0].name : '_Cannot display manga_'}
+
+Type *!claim _anime name_* to guessing!
+
+Ex : *!claim naruto*
+`
+                        hurtz.sendFileFromUrl(from, char.image, 'chara.jpg', contentChar)
+                        INFOLOG(`New Character Appear : ${buffChara.chara_name}`)
                     })
                 }
             }
@@ -3959,6 +3972,145 @@ Video : ${vid_post_}
                     hurtz.reply(from, e.message, id)
                 })
                 break
+            case switch_pref+'gallery':
+                const fsGaleryOne = fs.readdirSync('./lib/chara_galery')
+                const isExistGalery = fsGaleryOne.includes(sender.id + '.json') ? true : false
+                if (!isExistGalery) {
+                    hurtz.reply(from, `Cannot display empty galery!`, id)
+                } else if (mentionedJidList.length > 0) {
+                        const userGallery = mentionedJidList[0] 
+                    if (!fsGaleryOne.includes(userGallery + '.json')) return hurtz.reply(from, `Cannot display empty galery!`, id)
+                        const showGaleryOne = JSON.parse(fs.readFileSync('./lib/chara_galery/' + userGallery + '.json'))
+                        let GaleryCoreOne = `*Show Galery Chara Anime ${showGaleryOne.name}*
+
+*Total Chara Claimed* : ${showGaleryOne.animes.length} character
+
+*Last Claim Chara* :
+➣ *Name* : ${showGaleryOne.animes[showGaleryOne.animes.length - 1].name}
+➣ *ID* : ${showGaleryOne.animes[showGaleryOne.animes.length - 1].url.replace('https://myanimelist.net/character/','').split('/')[0]}
+➣ *Description* : ${showGaleryOne.animes[showGaleryOne.animes.length - 1].full_desc.replace('\n','').split(' ').slice(0, 15).join(' ') + ' ...'}
+
+                    `
+                    for (var i = 0; i < showGaleryOne.animes.length; i++) {
+                        GaleryCoreOne += `
+________________________________________
+
+➣ *Name* : ${showGaleryOne.animes[i].name}
+➣ *ID* : ${showGaleryOne.animes[i].url.replace('https://myanimelist.net/character/','').split('/')[0]}
+➣ *Description* : ${showGaleryOne.animes[i].full_desc.replace('\n','').split(' ').slice(0, 15).join(' ') + ' ...'}
+
+`
+                        }
+                        hurtz.sendFileFromUrl(from, showGaleryOne.animes[showGaleryOne.animes.length - 1].image, 'galery.jpg', GaleryCoreOne, id)
+
+                } else {
+                    const showGalery = JSON.parse(fs.readFileSync('./lib/chara_galery/' + sender.id + '.json'))
+                    let GaleryCore = `*Show Galery Chara Anime ${showGaleryOne.name}*
+
+*Total Chara Claimed* : ${showGalery.animes.length} character
+
+*Last Claim Chara* :
+➣ *Name* : ${showGalery.animes[showGalery.animes.length - 1].name}
+➣ *ID* : ${showGalery.animes[showGalery.animes.length - 1].url.replace('https://myanimelist.net/character/','').split('/')[0]}
+➣ *Description* : ${showGalery.animes[showGalery.animes.length - 1].full_desc.replace('\n','').split(' ').slice(0, 15).join(' ') + ' ...'}
+
+                    `
+                    for (var i = 0; i < showGalery.animes.length; i++) {
+                        GaleryCore += `
+________________________________________
+
+➣ *Name* : ${showGalery.animes[i].name}
+➣ *ID* : ${showGalery.animes[i].url.replace('https://myanimelist.net/character/','').split('/')[0]}
+➣ *Description* : ${showGalery.animes[i].full_desc.replace('\n','').split(' ').slice(0, 15).join(' ') + ' ...'}
+
+`
+                    }
+                    hurtz.sendFileFromUrl(from, showGalery.animes[showGalery.animes.length - 1].image, 'galery.jpg', GaleryCore, id)
+                }
+                break
+            case switch_pref+'claim':     
+                if (args.length === 1) return hurtz.reply(from, `Please use command:\n*!claim _chara name_*\nEx: *!claim naruto*`, id)
+                const read_carg = fs.readdirSync('./lib/chara_galery')
+                const galeryPath = './lib/chara_galery/' + sender.id + '.json'
+                const detectNumChar = read_carg.includes(sender.id + '.json') ? true : false
+                const buffGalery = detectNumChar ? JSON.parse(fs.readFileSync(galeryPath)) : ''
+                try {
+                    const correctChat = new RegExp(`${buffChara.chara_name.split(' ')[0]}`, 'gi')
+                    // console.log(buffChara.chara_name)
+                    if (!correctChat.test(body.slice(7))) return hurtz.reply(from, `Oops sorry wrong character name! also try to guess last name if first name doesn't correct.`, id)
+                    if (!detectNumChar) {
+                        if (buffGalery.status !== 'active' && fs.existsSync('./lib/chara_galery/' + sender.id + '.json')) return hurtz.reply(from, `Double claim not allowed!`, id)
+                        if (buffChara.status !== 'active') return hurtz.reply(from, `You cannot claiming because tharagame not active in this group\ntype *!charagame enable* to activate this!`, id)
+                        const galery_obj = {
+                            status: 'active',
+                            sender: sender.id,
+                            name: pushname,
+                            animes: []
+                        }
+                        fs.writeFile(galeryPath, JSON.stringify(galery_obj, null, 2)).then(() => {
+                            const buffChara = fs.readFileSync('./lib/chara/' + chat.id + '.json')
+                            const buffGalery = fs.readFileSync(JSON.parse('./lib/chara_galery/' + sender.id + '.json'))
+                            buffGalery.animes.push(buffChara.anime_result)
+                            // console.log(buffGalery)
+                            fs.writeFile(galeryPath, JSON.stringify(buffGalery, null, 2)).then(() => {
+                                const buffGalery = fs.readFileSync(JSON.parse('./lib/chara_galery/' + sender.id + '.json'))
+                                const buffChara = fs.readFileSync(JSON.parse('./lib/chara/' + chat.id + '.json'))
+                                let outGalery = `*Galery Chara ${pushname}*\n\n`
+                            // for (var i = 0; i < buffGalery.animes.length; i++) {
+                                outGalery += `________________________________________
+
+➣ *Name* : ${buffChara.anime_result.name}
+➣ *Description* : ${buffChara.anime_result.full_desc}
+➣ *Link Detail* : ${buffChara.anime_result.url}
+
+`
+                            if (/*buffGalery.animes.length === 0*/false) {
+                                hurtz.reply(from, `You must claim some chara to display galery!`, id)
+                            } else {
+                                hurtz.sendFileFromUrl(from, buffChara.anime_result.images, 'galery.jpg', outGalery, id)
+                            }
+                            // console.log(buffGalery)
+                            // console.log(buffChara)
+                            buffGalery.status = 'unactive'  
+                            fs.writeFileSync(galeryPath, JSON.stringify(buffGalery, null, 2))
+                            })
+                        })
+                    } else {
+                        // console.log(buffGalery)
+                        if (buffGalery.status !== 'active') return hurtz.reply(from, `Double claim not allowed!`, id)
+                        if (buffChara.status !== 'active') return hurtz.reply(from, `You cannot claiming because charagame not active in this group\ntype *!charagame enable* to activate this!`, id)
+                            buffGalery.animes.push(buffChara.anime_result)
+                            fs.writeFile(galeryPath, JSON.stringify(buffGalery, null, 2)).then(() => {
+                                const buffGalery = JSON.parse(fs.readFileSync('./lib/chara_galery/' + sender.id + '.json', 'utf-8'))
+                                const buffChara = JSON.parse(fs.readFileSync('./lib/chara/' + chat.id + '.json', 'utf-8'))
+                                // console.log(buffChara)
+                                // return
+                                let outGalery = `*Correct Chara ${pushname}!*\n\n`
+                            // for (var i = 0; i < buffGalery.animes.length; i++) {
+                                outGalery += `________________________________________
+
+➣ *Name* : ${buffChara.anime_result.name}
+➣ *Description* : ${buffChara.anime_result.full_desc}
+➣ *Link Detail* : ${buffChara.anime_result.url}
+
+`
+                            // }
+                            if (/*buffGalery.animes.length === 0*/false) {
+                                hurtz.reply(from, `You must claim some chara to display galery!`, id)
+                            } else {
+                                hurtz.sendFileFromUrl(from, buffChara.anime_result.image, 'galery.jpg', outGalery, id)
+                            }
+                            // console.log(buffGalery)
+                            // console.log(buffChara)
+                            buffGalery.status = 'unactive'  
+                            fs.writeFileSync(galeryPath, JSON.stringify(buffGalery, null, 2))
+                        })
+                    } 
+                } catch (e) {
+                    console.log(e)
+                    hurtz.reply(from, e, id)
+                }
+                break
             case switch_pref+'charagame':     
                 if (args.length === 1) return hurtz.reply(from, `Please use command:\n*!charagame enable*\nor\n*!charagame disable*`, id)
                 try {
@@ -3967,12 +4119,13 @@ Video : ${vid_post_}
                         const charDirObj = {
                                 status: 'active',
                                 anime_result: '',
+                                chara_name: '',
                                 groupId: chat.id,
                                 msgID: [],
                                 messages: []
                             }
                         fs.writeFile(CharaPath, JSON.stringify(charDirObj, null, 2)).then(() => {
-                            console.log(buffChara)
+                            // console.log(buffChara)
                             hurtz.reply(from, `Chara games now activated in this grup ✅\n\nThis will send anime randomly every 15 chat messages! and you have to guess that with type :\n*!claim _anime name_*\nEx : *!claim naruto*`, id)
                         })
                     } if (args[1] == 'disable') {
