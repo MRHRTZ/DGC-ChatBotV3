@@ -50,7 +50,7 @@ const start = async (hurtz = new Hurtz()) => {
         // listening on message
 
 
-        hurtz.onMessage((async (message) => {
+        hurtz.onAnyMessage((async (message) => {
             hurtz.getAmountOfLoadedMessages()
             .then((msg) => {
                 if (msg >= 500) {

@@ -1,5 +1,9 @@
 const fs = require('fs-extra')
 
+module.exports.argsC = {
+
+}
+
 module.exports = options = (headless, start) => {
     const chromePath = {
         win32: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', // Windows 32 bit
@@ -108,14 +112,12 @@ module.exports = options = (headless, start) => {
         '--disk-cache-size=0'
     ]
       const options = {
-        headless: false,
+        headless: headless,
         autoRefresh: true,
         qrTimeout:600,   //set to 0 to wait forever for a qr scan
         authTimeout:0, //set to 0 to wait forever for connection to phone
         restartOnCrash: start,
         cacheEnabled: false,
-        // defaultViewport: null,
-        // executablePath: execPath,
         useChrome: true,
         killProcessOnBrowserClose: true,
         throwErrorOnTosBlock: false,

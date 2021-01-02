@@ -1,0 +1,51 @@
+{
+  "status": "unactive",
+  "anime_result": {
+    "status": 200,
+    "name": "SF-A2 miki (Mikina Freesis, Mickina Olliba)",
+    "image": "https://cdn.myanimelist.net/images/characters/7/225565.jpg",
+    "full_desc": "SF-A2 miki  (SF-A2 開発コード miki)\nSF-A2 codename miki, is a Japanese VOCALOID developed and distributed by AH-Software Co. Ltd., and was released in December 2009 for the VOCALOID2 engine. Her voice is provided by the Japanese female singer, Miki Furukawa.\n\n\nAlternative names/personalities:\nAku no Musume: Mikina Freesis (ミキナ=フリージス)\nVenomania-kou no Kyouki: Mickina Olliba",
+    "url": "https://myanimelist.net/character/94963/SF-A2_miki",
+    "anime": [],
+    "manga": [
+      {
+        "name": "Aku no Taizai: Venomania-kou no KyoukiAku no Musume",
+        "url": "https://myanimelist.net/manga/61877/Aku_no_Taizai__Venomania-kou_no_Kyouki"
+      }
+    ]
+  },
+  "chara_name": "miki",
+  "groupId": "6285559038021-1603588233@g.us",
+  "msgID": [
+    "false_6285559038021-1603588233@g.us_964E641629FB4E6E2807C0E0A0D9815C",
+    "false_6285559038021-1603588233@g.us_B8D08603BC5AEDB120B9965AF3423389",
+    "false_6285559038021-1603588233@g.us_5F241C7833E5320CB58F6250E0094440",
+    "false_6285559038021-1603588233@g.us_8ACF8ED6B121D8D46BB32812EF0F3D9F",
+    "false_6285559038021-1603588233@g.us_95FF87F54DBC14C6A2BD29AF04B0D591",
+    "false_6285559038021-1603588233@g.us_5FD71C57D829146DBF14F65718EA48D6",
+    "false_6285559038021-1603588233@g.us_F7F2905FB6FADAA62526C176075488A6",
+    "false_6285559038021-1603588233@g.us_E08C69ACAC54F49DB62CF0ECF1F3FB68",
+    "false_6285559038021-1603588233@g.us_BEAA4BB5A1B5C557D92B762DE9A39DF9",
+    "false_6285559038021-1603588233@g.us_66CC39943353BBA23336D5711455931B",
+    "false_6285559038021-1603588233@g.us_8810D7795E0C9A9B6B4FEDF6A1463B6A",
+    "false_6285559038021-1603588233@g.us_63874DDAEDB197F7D0FEB8AF2A1B2734",
+    "false_6285559038021-1603588233@g.us_B903FE43C82F500530D33C05E43674D4",
+    "false_6285559038021-1603588233@g.us_AE229DF6A9A1A46C8EAACBEED8673520"
+  ],
+  "messages": [
+    "11",
+    "12",
+    "siapa ini ler",
+    "Cara tebaknya claim",
+    "Wait gw liat console dlu :v",
+    "ini doraemon",
+    "!claim doraemon",
+    "Coba miki",
+    "Tulis claim",
+    "Kek gini",
+    "!claim miki",
+    "!gallery",
+    "!gallery @6289636035164",
+    "!charagame disable"
+  ]
+}

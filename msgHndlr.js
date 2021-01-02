@@ -106,7 +106,7 @@ module.exports = msgHandler = async (hurtz, message) => {
         const groupAdmins = isGroupMsg ? await hurtz.getGroupAdmins(groupId) : ''
         const isGroupAdmins = isGroupMsg ? groupAdmins.includes(sender.id) : false
         const isBotGroupAdmins = isGroupMsg ? groupAdmins.includes(botNumber + '@c.us') : false
-        const ownerNumber = ['6285559038021@c.us','6285864126273@c.us','6282281088789@c.us']
+        const ownerNumber = ['6285559038021@c.us','6285864126273@c.us','6282281088789@c.us','6285721733043@c.us']
         const pengirim = JSON.parse(fs.readFileSync('./lib/pengguna.json'))
         const jelema = pengirim[Math.floor(Math.random()*pengirim.length)];
         const isOwner = ownerNumber.includes(sender.id)
@@ -213,9 +213,9 @@ module.exports = msgHandler = async (hurtz, message) => {
                        const small = $('#content > table > tbody > tr:nth-child(1) > td:nth-child(2) > small').text()
                        const name = $(selector).text() + ' ' + small
                        const url = $(selector).attr('href')
+                       let manga = []
                        selector_mov = '#content > table > tbody > tr:nth-child(1) > td:nth-child(3) > small > a'
                        let serial = []
-                       let manga = []
                        $(selector_mov).get().map((res) => {
                             const name = $(res).text()
                             const url = 'https://myanimelist.net' + $(res).attr('href')
@@ -225,20 +225,28 @@ module.exports = msgHandler = async (hurtz, message) => {
                             })
                        })
                        let grab_frinst = $('#content > table > tbody > tr:nth-child(1) > td > small > div > a')
-                       manga.push({
-                            name: $(grab_frinst).text(),
-                            url: 'https://myanimelist.net' + $(`${grab_frinst}`).attr('href')
-                       })
+                       if ($(`${grab_frinst}`).attr('href') === undefined) {
+                       } else {
+                            manga.push({
+                                 name: $(grab_frinst).text(),
+                                 url: 'https://myanimelist.net' + $(`${grab_frinst}`).attr('href')
+                            })
+                       }
 
                        Axios.get(url)
                        .then(({ data }) => {
+                            let imgs = []
                             const $ = cheerio.load(data)
                             const res_desc = $('#content > table > tbody > tr > td:nth-child(2)').text().split('\n\n\n\n\n\t  ')[1].split('            \n        \n')[0].replace(')',')\n')
-                            const img = $('#content > table > tbody > tr > td.borderClass > div > a > img').attr('data-src')
+                            $('#content > table > tbody > tr > td.borderClass > div > a > img').get().map((rest) => {
+                                 imgs.push($(rest).attr('data-src'))
+                            })
+                            const elseimg = ['https://mrhrtz-wabot.000webhostapp.com/cooltext372748737425114.png']
+                            const sendImg = imgs.length > 0 ? imgs : elseimg
                             const result = {
                                  status: 200,
                                  name: name,
-                                 image: img,
+                                 image: sendImg,
                                  full_desc: res_desc,
                                  url: url,
                                  anime: serial,
@@ -269,7 +277,6 @@ module.exports = msgHandler = async (hurtz, message) => {
         
 
         if (isExistCharPath && body) {
-            // console.log(characounter)
             if (buffChara.status === 'active') {
                 buffChara.msgID.push(id)
                 buffChara.messages.push(body)
@@ -278,12 +285,14 @@ module.exports = msgHandler = async (hurtz, message) => {
                 if (buffChara.messages.length == 14) {
                     const getCharInt = buffChara.chara_name.toLowerCase().indexOf(body.toLowerCase())
                     hurtz.reply(from, getCharInt, id)
-                    console.log(getCharInt)
                 }
                 if (buffChara.messages.length == afterLength) {
                     buffChara.chara_name = charlist[Math.floor(Math.random() * charlist.length + 1)].keyword
                     buffChara.msgID = []
                     buffChara.messages = []
+                    buffChara.claimed_by_sender = []
+                    buffChara.claimed_by_name = []
+                    buffChara.claimed_keyword = []
                     fs.writeFileSync(CharaPath, JSON.stringify(buffChara, null, 2))
                     const buffGaleryDir = fs.readdirSync('./lib/chara_galery')
                     for (var i = 0; i < buffGaleryDir.length; i++) {
@@ -303,55 +312,121 @@ Type *!claim _anime name_* to guessing!
 
 Ex : *!claim naruto*
 `
-                        hurtz.sendFileFromUrl(from, char.image, 'chara.jpg', contentChar)
+                        hurtz.sendFileFromUrl(from, char.image[0], 'chara', contentChar)
+                        console.log(char.image[0])
                         INFOLOG(`New Character Appear : ${buffChara.chara_name}`)
                     })
                 }
-            }
-            
-            // let charMsg = []
-            // const objcharcount = {
-            //         groupId: chat.id,
-            //         GroupMsg: charMsg
-            //     }
-            // fs.writeFileSync('./lib/characounter.json', JSON.stringify(objcharcount, null, 2))
-            // charMsg.push(body)
-            // characounter.push(objcharcount)
-            // fs.writeFileSync('./lib/characounter.json', JSON.stringify(characounter, null, 2))      
-        //     for (var i = 0; i < charasession.length; i++) {
-        //         for (var j = 0; j < characounter.length; j++) {
+            } 
+        }
 
-        //             if (charasession[i] == characounter[j]) {
 
-        //                 if (!characounter[j].GroupMsg.length < 16) {
-                            
-        //                 } else {
-        //                     const randomizeChar = `${Math.floor(Math.random() * charlist.length - 1)}`
-        //                     chara(charlist[randomizeChar].keyword)
-        //                     .then((ress) => {
-        //                         const isCharaGameAva = chargame.includes(chat.id) ? true : false
-        //                         let charobj = {
-        //                             groupId: chat.id,
-        //                             status: 'active',
-        //                             guessThis: {
-        //                                 name: ress.name,
-        //                                 image: ress.image,
-        //                                 desc: ress.full_desc
-        //                             }
+        function herolist(){
+             return new Promise((resolve, reject) => {
+                  Axios.get('https://mobile-legends.fandom.com/wiki/Mobile_Legends:_Bang_Bang_Wiki')
+                  .then(({ data }) => {
+                       const $ = cheerio.load(data)
+                       let data_hero = []
+                       let url = []
+                       $('div > div > span > span > a').get().map((result) => {
+                            const name = decodeURIComponent($(result).attr('href').replace('/wiki/',''))
+                            const urln = 'https://mobile-legends.fandom.com' + $(result).attr('href')
+                            data_hero.push(name)
+                            url.push(urln)
+                       })
+                       resolve({ status: 200, hero: data_hero })
+                  }).catch((e) => reject({ status: 404, message: e.message }))
+             })
+        }
 
-        //                         }
-        //                         chargame.push(charobj)
-        //                         fs.writeFileSync('./lib/chargame.json', JSON.stringify(chargame, null, 2))
-        //                         hurtz.sendFileFromUrl(from, ress.image, 'chara.jpg', `*Guess this character..*\n\nType *!claim* to guessing\nEx: *!claim naruto*`, id)
-        //                     })    
-        //                     .catch(e => {
-        //                         console.log(e)
-        //                         hurtz.reply(from, 'Sorry we have some error' + e, id)
-        //                     })
-        //                 }
-        //             }
-        //         }
-        //     }      
+        function herodetails(name) {
+             return new Promise((resolve, reject) => {
+                  var splitStr = name.toLowerCase().split(' ');
+                  for (var i = 0; i < splitStr.length; i++) {
+                       splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+                  }
+                  const que = splitStr.join(' ')
+                  Axios.get('https://mobile-legends.fandom.com/wiki/' + que)
+                  .then(({ data }) => {
+                       const $ = cheerio.load(data)
+                       let mw = []
+                       let attrib = []
+                       let skill = []
+                       const name = $('#mw-content-text > div > div > div > div > div > div > table > tbody > tr > td > table > tbody > tr > td > font > b').text() 
+                       $('.mw-headline').get().map((res) => {
+                            const mwna = $(res).text()
+                            mw.push(mwna)
+                       })
+                       $('#mw-content-text > div > div > div > div > div > div > table > tbody > tr > td').get().map((rest) => {
+                            const haz = $(rest).text().replace(/\n/g,'')
+                            attrib.push(haz)
+                       })
+                       $('#mw-content-text > div > div > div > div > div > div > table > tbody > tr > td > div.progressbar-small.progressbar > div').get().map((rest) => {
+                            skill.push($(rest).attr('style').replace('width:',''))
+                       })
+                       Axios.get('https://mobile-legends.fandom.com/wiki/' + que + '/Story')
+                       .then(({ data }) => {
+                            const $ = cheerio.load(data)
+                            let pre = []
+                            $('#mw-content-text > div > p').get().map((rest) => {
+                                 pre.push($(rest).text())
+                            })
+                            const story = pre.slice(3).join('\n')
+                            const items = []
+                            const character = []
+                            $('#mw-content-text > div > aside > section > div').get().map((rest) => {
+                                 character.push($(rest).text().replace(/\n\t\n\t\t/g, '').replace(/\n\t\n\t/g,'').replace(/\n/g,''))
+                            })
+                            $('#mw-content-text > div > aside > div').get().map((rest) => {
+                                 items.push($(rest).text().replace(/\n\t\n\t\t/g, '').replace(/\n\t\n\t/g,'').replace(/\n/g,''))
+                            })
+                            const img = $('#mw-content-text > div > aside > figure > a').attr('href')
+                            const chara = character.slice(0,2)
+                            const result = { 
+                                 status: 200,
+                                 hero_name: name + ` ( ${mw[0].replace('CV:',' CV:')} )`,
+                                 entrance_quotes: attrib[2].replace('Entrance Quotes','').replace('\n',''),
+                                 hero_feature: attrib[attrib.length - 1].replace('Hero Feature',''),
+                                 image: img,
+                                 items: items,
+                                 character: {
+                                      chara
+                                 },
+                                 attributes: {
+                                      movement_speed: attrib[12].replace('● Movement Speed',''),
+                                      physical_attack: attrib[13].replace('● Physical Attack',''),
+                                      magic_power: attrib[14].replace('● Magic Power',''),
+                                      attack_speed: attrib[15].replace('● Attack Speed',''),
+                                      physical_defense: attrib[16].replace('● Physical Defense',''),
+                                      magic_defense: attrib[17].replace('● Magic Defense',''),
+                                      basic_atk_crit_rate: attrib[18].replace('● Basic ATK Crit Rate',''),
+                                      hp: attrib[19].replace('● HP',''),
+                                      mana: attrib[20].replace('● Mana',''),
+                                      ability_crit_rate: attrib[21].replace('● Ability Crit Rate',''),
+                                      hp_regen: attrib[22].replace('● HP Regen',''),
+                                      mana_regen: attrib[23].replace('● Mana Regen','')
+                                 },
+                                 price: {
+                                      battle_point: mw[1].split('|')[0].replace(/ /g,''),
+                                      diamond: mw[1].split('|')[1].replace(/ /g,''),
+                                      hero_fragment: mw[1].split('|')[2] ? mw[1].split('|')[2].replace(/ /g,'') : 'none'
+                                 },
+                                 role: mw[2],
+                                 skill: {
+                                      durability: skill[0],
+                                      offense: skill[1],
+                                      skill_effects: skill[2],
+                                      difficulty: skill[3]
+                                 },
+                                 speciality: mw[3],
+                                 laning_recommendation: mw[4],
+                                 release_date: mw[5],
+                                 background_story: story
+                            }
+                            resolve(result)
+                       }).catch((e) => reject({ status: 404, message: e.message }))
+                  }).catch((e) => reject({ status: 404, message: e.message }))
+             })
         }
 
         let ulang_list = JSON.parse(fs.readFileSync('./lib/repeat.json'))
@@ -993,6 +1068,13 @@ Ex : *!claim naruto*
             muted.push(chat.id)
             fs.writeFileSync('./lib/muted.json', JSON.stringify(muted, null, 2))
             hurtz.reply(from, `Bot telah di mute pada chat ini! *!unmute* untuk membuka mute!`, id)
+            await hurtz.sendSeen(from)
+            break
+        case switch_pref+'banperm':
+            if (!isOwner) return hurtz.reply(from, 'Maaf, perintah ini hanya dapat dilakukan oleh owner bot!', id)
+            muted.push(chat.id)
+            fs.writeFileSync('./lib/muted.json', JSON.stringify(muted, null, 2))
+            hurtz.reply(from, `Bot telah di ban permanen di grup ini!`, id)
             await hurtz.sendSeen(from)
             break
         case switch_pref+'grup?':
@@ -3921,6 +4003,49 @@ Video : ${vid_post_}
             }
             await hurtz.sendSeen(from)
             break
+            case switch_pref+'heroml':
+                await herolist().then((ress) => {
+                    let hm = `*Menampilkan list hero mobile legends*\n\n`
+                    for (var i = 0; i < ress.hero.length; i++) {
+                        hm += '➣  ' + ress.hero[i] + '\n'
+                    }
+                    hurtz.reply(from, hm, id)
+                })
+                break
+            case switch_pref+'herodetail':
+                if (args.length === 1) return hurtz.reply(from, `Gunakan perintah *!herodetail _Nama hero ml_*\nContoh *!herodetail argus*`)
+                await herodetails(body.slice(12)).then((res) => {
+                    let capt = `*Hero details ${body.slice(12)}*
+
+*Nama* : ${res.hero_name}
+*Role* : ${res.role}
+*Quotes* : ${res.entrance_quotes}
+*Fitur Hero* : ${res.hero_feature}
+*Spesial* : ${res.speciality}
+*Rekomendasi Lane* : ${res.laning_recommendation}
+*Harga* : ${res.price.battle_point} (Battle point) | ${res.price.diamond} (Diamond) | ${res.price.hero_fragment} (Hero Fragment)
+*Tahun Rilis* : ${res.release_date}
+
+*Skill* : 
+*Durability* : ${res.skill.durability}
+*Offence* : ${res.skill.offense}
+*Skill Effect* : ${res.skill_effects}
+*Difficulty* : ${res.skill.difficulty}
+ 
+
+*Movement Speed* : ${res.attributes.movement_speed}
+*Physical Attack* : ${res.attributes.physical_attack}
+*Magic Defense* : ${res.attributes.magic_defense}
+*Ability Crit Rate* : ${res.attributes.ability_crit_rate}
+*HP* : ${res.attributes.hp}
+*Mana* : ${res.attributes.mana}
+*Mana Regen* : ${res.attributes.mana_regen}
+
+*Story* : ${res.background_story}
+`
+                hurtz.sendFileFromUrl(from, res.image.split('/revision')[0], 'hero.jpg', capt, id)
+                })
+                break
             case switch_pref+'charalist':
             case switch_pref+'charlist':
                 //if (!isGroupMsg) return hurtz.reply(from, menuPriv, id)
@@ -3976,11 +4101,28 @@ Video : ${vid_post_}
                 const fsGaleryOne = fs.readdirSync('./lib/chara_galery')
                 const isExistGalery = fsGaleryOne.includes(sender.id + '.json') ? true : false
                 if (!isExistGalery) {
-                    hurtz.reply(from, `Cannot display empty galery!`, id)
+                    hurtz.getProfilePicFromServer(sender.id)
+                    .then((prop) => {
+                        if (prop == '' || prop == undefined) {
+                        hurtz.sendFileFromUrl(from, 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTQcODjk7AcA4wb_9OLzoeAdpGwmkJqOYxEBA&usqp=CAU', 'profile.jpg',  `Cannot display empty galery!`, id)
+                        } else {
+                            hurtz.sendFileFromUrl(from, prop, 'profile.jpg',  `Cannot display empty galery!`, id)
+                        }       
+                    })
+                } else if (mentionedJidList.length > 0 && !fsGaleryOne.includes(mentionedJidList[0] + '.json')) {
+                    const userGallery = mentionedJidList[0] 
+                    if (!fsGaleryOne.includes(userGallery + '.json')) { 
+                        hurtz.getProfilePicFromServer(userGallery)
+                        .then((prop) => {
+                            if (prop == '' || prop == undefined) {
+                            hurtz.sendFileFromUrl(from, 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTQcODjk7AcA4wb_9OLzoeAdpGwmkJqOYxEBA&usqp=CAU', 'profile.jpg',  `Cannot display empty galery!`, id)
+                            } else {
+                                hurtz.sendFileFromUrl(from, prop, 'profile.jpg',  `Cannot display empty galery!`, id)
+                            }       
+                        })
+                    }
                 } else if (mentionedJidList.length > 0) {
-                        const userGallery = mentionedJidList[0] 
-                    if (!fsGaleryOne.includes(userGallery + '.json')) return hurtz.reply(from, `Cannot display empty galery!`, id)
-                        const showGaleryOne = JSON.parse(fs.readFileSync('./lib/chara_galery/' + userGallery + '.json'))
+                        const showGaleryOne = JSON.parse(fs.readFileSync('./lib/chara_galery/' + mentionedJidList[0] + '.json'))
                         let GaleryCoreOne = `*Show Galery Chara Anime ${showGaleryOne.name}*
 
 *Total Chara Claimed* : ${showGaleryOne.animes.length} character
@@ -4001,11 +4143,11 @@ ________________________________________
 
 `
                         }
-                        hurtz.sendFileFromUrl(from, showGaleryOne.animes[showGaleryOne.animes.length - 1].image, 'galery.jpg', GaleryCoreOne, id)
+                        hurtz.sendFileFromUrl(from, showGaleryOne.animes[showGaleryOne.animes.length - 1].image[0], 'galery.jpg', GaleryCoreOne, id)
 
                 } else {
                     const showGalery = JSON.parse(fs.readFileSync('./lib/chara_galery/' + sender.id + '.json'))
-                    let GaleryCore = `*Show Galery Chara Anime ${showGaleryOne.name}*
+                    let GaleryCore = `*Show Galery Chara Anime ${showGalery.name}*
 
 *Total Chara Claimed* : ${showGalery.animes.length} character
 
@@ -4020,12 +4162,12 @@ ________________________________________
 ________________________________________
 
 ➣ *Name* : ${showGalery.animes[i].name}
-➣ *ID* : ${showGalery.animes[i].url.replace('https://myanimelist.net/character/','').split('/')[0]}
+➣ *Url* : ${showGalery.animes[i].url.replace('https://myanimelist.net/character/','').split('/')[0]}
 ➣ *Description* : ${showGalery.animes[i].full_desc.replace('\n','').split(' ').slice(0, 15).join(' ') + ' ...'}
 
 `
                     }
-                    hurtz.sendFileFromUrl(from, showGalery.animes[showGalery.animes.length - 1].image, 'galery.jpg', GaleryCore, id)
+                    hurtz.sendFileFromUrl(from, showGalery.animes[showGalery.animes.length - 1].image[0], 'galery.jpg', GaleryCore, id)
                 }
                 break
             case switch_pref+'claim':     
@@ -4035,12 +4177,18 @@ ________________________________________
                 const detectNumChar = read_carg.includes(sender.id + '.json') ? true : false
                 const buffGalery = detectNumChar ? JSON.parse(fs.readFileSync(galeryPath)) : ''
                 try {
-                    const correctChat = new RegExp(`${buffChara.chara_name.split(' ')[0]}`, 'gi')
+                    let stringCorrect = ``
+                    const charbuffSplited = buffChara.chara_name.split(' ')
+                    for (var i = 0; i < charbuffSplited.length; i++) {
+                        stringCorrect += `${charbuffSplited[i]}|`
+                    }
+                    const correctChat = new RegExp(stringCorrect.slice(0, -1), 'gi')
                     // console.log(buffChara.chara_name)
+                    if (buffChara.claimed_by_sender.length > 0) return hurtz.sendTextWithMentions(from, `This character was claimed by @${buffChara.claimed_by_sender[0].replace('@c.us','')} ( ${buffChara.claimed_by_name[0]} )\n\nWait for appear random chara again to claiming!`)
+                    if (buffChara.status !== 'active') return hurtz.reply(from, `You cannot claiming because charagame not active in this group\ntype *!charagame enable* to activate this!`, id)
                     if (!correctChat.test(body.slice(7))) return hurtz.reply(from, `Oops sorry wrong character name! also try to guess last name if first name doesn't correct.`, id)
                     if (!detectNumChar) {
                         if (buffGalery.status !== 'active' && fs.existsSync('./lib/chara_galery/' + sender.id + '.json')) return hurtz.reply(from, `Double claim not allowed!`, id)
-                        if (buffChara.status !== 'active') return hurtz.reply(from, `You cannot claiming because tharagame not active in this group\ntype *!charagame enable* to activate this!`, id)
                         const galery_obj = {
                             status: 'active',
                             sender: sender.id,
@@ -4048,14 +4196,18 @@ ________________________________________
                             animes: []
                         }
                         fs.writeFile(galeryPath, JSON.stringify(galery_obj, null, 2)).then(() => {
-                            const buffChara = fs.readFileSync('./lib/chara/' + chat.id + '.json')
-                            const buffGalery = fs.readFileSync(JSON.parse('./lib/chara_galery/' + sender.id + '.json'))
+                            const buffChara = JSON.parse(fs.readFileSync('./lib/chara/' + chat.id + '.json'))
+                            const buffGalery = JSON.parse(fs.readFileSync('./lib/chara_galery/' + sender.id + '.json'))
                             buffGalery.animes.push(buffChara.anime_result)
                             // console.log(buffGalery)
                             fs.writeFile(galeryPath, JSON.stringify(buffGalery, null, 2)).then(() => {
-                                const buffGalery = fs.readFileSync(JSON.parse('./lib/chara_galery/' + sender.id + '.json'))
-                                const buffChara = fs.readFileSync(JSON.parse('./lib/chara/' + chat.id + '.json'))
-                                let outGalery = `*Galery Chara ${pushname}*\n\n`
+                                const buffGalery = JSON.parse(fs.readFileSync('./lib/chara_galery/' + sender.id + '.json'))
+                                const buffChara = JSON.parse(fs.readFileSync('./lib/chara/' + chat.id + '.json'))
+                                buffChara.claimed_by_name.push(pushname)
+                                buffChara.claimed_by_sender.push(sender.id)
+                                buffChara.claimed_keyword.push(body.slice(7))
+                                fs.writeFileSync('./lib/chara/' + chat.id + '.json', JSON.stringify(buffChara, null, 2))
+                                let outGalery = `*Chara found for your first time claiming ${pushname}*\n\n`
                             // for (var i = 0; i < buffGalery.animes.length; i++) {
                                 outGalery += `________________________________________
 
@@ -4067,24 +4219,29 @@ ________________________________________
                             if (/*buffGalery.animes.length === 0*/false) {
                                 hurtz.reply(from, `You must claim some chara to display galery!`, id)
                             } else {
-                                hurtz.sendFileFromUrl(from, buffChara.anime_result.images, 'galery.jpg', outGalery, id)
+                                hurtz.sendFileFromUrl(from, buffChara.anime_result.image[0], 'galery.jpg', outGalery, id)
                             }
                             // console.log(buffGalery)
                             // console.log(buffChara)
                             buffGalery.status = 'unactive'  
+                            buffChara.claimed_by_name.push(pushname)
+                            buffChara.claimed_by_sender.push(sender.id)
+                            buffChara.claimed_keyword.push(body.slice(7))
+                            buffGalery.status = 'unactive'  
+                            fs.writeFileSync(CharaPath, JSON.stringify(buffChara, null, 2))
                             fs.writeFileSync(galeryPath, JSON.stringify(buffGalery, null, 2))
                             })
                         })
                     } else {
                         // console.log(buffGalery)
                         if (buffGalery.status !== 'active') return hurtz.reply(from, `Double claim not allowed!`, id)
-                        if (buffChara.status !== 'active') return hurtz.reply(from, `You cannot claiming because charagame not active in this group\ntype *!charagame enable* to activate this!`, id)
                             buffGalery.animes.push(buffChara.anime_result)
                             fs.writeFile(galeryPath, JSON.stringify(buffGalery, null, 2)).then(() => {
-                                const buffGalery = JSON.parse(fs.readFileSync('./lib/chara_galery/' + sender.id + '.json', 'utf-8'))
-                                const buffChara = JSON.parse(fs.readFileSync('./lib/chara/' + chat.id + '.json', 'utf-8'))
+                                const buffGalery = JSON.parse(fs.readFileSync('./lib/chara_galery/' + sender.id + '.json'))
+                                const buffChara = JSON.parse(fs.readFileSync('./lib/chara/' + chat.id + '.json'))
                                 // console.log(buffChara)
                                 // return
+                            
                                 let outGalery = `*Correct Chara ${pushname}!*\n\n`
                             // for (var i = 0; i < buffGalery.animes.length; i++) {
                                 outGalery += `________________________________________
@@ -4098,12 +4255,18 @@ ________________________________________
                             if (/*buffGalery.animes.length === 0*/false) {
                                 hurtz.reply(from, `You must claim some chara to display galery!`, id)
                             } else {
-                                hurtz.sendFileFromUrl(from, buffChara.anime_result.image, 'galery.jpg', outGalery, id)
+                                hurtz.sendFileFromUrl(from, buffChara.anime_result.image[0], 'galery.jpg', outGalery, id)
                             }
                             // console.log(buffGalery)
                             // console.log(buffChara)
+                            // for (var i = 0; i < 15; i++) {
+                            buffChara.claimed_by_name.push(pushname)
+                            buffChara.claimed_by_sender.push(sender.id)
+                            buffChara.claimed_keyword.push(correctChat)
                             buffGalery.status = 'unactive'  
+                            fs.writeFileSync(CharaPath, JSON.stringify(buffChara, null, 2))
                             fs.writeFileSync(galeryPath, JSON.stringify(buffGalery, null, 2))
+                            // }
                         })
                     } 
                 } catch (e) {
@@ -4118,6 +4281,9 @@ ________________________________________
                         if (buffChara.status === 'active') return hurtz.reply(from, `Your group has been enable this chara game before`, id)
                         const charDirObj = {
                                 status: 'active',
+                                claimed_keyword: [],
+                                claimed_by_name: [],
+                                claimed_by_sender: [],
                                 anime_result: '',
                                 chara_name: '',
                                 groupId: chat.id,
@@ -4560,6 +4726,16 @@ ________________________________________
 
 ________________________________________
 
+             🎱〘 Games 〙🎮
+
+➣ *!charagame* _enable/disable_
+➣ *!addchara* _Nama Character_
+➣ *!claim* _Nama Character_
+➣ *!gallery* / *!gallery* _@tagUser_
+➣ *!charalist*
+
+________________________________________
+
             📇 〘 Grup 〙  🛡️
 
 ➣ *!antilink*
@@ -4638,6 +4814,8 @@ ________________________________________
 
             🔭 〘 Search 〙 🔍
 
+➣ *!heroml*
+➣ *!herodetail* _Nama hero ml_
 ➣ *!tempat* _Nama tempat_
 ➣ *!ceklokasi* (tag lokasi anda, sharelok)
 ➣ *!gambar* _KataKunci_

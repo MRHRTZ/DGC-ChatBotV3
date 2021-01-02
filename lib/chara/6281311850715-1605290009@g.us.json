@@ -1,0 +1,38 @@
+{
+  "status": "unactive",
+  "anime_result": {
+    "status": 200,
+    "name": "Fuji ",
+    "image": "https://cdn.myanimelist.net/images/characters/15/377517.jpg",
+    "full_desc": "Fuji  (富士)\nFuji is the gang leader of the Miso Middle School.",
+    "url": "https://myanimelist.net/character/169725/Fuji",
+    "anime": [
+      {
+        "Anime": "Mob Psycho 100",
+        "url": "https://myanimelist.net/anime/32182/Mob_Psycho_100"
+      }
+    ],
+    "manga": [
+      {
+        "name": "Mob Psycho 100",
+        "url": "https://myanimelist.net/manga/60783/Mob_Psycho_100"
+      }
+    ]
+  },
+  "chara_name": "fuji",
+  "groupId": "6281311850715-1605290009@g.us",
+  "msgID": [
+    "false_6281311850715-1605290009@g.us_3814C96E12C86EAA09B352EEA8839E13",
+    "false_6281311850715-1605290009@g.us_CA56C1C9C68D8E68FCC6C9064EA39FE2",
+    "false_6281311850715-1605290009@g.us_CB97159FF9FEED82684FE16BC16F85D9",
+    "false_6281311850715-1605290009@g.us_5C08687399CF1EF48D0B94158E514865",
+    "false_6281311850715-1605290009@g.us_E40F47B52E46DF3BCE87420AADD191C2"
+  ],
+  "messages": [
+    "!claim false",
+    "!claim fuji",
+    "!claim fuji",
+    "!gallery",
+    "!charagame disable"
+  ]
+}

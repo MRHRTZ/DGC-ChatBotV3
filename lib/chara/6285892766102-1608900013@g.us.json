@@ -1,0 +1,46 @@
+{
+  "status": "unactive",
+  "anime_result": {
+    "status": 200,
+    "name": "Kaname ",
+    "image": "https://cdn.myanimelist.net/images/characters/11/388699.jpg",
+    "full_desc": "Kaname  (カナメ)\nKaname is a former Jukai's disciple",
+    "url": "https://myanimelist.net/character/173474/Kaname",
+    "anime": [
+      {
+        "Anime": "Dororo",
+        "url": "https://myanimelist.net/anime/37520/Dororo"
+      }
+    ],
+    "manga": [
+      {
+        "name": "",
+        "url": "https://myanimelist.netundefined"
+      }
+    ]
+  },
+  "chara_name": " kaname",
+  "groupId": "6285892766102-1608900013@g.us",
+  "msgID": [
+    "false_6285892766102-1608900013@g.us_AAD9MEZDJPFOFUZV5E3A",
+    "false_6285892766102-1608900013@g.us_8C7D2BDAF3B6404F9986ED58CE19E530",
+    "false_6285892766102-1608900013@g.us_1EC05E41AD62C86136C80F1DBA412F15",
+    "false_6285892766102-1608900013@g.us_728E09F88E4A97070203E95626B03788",
+    "false_6285892766102-1608900013@g.us_18537EF8ED5AE6EE6FD24790579D0961",
+    "false_6285892766102-1608900013@g.us_E7EB4655F97C7886BF459CCC5AF83555",
+    "false_6285892766102-1608900013@g.us_8B039ECF6628E6B553C5903F225F8783",
+    "false_6285892766102-1608900013@g.us_D7BEDA9A448EEEFAE9249B90A26E6E9F",
+    "false_6285892766102-1608900013@g.us_372278C7F21E498E1B4E962D82138FD9"
+  ],
+  "messages": [
+    "*Bot Berjalan Selama 2 Jam 49 Menit 16 Detik*",
+    "Iya. Tp maksudnya write jadi file?",
+    "Anjing spam ae nih bot",
+    "Owalah s nandaz",
+    "Mute aja",
+    "!mute",
+    "nggak langsung raw ke base64\nTapi w coba di jadiin file dulu juga tetep kek gitu",
+    "Lag botnya",
+    "!charagame disable"
+  ]
+}

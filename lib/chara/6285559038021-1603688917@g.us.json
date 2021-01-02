@@ -1,40 +1,115 @@
 {
   "status": "unactive",
+  "claimed_keyword": [],
+  "claimed_by_name": [],
+  "claimed_by_sender": [],
   "anime_result": {
     "status": 200,
-    "name": "Mamoru ",
-    "image": "https://cdn.myanimelist.net/images/characters/8/71538.jpg",
-    "full_desc": "Mamoru  (衛)\nMamoru can be described as the sports girl type. Very athletic and energetic, she always looks forward to spending time with her brother, whether it be camping, running with him in sports events, going for a bicycle ride, or even teaching him how to swim. One of her signature features is jetting along in roller skates. Since she's more adapted to wearing sports related clothing, she easily becomes embarrassed when it comes to wearing a dress.\n\nIn RePure, it's obvious that she really values the time that she gets to spend with her brother, just the two of them, when she plans out a camping trip. Although viewed as somewhat of a tomboy, that image doesn't bother her as long as her brother is with her, supporting her in any way possible.",
-    "url": "https://myanimelist.net/character/8288/Mamoru",
+    "name": "Nara, Shikamaru (Shadow Boy)",
+    "image": [
+      "https://cdn.myanimelist.net/images/characters/3/131315.jpg"
+    ],
+    "full_desc": "Shikamaru Nara (奈良 シカマル)\nAge: 12 (I); 15 (II)\nBirthday: September 22\nHoroscope: Virgo\nBlood Type: AB\nHeight: 170 cm\nWeight: 53.4 kg\nRank: Genin (I); Chuunin (II)\nLikes: taking naps, playing shogi\nDislikes: Hard-boiled eggs\n\nShikamaru is an extremely unenthusiastic person, and as such lives his life avoiding work. This is partly due to him seeking paths of least resistance, as he often chooses to do things he would otherwise not do if people nag him enough. In his free time he typically takes naps, watches clouds, and plays strategy games such as Shogi and Go. When put into a situation where he potentially needs to put effort into something, he attempts to try to find a way to avoid it such as forfeiting a battle or by pretending to be preoccupied with something else. In the instances where he can not avoid these situations, Shikamaru tends to remark \"how troublesome.\"\n\nDespite his lazy tendencies, Shikamaru is extremely intelligent. His teacher, Asuma, found Shikamaru to have an IQ of over 200, and learned that Shikamaru's poor grades were a result of him finding lifting a pencil to be too much work for him. Nevertheless, Shikamaru works very well with his teammates, as their fathers were teamed together in their youth. Of his teammates, Shikamaru is closest with Chouji, who repays Shikamaru's confidence in him with unyielding loyalty. Shikamaru also has a strong bond with Asuma, often spending time with him playing strategy games. After Asuma's death, he even vows to protect Asuma and Kurenai's unborn child for his teacher's sake. Shikamaru has stated that he will make the child his apprentice someday.\n\nOne of Shikamaru's more distinctive characteristics is that he finds all women to be bossy and \"a pain.\" Contrary to this opinion, he has expressed a notably mature interest in marriage and raising a family with a son and daughter. Ironically, Shikamaru seems to constantly find himself surrounded by the very same strong-willed and bossy women he dislikes. In addition to his own mother, and being surrounded by bossy females, he usually ends up fighting against such women. Shikamaru has had a number of his appearances coincide with those of Temari. When they make their Part II debut together, Naruto Uzumaki asks if they are on a date, though both Shikamaru and Temari state that this is not the case.\n\nWhen the need arises, Shikamaru is quick to abandon his lazy nature and act appropriately to complete a mission or save his teammates. Using his Shadow Imitation Technique, the signature technique of his clan, he can capture the shadow of an opponent to either keep them immobilized or force them to mimic his movements. This ability causes Shikamaru to frequently take the task of stalling enemies so that his comrades can get to safety or to simply buy time. Although this role puts him in a dangerous position once he can no longer stall the opponent, Shikamaru is willing to serve it, feeling that sacrificing his life to ensure the safety of his friends is worth it. He then considers every element that is relevant to the situation at hand and analyzes the information to its fullest, planning out a battle ten moves in advance and devising over a hundred strategies to use against an opponent. This combination of intelligence and dedication to his teammates causes Shikamaru to become the first of the primary Konoha Genin to advance to the rank of Chunin.\n\nOnce becoming a Chunin, Shikamaru's father teaches him how to use his shadow technique more effectively, by using it to choke an opponent. This more interactive capability with his shadow is put to great use over the timeskip, and by Part II Shikamaru becomes proficient at using multiple shadow-based techniques at once. He is also able to manipulate his shadow to lift from the ground and either grab or throw weapons simply by utilizing an opponent's shadow for the same purpose. After he comes into the possession of Asuma's brass knuckles, Shikamaru learns to channel his shadow into them, using them to immobilize opponents by throwing them at an opponent's shadow to capture them and save himself the energy.\n\nShikamaru goes to the Chunin Exams without a particular objective, not caring if he becomes a Chunin or not. In the finals he fights Temari, and would've won, but he decided to forfeit. During the invasion of Konoha, Shikamaru helps Naruto and Sakura to find Sasuke by staying behind and creating a diversionary ambush against the Sound Ninja who were pursuing them. Even though he forfeited the match, he was still promoted to Chunin, mostly because of his incredible way of thinking displayed throughout it. As a result of his early advance to the rank of Chunin, Shikamaru plays a considerably more active role in the plot than most members of the Konoha 11, albeit more indirectly than the primary cast. His first assignment as a Chunin is to assemble a team to retrieve Sasuke Uchiha, who has betrayed Konoha in search for Orochimaru to gain greater power. This forces Shikamaru's team to defeat Sasuke's escorts, the Sound Four. While his teammates defeat their enemies, Sasuke is able to escape, despite their best efforts.\n\nIn Part II, Shikamaru is assigned to track down two members of Akatsuki. While he and his team manage to find their targets with relative ease, Akatsuki member Hidan is able to kill Asuma during the course of a battle. After Asuma's funeral, Shikamaru sets out with the surviving members of Team 10 and Kakashi to avenge their sensei. As his team deals with Hidan's partner, Shikamaru is able to defeat Hidan in memory of Asuma, and single-handedly weakens Akatsuki by one member.\n\nIn chapter 649 of the manga, Shikamaru states that when Naruto becomes the next Hokage, Naruto doesn't have a smart brother willing to be his adviser like the first Hokage and there would be no better adviser for Naruto other than him.\n\nYears later, Shikamaru married Temari and have a son named Shikadai.",
+    "url": "https://myanimelist.net/character/2007/Shikamaru_Nara",
     "anime": [
       {
-        "Anime": "Sister Princess: Re Pure Character's",
-        "url": "https://myanimelist.net/anime/21119/Sister_Princess__Re_Pure_Characters"
+        "Anime": "Naruto SD: Rock Lee no Seishun Full-Power Ninden",
+        "url": "https://myanimelist.net/anime/12979/Naruto_SD__Rock_Lee_no_Seishun_Full-Power_Ninden"
       },
       {
-        "Anime": "Sister Princess",
-        "url": "https://myanimelist.net/anime/836/Sister_Princess"
+        "Anime": "Naruto: Honoo no Chuunin Shiken! Naruto vs. Konohamaru!!",
+        "url": "https://myanimelist.net/anime/10686/Naruto__Honoo_no_Chuunin_Shiken_Naruto_vs_Konohamaru"
       },
       {
-        "Anime": "Sister Princess: Re Pure",
-        "url": "https://myanimelist.net/anime/835/Sister_Princess__Re_Pure"
+        "Anime": "Naruto: Shippuuden Movie 6 - Road to Ninja",
+        "url": "https://myanimelist.net/anime/13667/Naruto__Shippuuden_Movie_6_-_Road_to_Ninja"
+      },
+      {
+        "Anime": "Naruto: Shippuuden Movie 5 - Blood Prison",
+        "url": "https://myanimelist.net/anime/10589/Naruto__Shippuuden_Movie_5_-_Blood_Prison"
+      },
+      {
+        "Anime": "Naruto Soyokazeden Movie: Naruto to Mashin to Mitsu no Onegai Dattebayo!!",
+        "url": "https://myanimelist.net/anime/10659/Naruto_Soyokazeden_Movie__Naruto_to_Mashin_to_Mitsu_no_Onegai_Dattebayo"
+      },
+      {
+        "Anime": "Boruto: Naruto the Movie - Naruto ga Hokage ni Natta Hi",
+        "url": "https://myanimelist.net/anime/32365/Boruto__Naruto_the_Movie_-_Naruto_ga_Hokage_ni_Natta_Hi"
+      },
+      {
+        "Anime": "Boruto: Naruto Next Generations",
+        "url": "https://myanimelist.net/anime/34566/Boruto__Naruto_Next_Generations"
+      },
+      {
+        "Anime": "Naruto",
+        "url": "https://myanimelist.net/anime/20/Naruto"
+      },
+      {
+        "Anime": "Boruto: Naruto the Movie",
+        "url": "https://myanimelist.net/anime/28755/Boruto__Naruto_the_Movie"
+      },
+      {
+        "Anime": "The Last: Naruto the Movie",
+        "url": "https://myanimelist.net/anime/16870/The_Last__Naruto_the_Movie"
+      },
+      {
+        "Anime": "Naruto Narutimate Hero 3: Tsuini Gekitotsu! Jounin vs. Genin!! Musabetsu Dairansen Taikai Kaisai!!",
+        "url": "https://myanimelist.net/anime/1074/Naruto_Narutimate_Hero_3__Tsuini_Gekitotsu_Jounin_vs_Genin_Musabetsu_Dairansen_Taikai_Kaisai"
+      },
+      {
+        "Anime": "Naruto: Shippuuden",
+        "url": "https://myanimelist.net/anime/1735/Naruto__Shippuuden"
+      },
+      {
+        "Anime": "Naruto: Dai Katsugeki!! Yuki Hime Shinobu Houjou Dattebayo! - Konoha no Sato no Dai Undoukai",
+        "url": "https://myanimelist.net/anime/2248/Naruto__Dai_Katsugeki_Yuki_Hime_Shinobu_Houjou_Dattebayo_-_Konoha_no_Sato_no_Dai_Undoukai"
+      },
+      {
+        "Anime": "Naruto: Shippuuden Movie 3 - Hi no Ishi wo Tsugu Mono",
+        "url": "https://myanimelist.net/anime/6325/Naruto__Shippuuden_Movie_3_-_Hi_no_Ishi_wo_Tsugu_Mono"
+      },
+      {
+        "Anime": "Naruto Movie 2: Dai Gekitotsu! Maboroshi no Chiteiiseki Dattebayo!",
+        "url": "https://myanimelist.net/anime/936/Naruto_Movie_2__Dai_Gekitotsu_Maboroshi_no_Chiteiiseki_Dattebayo"
+      },
+      {
+        "Anime": "Naruto: Shippuuden Movie 2 - Kizuna",
+        "url": "https://myanimelist.net/anime/4437/Naruto__Shippuuden_Movie_2_-_Kizuna"
+      },
+      {
+        "Anime": "Naruto: Shippuuden - Shippuu! \"Konoha Gakuen\" Den",
+        "url": "https://myanimelist.net/anime/4134/Naruto__Shippuuden_-_Shippuu_Konoha_Gakuen_Den"
+      },
+      {
+        "Anime": "Naruto: Shippuuden Movie 1",
+        "url": "https://myanimelist.net/anime/2472/Naruto__Shippuuden_Movie_1"
       }
     ],
     "manga": [
       {
-        "name": "Sister Princess",
-        "url": "https://myanimelist.net/manga/8414/Sister_Princess"
+        "name": "NarutoRock Lee no Seishun Full-Power NindenNaruto: Konoha Shinden - Yukemuri NinpouchouBoruto: Naruto Next GenerationsNaruto Hiden SeriesNaruto Gaiden: Nanadaime Hokage to Akairo no HanatsuzukiRoad to Ninja: Naruto the Movie",
+        "url": "https://myanimelist.net/manga/11/Naruto"
       }
     ]
   },
-  "chara_name": "mamoru",
+  "chara_name": "shikamaru",
   "groupId": "6285559038021-1603688917@g.us",
   "msgID": [
-    "false_6285559038021-1603688917@g.us_22666EB03F8067E9119F9D3DA472E181",
-    "false_6285559038021-1603688917@g.us_3EB0EBB6714FCA8EBA38"
+    "false_6285559038021-1603688917@g.us_1099B1957FFD372685DC7BF3A5810EDD",
+    "false_6285559038021-1603688917@g.us_3EB0DFBE32B3A85AAE6E",
+    "false_6285559038021-1603688917@g.us_41B6C2595111593FEB513C9B6B5435AD",
+    "false_6285559038021-1603688917@g.us_FD87EE7294D89D8EEA5CF7300B84A149",
+    "false_6285559038021-1603688917@g.us_E20EA754F424E8C96D40F91D1ED46F21",
+    "false_6285559038021-1603688917@g.us_2ADFDAAC9479FDF414EE80FFE26573C7",
+    "false_6285559038021-1603688917@g.us_3EB012489D98FFEEADA7"
   ],
   "messages": [
-    "Gay",
+    "That  made disabled",
+    "I'm forgot what i add :v",
+    "Case",
+    "**",
+    "🐦",
+    "See my code",
     "!charagame disable"
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "status": "active",
+  "sender": "6289636035164@c.us",
+  "name": "A Dev",
+  "animes": [
+    {
+      "status": 200,
+      "name": "SF-A2 miki (Mikina Freesis, Mickina Olliba)",
+      "image": "https://cdn.myanimelist.net/images/characters/7/225565.jpg",
+      "full_desc": "SF-A2 miki  (SF-A2 開発コード miki)\nSF-A2 codename miki, is a Japanese VOCALOID developed and distributed by AH-Software Co. Ltd., and was released in December 2009 for the VOCALOID2 engine. Her voice is provided by the Japanese female singer, Miki Furukawa.\n\n\nAlternative names/personalities:\nAku no Musume: Mikina Freesis (ミキナ=フリージス)\nVenomania-kou no Kyouki: Mickina Olliba",
+      "url": "https://myanimelist.net/character/94963/SF-A2_miki",
+      "anime": [],
+      "manga": [
+        {
+          "name": "Aku no Taizai: Venomania-kou no KyoukiAku no Musume",
+          "url": "https://myanimelist.net/manga/61877/Aku_no_Taizai__Venomania-kou_no_Kyouki"
+        }
+      ]
+    }
+  ]
+}
