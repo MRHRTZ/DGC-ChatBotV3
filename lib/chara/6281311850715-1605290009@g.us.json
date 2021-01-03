@@ -1,38 +1,42 @@
 {
-  "status": "unactive",
+  "status": "active",
+  "claimed_keyword": [],
+  "claimed_by_name": [],
+  "claimed_by_sender": [],
   "anime_result": {
     "status": 200,
-    "name": "Fuji ",
-    "image": "https://cdn.myanimelist.net/images/characters/15/377517.jpg",
-    "full_desc": "Fuji  (富士)\nFuji is the gang leader of the Miso Middle School.",
-    "url": "https://myanimelist.net/character/169725/Fuji",
+    "name": "Toothy Boy ",
+    "image": [
+      "https://mrhrtz-wabot.000webhostapp.com/cooltext372748737425114.png"
+    ],
+    "full_desc": "Toothy Boy  (こぼれるようなの少年)\nThe main character and victim from the bullies.",
+    "url": "https://myanimelist.net/character/167436/Toothy_Boy",
     "anime": [
       {
-        "Anime": "Mob Psycho 100",
-        "url": "https://myanimelist.net/anime/32182/Mob_Psycho_100"
+        "Anime": "Nido to Mezamenu Komori Uta",
+        "url": "https://myanimelist.net/anime/7273/Nido_to_Mezamenu_Komori_Uta"
       }
     ],
-    "manga": [
-      {
-        "name": "Mob Psycho 100",
-        "url": "https://myanimelist.net/manga/60783/Mob_Psycho_100"
-      }
-    ]
+    "manga": []
   },
-  "chara_name": "fuji",
+  "chara_name": "toothy",
   "groupId": "6281311850715-1605290009@g.us",
   "msgID": [
-    "false_6281311850715-1605290009@g.us_3814C96E12C86EAA09B352EEA8839E13",
-    "false_6281311850715-1605290009@g.us_CA56C1C9C68D8E68FCC6C9064EA39FE2",
-    "false_6281311850715-1605290009@g.us_CB97159FF9FEED82684FE16BC16F85D9",
-    "false_6281311850715-1605290009@g.us_5C08687399CF1EF48D0B94158E514865",
-    "false_6281311850715-1605290009@g.us_E40F47B52E46DF3BCE87420AADD191C2"
+    "false_6281311850715-1605290009@g.us_M4VYKLVG3DDPRRSLPPX9",
+    "false_6281311850715-1605290009@g.us_ABWMCB95KY6KLFK9AWIQ",
+    "false_6281311850715-1605290009@g.us_C6X4YEJ6DJEAGNAJTPES",
+    "false_6281311850715-1605290009@g.us_2EEC11B6E4631DF7DE4E2AB3E73472F5",
+    "false_6281311850715-1605290009@g.us_ETTS0Z0AHM7DKQVYHGRL",
+    "false_6281311850715-1605290009@g.us_788F7C07C4D99B4F28FD9B195ABFF236",
+    "false_6281311850715-1605290009@g.us_LRTS2M1SG1DOAPGNCM5Z"
   ],
   "messages": [
-    "!claim false",
-    "!claim fuji",
-    "!claim fuji",
-    "!gallery",
-    "!charagame disable"
+    "Selamat Tinggal @966572592040 👋",
+    "Maaf jonaz, Command *#googleimg* tidak di mengerti bot",
+    "Maaf jonaz, Command *#trapcard* tidak di mengerti bot",
+    "!tts ar هاي",
+    "Hai ؏ــاصوفء الششـبحء🏴‍☠️📌. sayangnya.. bot tidak mengerti perintah !tts, mohon ketik *#menu*\n\nDan ketik *#limit* untuk cek sisa limit request anda",
+    "!tts ar يديوث يا بنيك لك امك يديوث يا زنوه بشخط اهلك واحد ورا الثاني يا يديوث بنيك لك امك يديوث يا كسمك ع كسختك بنيك لك اختك كسمك  ع كسختك يديوث يا يمهان يرخيص بسفر امك ع بيت الدعاره ديوث بهين لك امك يا شرايك يديوث اسمع بنيك لك امك لا خلاص بمسك اختك ولا يا اقولك امك احلا لا خلاص يا بشخل اختك الصغيره شخل اعنفها تعنيف من كسها يولد بقرص  كسها",
+    "Hai ؏ــاصوفء الششـبحء🏴‍☠️📌. sayangnya.. bot tidak mengerti perintah !tts, mohon ketik *#menu*\n\nDan ketik *#limit* untuk cek sisa limit request anda"
   ]
 }

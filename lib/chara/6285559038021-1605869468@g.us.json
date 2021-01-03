@@ -1,43 +1,40 @@
 {
-  "status": "unactive",
+  "status": "active",
   "claimed_keyword": [],
   "claimed_by_name": [],
   "claimed_by_sender": [],
   "anime_result": {
     "status": 200,
-    "name": "Ryuga ",
+    "name": "Moriyama, Jin ",
     "image": [
-      "https://cdn.myanimelist.net/images/characters/11/288072.jpg"
+      "https://mrhrtz-wabot.000webhostapp.com/cooltext372748737425114.png"
     ],
-    "full_desc": "Ryuga  (リュウガ)\nRyuga (リュウガ, Ryūga?) is the elder brother of Yuria and the successor of the Taizan Tenrōken (泰山天狼拳?, \"Mt. Tai Celestial Wolf Fist\") style, which allows him to scoop the chunks of his enemies' flesh while leaving them with a feeling of coldness. He represents the solitary star of Sirius (天狼星, Tenrōsei?, The Heavenly Wolf Star), which is neither, part of the Hokuto nor Nanto constellations. After the nuclear war, Ryuga pledges his loyalty to Raoh, believing that his tyranny will restore order to the world.\n\nRyuga was voiced by Hideyuki Hori in the original TV series, Daisuke Sakaguchi (as a child) in the Shin Kyūseishu Densetsu series, and by Daisuke Matsubara in the Ten no Haoh anime series.\n\n(Source: Wikipedia)",
-    "url": "https://myanimelist.net/character/27072/Ryuga",
+    "full_desc": "Jin Moriyama (森山仁)\nNo biography written.",
+    "url": "https://myanimelist.net/character/143132/Jin_Moriyama",
     "anime": [
       {
-        "Anime": "Hokuto no Ken: Yuria-den",
-        "url": "https://myanimelist.net/anime/3027/Hokuto_no_Ken__Yuria-den"
-      },
-      {
-        "Anime": "Hokuto no Ken: Raoh Gaiden Ten no Haoh",
-        "url": "https://myanimelist.net/anime/4549/Hokuto_no_Ken__Raoh_Gaiden_Ten_no_Haoh"
-      },
-      {
-        "Anime": "Hokuto no Ken",
-        "url": "https://myanimelist.net/anime/967/Hokuto_no_Ken"
+        "Anime": "Burning Blood",
+        "url": "https://myanimelist.net/anime/9177/Burning_Blood"
       }
     ],
-    "manga": [
-      {
-        "name": "Hokuto no Ken - Toki GaidenHokuto no Ken - Juuza GaidenHokuto no KenHokuto no Ken - Raoh Gaiden",
-        "url": "https://myanimelist.net/manga/4008/Hokuto_no_Ken_-_Toki_Gaiden"
-      }
-    ]
+    "manga": []
   },
-  "chara_name": "ryuga",
+  "chara_name": "Jin mori",
   "groupId": "6285559038021-1605869468@g.us",
   "msgID": [
-    "false_6285559038021-1605869468@g.us_04CBDB95FF52133F958E214ACDCD2329"
+    "false_6285559038021-1605869468@g.us_69D5E7E5C7B1A89E15A15B231106D99C",
+    "false_6285559038021-1605869468@g.us_F7C15229473F307DD8ACC3D0DF02D0B3",
+    "false_6285559038021-1605869468@g.us_668C648CFC02E675B6515D741D72DC5A",
+    "false_6285559038021-1605869468@g.us_9E545EC3D3D5BE337C05E1504C517C7D",
+    "false_6285559038021-1605869468@g.us_C055EEA446D5FB68220358920469B0D8",
+    "false_6285559038021-1605869468@g.us_8A11AA24927B88D20E9383E6FB24577F"
   ],
   "messages": [
-    "!charagame disable"
+    "Offline",
+    "!tts ar ‏لا تقبل بأقل مما تستحق.. فأغلب أوجاعك تبدأ عندما تتنازل",
+    "!tts en ‏لا تقبل بأقل مما تستحق.. فأغلب أوجاعك تبدأ عندما تتنازل",
+    "!tts EN ‏لا تقبل بأقل مما تستحق.. فأغلب أوجاعك تبدأ عندما تتنازل",
+    "Orang Indonesia?",
+    "Streess"
   ]
 }

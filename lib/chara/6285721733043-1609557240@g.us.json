@@ -1,0 +1,91 @@
+{
+  "status": "unactive",
+  "claimed_keyword": [],
+  "claimed_by_name": [],
+  "claimed_by_sender": [],
+  "anime_result": {
+    "status": 200,
+    "name": "Levi ",
+    "image": [
+      "https://cdn.myanimelist.net/images/characters/2/241413.jpg"
+    ],
+    "full_desc": "Levi  (リヴァイ)\nBirthday: December 25\nHeight: 160 cm (5'3\")\nWeight: 65 kg (143 lbs)\nAffiliations: Scouting Legion, Special Operations Squad\n\nLevi is known as humanity's most powerful soldier. He's ranked as Captain of the Scouting Legion division. Levi is also the leader of the Special Operations Squad, an elite team that he hand-picked in order to protect Eren Yeager. While it is said that he is blunt and unapproachable, it is noted that he has a strong respect for structure and discipline. There are rumors that he was originally part of underground crime before he became a soldier. Although he often appears to be unfriendly, he cares deeply for his team and has never undervalued human life. He is also a notorious clean-freak.\n\nIt is later revealed that his full name is Levi Ackerman.\nNote: Levi is the official English translation by Kodansha.",
+    "url": "https://myanimelist.net/character/45627/Levi",
+    "anime": [
+      {
+        "Anime": "Shingeki no Kyojin: Kuinaki Sentaku",
+        "url": "https://myanimelist.net/anime/25781/Shingeki_no_Kyojin__Kuinaki_Sentaku"
+      },
+      {
+        "Anime": "Shingeki! Kyojin Chuugakkou",
+        "url": "https://myanimelist.net/anime/31374/Shingeki_Kyojin_Chuugakkou"
+      },
+      {
+        "Anime": "Shingeki no Kyotou",
+        "url": "https://myanimelist.net/anime/35122/Shingeki_no_Kyotou"
+      },
+      {
+        "Anime": "Shingeki no Kyojin Season 2",
+        "url": "https://myanimelist.net/anime/25777/Shingeki_no_Kyojin_Season_2"
+      },
+      {
+        "Anime": "Shingeki no Kyojin Movie 2: Jiyuu no Tsubasa",
+        "url": "https://myanimelist.net/anime/23777/Shingeki_no_Kyojin_Movie_2__Jiyuu_no_Tsubasa"
+      },
+      {
+        "Anime": "Shingeki no Kyojin: The Final Season",
+        "url": "https://myanimelist.net/anime/40028/Shingeki_no_Kyojin__The_Final_Season"
+      },
+      {
+        "Anime": "Shingeki no Kyojin Season 3 Part 2",
+        "url": "https://myanimelist.net/anime/38524/Shingeki_no_Kyojin_Season_3_Part_2"
+      },
+      {
+        "Anime": "Shingeki no Kyojin: Chronicle",
+        "url": "https://myanimelist.net/anime/42091/Shingeki_no_Kyojin__Chronicle"
+      },
+      {
+        "Anime": "Shingeki no Kyojin Season 3",
+        "url": "https://myanimelist.net/anime/35760/Shingeki_no_Kyojin_Season_3"
+      },
+      {
+        "Anime": "Shingeki no Kyojin Movie 1: Guren no Yumiya",
+        "url": "https://myanimelist.net/anime/23775/Shingeki_no_Kyojin_Movie_1__Guren_no_Yumiya"
+      },
+      {
+        "Anime": "Shingeki no Kyojin OVA",
+        "url": "https://myanimelist.net/anime/18397/Shingeki_no_Kyojin_OVA"
+      },
+      {
+        "Anime": "Shingeki no Kyojin: Ano Hi Kara",
+        "url": "https://myanimelist.net/anime/19285/Shingeki_no_Kyojin__Ano_Hi_Kara"
+      },
+      {
+        "Anime": "Shingeki no Kyojin",
+        "url": "https://myanimelist.net/anime/16498/Shingeki_no_Kyojin"
+      },
+      {
+        "Anime": "Shingeki no Kyojin Picture Drama",
+        "url": "https://myanimelist.net/anime/19391/Shingeki_no_Kyojin_Picture_Drama"
+      }
+    ],
+    "manga": [
+      {
+        "name": "Shingeki no Kyojin: Kuinaki Sentaku - PrologueSungeki no KyojinShingeki no Kyojin: Kuinaki SentakuShingeki! Kyojin ChuugakkouShingeki no Kyojin",
+        "url": "https://myanimelist.net/manga/70613/Shingeki_no_Kyojin__Kuinaki_Sentaku_-_Prologue"
+      }
+    ]
+  },
+  "chara_name": "levi",
+  "groupId": "6285721733043-1609557240@g.us",
+  "msgID": [
+    "false_6285721733043-1609557240@g.us_EC5391836A8AA602F8B5904ADDB7B4F8",
+    "false_6285721733043-1609557240@g.us_BA4B95EE3FA31ADD1836F971D39B6570",
+    "false_6285721733043-1609557240@g.us_A227FD6FFF93B0C34BCD4453EE8E5D5F"
+  ],
+  "messages": [
+    "Keluar lagi aja",
+    "Ok",
+    "!charagame disable"
+  ]
+}
