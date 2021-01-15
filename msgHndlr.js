@@ -800,7 +800,7 @@ Ex : *!claim naruto*
             }
     }
 
-    if (!groupIzin && command.startsWith(switch_pref) && !sender.isMe && body != switch_pref+'aktifkan' && body != '> ' && command != switch_pref+'izin') return hurtz.sendText(from, `Bot belum diaktifkan pada chat ini!\n\nketik : \n\n*!aktifkan* \n\n_Note : Hanya nomer yang diizinkan dapat mengaktifkan bot!_`)
+   // if (!groupIzin && command.startsWith(switch_pref) && !sender.isMe && body != switch_pref+'aktifkan' && body != '> ' && command != switch_pref+'izin') return hurtz.sendText(from, `Bot belum diaktifkan pada chat ini!\n\nketik : \n\n*!aktifkan* \n\n_Note : Hanya nomer yang diizinkan dapat mengaktifkan bot!_`)
     // console.log(groupIzin)
                         
 
